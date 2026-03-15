@@ -53,6 +53,7 @@ async def init_schema(pool: asyncpg.Pool) -> None:
             ALTER TABLE products ADD COLUMN IF NOT EXISTS category_sub     TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS canonical_key    TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS features_version INT DEFAULT 0;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS last_scraped_at  TIMESTAMPTZ;
 
             -- Indexes for new columns
             CREATE UNIQUE INDEX IF NOT EXISTS idx_products_product_id ON products(product_id)
@@ -60,6 +61,7 @@ async def init_schema(pool: asyncpg.Pool) -> None:
             CREATE INDEX IF NOT EXISTS idx_products_canonical_key ON products(canonical_key)
                 WHERE canonical_key IS NOT NULL;
             CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_dept, category_sub);
+            CREATE INDEX IF NOT EXISTS idx_products_last_scraped ON products(last_scraped_at DESC);
 
             CREATE TABLE IF NOT EXISTS price_snapshots (
                 id          BIGSERIAL   PRIMARY KEY,
@@ -111,8 +113,8 @@ async def upsert_product(pool: asyncpg.Pool, supplier: str, product_dict: dict) 
         await conn.execute(
             """
             INSERT INTO products
-                (sku, supplier, name, url, category, units_per_package, packs_per_pallet, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+                (sku, supplier, name, url, category, units_per_package, packs_per_pallet, updated_at, last_scraped_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
             ON CONFLICT (sku, supplier) DO UPDATE
                 SET name              = EXCLUDED.name,
                     url               = EXCLUDED.url,
@@ -123,7 +125,8 @@ async def upsert_product(pool: asyncpg.Pool, supplier: str, product_dict: dict) 
                         WHEN products.name IS DISTINCT FROM EXCLUDED.name THEN NULL
                         ELSE products.features_version
                     END,
-                    updated_at        = NOW()
+                    updated_at        = NOW(),
+                    last_scraped_at   = NOW()
             """,
             product_dict["sku"],
             supplier,
