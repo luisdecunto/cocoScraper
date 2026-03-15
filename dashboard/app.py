@@ -58,7 +58,8 @@ with tab1:
 
     try:
         df = query("""
-            SELECT p.name, p.sku, p.category, p.supplier,
+            SELECT p.product_id, p.name, p.brand, p.product_type, p.supplier,
+                   p.category_dept, p.category_sub, p.size_value, p.size_unit,
                    s.price_unit, s.price_bulk, s.stock, s.scraped_at
             FROM products p
             JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier
@@ -74,21 +75,28 @@ with tab1:
             suppliers = ["All"] + sorted(df["supplier"].dropna().unique().tolist())
             sel_supplier = st.multiselect("Supplier", suppliers[1:], key="t1_supplier")
         with col2:
-            categories = sorted(df["category"].dropna().unique().tolist())
-            sel_category = st.multiselect("Category", categories, key="t1_category")
+            depts = sorted(df["category_dept"].dropna().unique().tolist())
+            sel_dept = st.multiselect("Department", depts, key="t1_dept")
         with col3:
-            search = st.text_input("Search name", key="t1_search")
+            search = st.text_input("Search by product_id or name", key="t1_search")
 
         filtered = df.copy()
         if sel_supplier:
             filtered = filtered[filtered["supplier"].isin(sel_supplier)]
-        if sel_category:
-            filtered = filtered[filtered["category"].isin(sel_category)]
+        if sel_dept:
+            filtered = filtered[filtered["category_dept"].isin(sel_dept)]
         if search:
-            filtered = filtered[filtered["name"].str.contains(search, case=False, na=False)]
+            filtered = filtered[
+                (filtered["product_id"].str.contains(search, case=False, na=False)) |
+                (filtered["name"].str.contains(search, case=False, na=False))
+            ]
 
         st.caption(f"{len(filtered)} rows")
-        st.dataframe(filtered, width="stretch", hide_index=True)
+        # Display key columns: product_id, brand, type, category, prices
+        display_cols = ["product_id", "brand", "product_type", "category_dept",
+                       "category_sub", "size_value", "size_unit", "supplier",
+                       "price_unit", "price_bulk", "stock", "scraped_at"]
+        st.dataframe(filtered[display_cols], width="stretch", hide_index=True)
 
     except Exception as e:
         st.error(f"Could not load data: {e}")
@@ -103,7 +111,8 @@ with tab2:
 
     try:
         df2 = query("""
-            SELECT p.name, p.sku, p.category, p.supplier,
+            SELECT p.product_id, p.name, p.brand, p.product_type, p.canonical_key,
+                   p.category_dept, p.category_sub, p.supplier,
                    s.price_unit, s.scraped_at
             FROM products p
             JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier
@@ -117,20 +126,20 @@ with tab2:
         if suppliers_in_data < 2:
             st.info("Add more suppliers to enable comparison.")
         else:
-            categories2 = ["All"] + sorted(df2["category"].dropna().unique().tolist())
-            sel_cat2 = st.selectbox("Category", categories2, key="t2_category")
+            depts2 = ["All"] + sorted(df2["category_dept"].dropna().unique().tolist())
+            sel_cat2 = st.selectbox("Department", depts2, key="t2_category")
 
-            filtered2 = df2 if sel_cat2 == "All" else df2[df2["category"] == sel_cat2]
+            filtered2 = df2 if sel_cat2 == "All" else df2[df2["category_dept"] == sel_cat2]
 
             pivot = filtered2.pivot_table(
-                index=["name", "sku", "category"],
+                index=["product_id", "brand", "product_type", "category_dept", "category_sub"],
                 columns="supplier",
                 values="price_unit",
                 aggfunc="first",
             ).reset_index()
             pivot.columns.name = None
 
-            supplier_cols = [c for c in pivot.columns if c not in ("name", "sku", "category")]
+            supplier_cols = [c for c in pivot.columns if c not in ("product_id", "brand", "product_type", "category_dept", "category_sub")]
 
             if supplier_cols:
                 price_data = pivot[supplier_cols]
@@ -169,16 +178,17 @@ with tab3:
 
     try:
         products_df = query("""
-            SELECT DISTINCT p.name, p.sku
+            SELECT DISTINCT p.product_id, p.name, p.sku, p.brand, p.product_type
             FROM products p
             JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier
-            ORDER BY p.name;
+            ORDER BY p.product_id;
         """)
 
-        search3 = st.text_input("Search product name or SKU", key="t3_search")
+        search3 = st.text_input("Search by product_id, name, or SKU", key="t3_search")
 
         if search3:
             mask = (
+                products_df["product_id"].str.contains(search3, case=False, na=False) |
                 products_df["name"].str.contains(search3, case=False, na=False) |
                 products_df["sku"].str.contains(search3, case=False, na=False)
             )
@@ -189,13 +199,15 @@ with tab3:
         if matches.empty:
             st.info("No products found.")
         else:
-            options = {f"{r['name']} (SKU {r['sku']})": r["sku"] for _, r in matches.iterrows()}
+            options = {f"{r['product_id']} — {r['name']} ({r['brand']})": r["sku"]
+                      for _, r in matches.iterrows()}
             selected_label = st.selectbox("Select product", list(options.keys()), key="t3_product")
             selected_sku = options[selected_label]
 
             history = query("""
-                SELECT s.scraped_at, s.price_unit, s.price_bulk, s.supplier
+                SELECT s.scraped_at, s.price_unit, s.price_bulk, s.supplier, p.product_id
                 FROM price_snapshots s
+                JOIN products p ON p.sku = s.sku AND p.supplier = s.supplier
                 WHERE s.sku = %s
                 ORDER BY s.scraped_at ASC;
             """, selected_sku)
@@ -210,7 +222,7 @@ with tab3:
                     labels={"scraped_at": "Date", "price_unit": "Unit Price"},
                     markers=True,
                 )
-                st.plotly_chart(fig, width="stretch")
+                st.plotly_chart(fig, use_container_width=True)
                 st.dataframe(history, width="stretch", hide_index=True)
             else:
                 st.info("No snapshot history for this product.")
