@@ -149,7 +149,11 @@ def extract_unified(
             return _empty_features()
 
         # Call supplier-specific extraction
-        features = extract_features(name, category)
+        # Luvik and Nini accept category; others only take name
+        if supplier in ("luvik", "nini"):
+            features = extract_features(name, category)
+        else:
+            features = extract_features(name)
 
         # Normalize size fields: Luvik/Nini return (size_value, size_unit),
         # while others may return nested dicts. Ensure we have both forms.
@@ -358,6 +362,9 @@ async def list_unmapped_types(pool: asyncpg.Pool) -> None:
 async def main():
     """CLI entry point."""
     import argparse
+    from dotenv import load_dotenv
+
+    load_dotenv()
 
     parser = argparse.ArgumentParser(description="Post-scrape feature extraction pipeline")
     parser.add_argument(
