@@ -1,0 +1,123 @@
+# Unified Category Taxonomy
+# Format: DEPARTMENT|SUBCATEGORY|PRODUCT_TYPE
+# One entry per line. Product types are ASCII-folded and uppercased for matching.
+# Comments start with #
+
+# ============================================================================
+# Almacén (General Grocery)
+# ============================================================================
+
+Almacén|Aceites y Grasas|Aceite
+Almacén|Aceites y Grasas|Grasa
+Almacén|Arroz y Legumbres|Arroz
+Almacén|Arroz y Legumbres|Arveja
+Almacén|Arroz y Legumbres|Frijol
+Almacén|Arroz y Legumbres|Garbanzo
+Almacén|Arroz y Legumbres|Lenteja
+Almacén|Conservas|Aceituna
+Almacén|Conservas|Arvejas
+Almacén|Conservas|Choclo
+Almacén|Conservas|Palmitos
+Almacén|Conservas|Tomate
+Almacén|Condimentos|Aji
+Almacén|Condimentos|Caldo
+Almacén|Condimentos|Especias
+Almacén|Condimentos|Mostaza
+Almacén|Condimentos|Pimienta
+Almacén|Condimentos|Sal
+Almacén|Condimentos|Vinagre
+Almacén|Galletitas|Galletita
+Almacén|Pastas|Fideos
+Almacén|Pastas|Tapa
+Almacén|Harinas y Panificados|Harina
+Almacén|Harinas y Panificados|Levadura
+Almacén|Harinas y Panificados|Pan
+Almacén|Desayuno|Chocolate
+Almacén|Desayuno|Dulce
+Almacén|Desayuno|Mermelada
+Almacén|Desayuno|Miel
+Almacén|Desayuno|Tostadas
+Almacén|Yerba y Té|Té
+Almacén|Yerba y Té|Yerba
+Almacén|Café|Café
+Almacén|Azúcar|Azúcar
+
+# ============================================================================
+# Bebidas (Beverages)
+# ============================================================================
+
+Bebidas|Gaseosas|Agua
+Bebidas|Gaseosas|Gaseosa
+Bebidas|Gaseosas|Jugo
+Bebidas|Gaseosas|Soda
+Bebidas|Cerveza|Cerveza
+Bebidas|Vino|Espumante
+Bebidas|Vino|Vino
+Bebidas|Bebidas Alcohólicas|Aperitivo
+Bebidas|Bebidas Alcohólicas|Fernet
+Bebidas|Bebidas Alcohólicas|Gin
+Bebidas|Bebidas Alcohólicas|Licor
+Bebidas|Bebidas Alcohólicas|Ron
+Bebidas|Bebidas Alcohólicas|Whisky
+Bebidas|Bebidas Alcohólicas|Vodka
+Bebidas|Bebidas Energizantes|Energizante
+Bebidas|Bebidas Energizantes|Isotonica
+
+# ============================================================================
+# Lácteos (Dairy)
+# ============================================================================
+
+Lácteos|Leche|Leche
+Lácteos|Yoghurt|Yoghurt
+Lácteos|Queso|Queso
+Lácteos|Manteca y Crema|Crema
+Lácteos|Manteca y Crema|Manteca
+
+# ============================================================================
+# Fiambres y Embutidos (Deli & Cold Meats)
+# ============================================================================
+
+Fiambres|Embutidos|Chorizo
+Fiambres|Embutidos|Salchicha
+Fiambres|Fiambre|Jamón
+Fiambres|Fiambre|Mortadela
+
+# ============================================================================
+# Limpieza (Cleaning)
+# ============================================================================
+
+Limpieza|Detergentes|Detergente
+Limpieza|Detergentes|Jabón
+Limpieza|Limpiadores|Desengrasante
+Limpieza|Limpiadores|Lavandina
+Limpieza|Limpiadores|Limpiador
+Limpieza|Papel|Papel Higiénico
+Limpieza|Papel|Rollo
+Limpieza|Papel|Servilleta
+
+# ============================================================================
+# Higiene y Cuidado Personal (Personal Care & Hygiene)
+# ============================================================================
+
+Higiene|Shampoo y Acondicionador|Acondicionador
+Higiene|Shampoo y Acondicionador|Shampoo
+Higiene|Desodorante|Desodorante
+Higiene|Jabón y Cremas|Crema Facial
+Higiene|Jabón y Cremas|Jabón Tocador
+Higiene|Dental|Cepillo Dental
+Higiene|Dental|Pasta Dental
+Higiene|Pañales|Pañal
+
+# ============================================================================
+# Mascotas (Pet Products)
+# ============================================================================
+
+Mascotas|Alimento Gatos|Alimento Gato
+Mascotas|Alimento Perros|Alimento Perro
+Mascotas|Accesorios|Accesorio Mascota
+
+# ============================================================================
+# Otros (Catch-all for unmapped product types)
+# ============================================================================
+
+Otros|Otros|Otros
