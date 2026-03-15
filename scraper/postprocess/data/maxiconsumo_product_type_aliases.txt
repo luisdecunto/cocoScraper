@@ -1,0 +1,142 @@
+# Maxiconsumo — product type alias/canonicalization rules
+# Format: VARIANT=CANONICAL
+# Left side: the raw product type as it appears (or gets extracted)
+# Right side: the canonical form that will be stored
+# Lines starting with # are comments. Case-insensitive matching.
+# Both sides should be written in UPPERCASE.
+# Add new groups with a comment header describing the group.
+
+# ── Empanada wrappers ────────────────────────────────────────────────────────
+TAPA DE EMPANADAS=TAPAS PARA EMPANADAS
+TAPAS EMPANADAS=TAPAS PARA EMPANADAS
+TAPA PARA EMPANADAS=TAPAS PARA EMPANADAS
+TAPA PARA EMPANADA=TAPAS PARA EMPANADAS
+TAPA PARA EMPANDA=TAPAS PARA EMPANADAS
+TAPA EMPANADA=TAPAS PARA EMPANADAS
+TAPAS EMPANADA=TAPAS PARA EMPANADAS
+
+# ── Easter eggs ──────────────────────────────────────────────────────────────
+HUEVA DE PASCUA=HUEVO DE PASCUA
+HUEVO DE PASCUAS=HUEVO DE PASCUA
+HUEVITOS DE PASCUA=HUEVO DE PASCUA
+UEVO DE PASCUA=HUEVO DE PASCUA
+
+# ── Rubbish bins / containers ────────────────────────────────────────────────
+RECIPIENTE PARA RESIDUO=RECIPIENTE PARA RESIDUOS
+RECIPIENTE PERA RESIDUOS=RECIPIENTE PARA RESIDUOS
+
+# ── Deodorant / air freshener ────────────────────────────────────────────────
+DESODORANTE AMBIENTE=DESODORANTE DE AMBIENTES
+DESODORANTE DE INODOROS=DESODORANTE PARA INODOROS
+DESODORANTE INODORO=DESODORANTE PARA INODOROS
+DESODORNTE MASCULINO=DESODORANTE MASCULINO
+
+# ── Tomato products ──────────────────────────────────────────────────────────
+EXTRACTO DE TOMATEATE=EXTRACTO DE TOMATES
+PULPA TOMATE=PULPA DE TOMATE
+
+# ── Sunflower seeds ──────────────────────────────────────────────────────────
+SEMILLAS GIRASOL=SEMILLAS DE GIRASOL
+
+# ── Condiments ───────────────────────────────────────────────────────────────
+CONDIMENTO PIZZA=CONDIMENTO PARA PIZZA
+
+# ── Glass / serving dishes ───────────────────────────────────────────────────
+FUENTE VIDRIO=FUENTE DE VIDRIO
+HERMETICO DE VIDRIO=RECIPIENTE HERMETICO DE VIDRIO
+
+# ── Pan / bread ──────────────────────────────────────────────────────────────
+PAPA FRITAS=PAPAS FRITAS
+
+# ── Bathroom / pastry ────────────────────────────────────────────────────────
+BAÑO REPOSTERO=BAÑO DE REPOSTERIA
+
+# ── Can opener ───────────────────────────────────────────────────────────────
+ABRELATA=ABRELATAS
+
+# ── Olives ───────────────────────────────────────────────────────────────────
+ACEITUINAS=ACEITUNAS
+ACEITUNA=ACEITUNAS
+
+# ── Alfajor ──────────────────────────────────────────────────────────────────
+ALFAJAJOR=ALFAJOR
+ALFAJORES=ALFAJOR
+
+# ── Gum ──────────────────────────────────────────────────────────────────────
+CHICLE=CHICLES
+
+# ── Lollipop ─────────────────────────────────────────────────────────────────
+CHUPETIN=CHUPETINES
+
+# ── Pasta ────────────────────────────────────────────────────────────────────
+FID.=FIDEOS
+FIDEO=FIDEOS
+
+# ── Flour ────────────────────────────────────────────────────────────────────
+HARINAMA=HARINA
+
+# ── Airtight container ───────────────────────────────────────────────────────
+HERMET.=HERMETICO
+
+# ── Liquid soap ──────────────────────────────────────────────────────────────
+JAB.LIQ=JABON LIQUIDO
+
+# ── Yeast ────────────────────────────────────────────────────────────────────
+LEVADUR=LEVADURA
+
+# ── Lemonade ─────────────────────────────────────────────────────────────────
+LIMONAD=LIMONADA
+
+# ── Furniture polish ─────────────────────────────────────────────────────────
+LUSTRAM=LUSTRAMUEBLES
+LUSTRAMUEBLE=LUSTRAMUEBLES
+
+# ── Muffins ──────────────────────────────────────────────────────────────────
+MADALEN=MAGDALENAS
+MADALENA=MAGDALENAS
+MADALENAS=MAGDALENAS
+
+# ── Mustard ──────────────────────────────────────────────────────────────────
+MOSTACE=MOSTAZA
+
+# ── Toiletry bag ─────────────────────────────────────────────────────────────
+NECESSA=NECESER
+
+# ── Potato masher ────────────────────────────────────────────────────────────
+PISAPAPA=PISAPAPAS
+
+# ── Nail polish remover ──────────────────────────────────────────────────────
+QUITA ESMALTE=QUITAESMALTE
+
+# ── Stain remover ────────────────────────────────────────────────────────────
+QUITAMANCHA=QUITAMANCHAS
+
+# ── Breading ─────────────────────────────────────────────────────────────────
+REBOZAD=REBOZADOR
+REBOZADO=REBOZADOR
+
+# ── Dish cloth ───────────────────────────────────────────────────────────────
+REPASAD=REPASADOR
+
+# ── Furniture repair ─────────────────────────────────────────────────────────
+REPARADOR MUEBLES=REPARADOR DE MUEBLES
+
+# ── Kitchen roll ─────────────────────────────────────────────────────────────
+ROLLO COCINA=ROLLO DE COCINA
+
+# ── Flavoring ────────────────────────────────────────────────────────────────
+SABORIZ=SABORIZADOR
+SABORIZADO=SABORIZADOR
+
+# ── Dish drainer ─────────────────────────────────────────────────────────────
+SECAPLA=SECAPLATOS
+
+# ── Napkins ──────────────────────────────────────────────────────────────────
+SERVILLETA=SERVILLETAS
+
+# ── Vermouth ─────────────────────────────────────────────────────────────────
+VERMOUT=VERMOUTH
+
+# ── Dishwashing liquid ───────────────────────────────────────────────────────
+LAVAVAJ=LAVAVAJILLA
+LAVAVAJILLAS=LAVAVAJILLA

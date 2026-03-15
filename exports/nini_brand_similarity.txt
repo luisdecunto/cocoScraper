@@ -1,0 +1,24 @@
+# Nini brand similarity analysis
+# 1070 distinct brands, 18 pairs above 82% similarity
+
+======================================================================
+NEAR-DUPLICATES (similarity >= 82%)
+======================================================================
+  0.89  'CHOCOLIA'                          (  1x)  vs  'CHOCOLINAS' (3x)
+  0.86  'ALA'                               ( 24x)  vs  'ALBA' (16x)
+  0.86  'AXE'                               ( 18x)  vs  'AXEL' (2x)
+  0.86  'LIA'                               (  1x)  vs  'LINA' (3x)
+  0.86  'LIA'                               (  1x)  vs  'LIRA' (8x)
+  0.86  'LUCCHETTI'                         ( 29x)  vs  'LUCCHETTINIS' (4x)
+  0.84  'CHOCOLINAS'                        (  3x)  vs  'CHOCOLINO' (3x)
+  0.84  'ESTRELLA'                          ( 31x)  vs  'LA ESTRELLA' (1x)
+  0.84  'FAVORITA'                          ( 10x)  vs  'LA FAVORITA' (10x)
+  0.84  'KRACHITOS'                         ( 23x)  vs  'SKARCHITOS' (2x)
+  0.84  'LA COLINA'                         (  1x)  vs  'LA DOLFINA' (1x)
+  0.83  'HAVANA'                            (  1x)  vs  'RAVANA' (32x)
+  0.82  'ALAMBRADO'                         (  4x)  vs  'MALAMADO' (1x)
+  0.82  'APOSTOLES'                         (  8x)  vs  'POSTALES' (4x)
+  0.82  'CACHAMAI'                          ( 13x)  vs  'CACHAMATE' (14x)
+  0.82  'CHOCOLIA'                          (  1x)  vs  'CHOCOLINO' (3x)
+  0.82  'LA CELIA'                          (  1x)  vs  'LA COLINA' (1x)
+  0.82  'LA COLINA'                         (  1x)  vs  'LA LINDA' (6x)

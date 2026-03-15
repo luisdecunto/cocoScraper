@@ -1,0 +1,13 @@
+Brand similarity groups (threshold=82%)
+Total unique brands: 815
+Groups found: 9
+
+[86%]  Ala  |  Alka
+[86%]  Amor  |  Mor
+[86%]  Ana  |  Mana
+[82%]  Cachamai  |  Cachamate
+[89%]  Chocolia  |  Chocolinas  |  Chocolino
+[83%]  Ivess  |  St Ives
+[86%]  Melitas  |  Melitta
+[83%]  Milka  |  Milkaut
+[84%]  Tia Maria  |  Tia Maruca

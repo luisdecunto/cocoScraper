@@ -1,0 +1,65 @@
+# Nini product-type aliases
+# Format: ABBREVIATED_FORM=Canonical Form
+# Matching is accent-insensitive (ascii-folded), case-insensitive on the key.
+# The key is the first word of the description after brand removal.
+
+# ── Personal care ──
+Acond.=Acondicionador
+Desod.=Desodorante
+Desod.Inodoro=Desodorante de Inodoro
+Antitr.=Antitraspirante
+Cr.Dental=Crema Dental
+Cep.Dental=Cepillo Dental
+Enj.Bucal=Enjuague Bucal
+Cr.Corp.=Crema Corporal
+Cr.P/Peinar=Crema P/Peinar
+Cr.P/Rostro=Crema P/Rostro
+Maq.Afeit.Desc.=Maquinita Afeitadora Desc.
+Prot.Solar=Protector Solar
+Acondic.Bebé=Acondicionador Bebé
+P.Hig.=Papel Higiénico
+
+# ── Hair colour ──
+Cr.Oxidante=Crema Oxidante
+
+# ── Confectionery ──
+Choc.=Chocolate
+Caram.=Caramelos
+Caram.Duros=Caramelos Duros
+
+# ── Cleaning & laundry ──
+Det.=Detergente
+Lavavaj.=Lavavajillas
+Lustram.=Lustramuebles
+Jab.Líq.P/Ropa=Jabón Líquido P/Ropa
+Jab.Pvo.P/Ropa=Jabón en Polvo P/Ropa
+Suav.P/Ropa=Suavizante P/Ropa
+Suav.Conc.=Suavizante Concentrado
+Bsa.P/Residuos=Bolsa P/Residuos
+Limp.Liq.=Limpiador Líquido
+Limp.Desinf.=Limpiador Desinfectante
+Limp.Baño=Limpiador de Baño
+Limp.Pisos=Limpiador de Pisos
+Limp.Coc.=Limpiador de Cocina
+Limp.Antigrasa=Limpiador Antigrasa
+Limp.Vidrios=Limpiador de Vidrios
+Limp.Multisup.=Limpiador Multiuso
+Limp.Crem.=Limpiador Cremoso
+Insect.=Insecticida
+
+# ── Pet food ──
+Alim.P/Perro=Alimento P/Perro
+Alim.P/Gato=Alimento P/Gato
+Alim.=Alimento
+
+# ── Beverages / food ──
+Jgo.Cub.=Jugo en Cubos
+Fórm.Inf.=Fórmula Infantil
+
+# ── Stationery ──
+Cuad.=Cuaderno
+Cuad.Rayado=Cuaderno Rayado
+Cuad.Espiral.=Cuaderno Espiral
+
+# ── Confectionery ──
+Bomb.=Bombones

@@ -1,0 +1,8 @@
+# Vital product-type aliases
+# Format: VARIANT=CANONICAL  (both sides UPPERCASE)
+# Used for typos, OCR splits, and regional naming variants specific to Vital's catalog.
+LECHE POLVO=Leche En Polvo
+BOLSA RESIDUO=Bolsa Residuos
+HUEVO PASCUAS=Huevo Pascua
+SET MUNECA=Set Muñeca
+SET MUÑECA=Set Muñeca

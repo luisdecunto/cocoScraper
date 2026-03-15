@@ -1,0 +1,18 @@
+# Santa Maria — Brand Similarity Report
+# Pairs with token_sort_ratio >= 80
+# Total pairs: 12
+
+Score  Brand A                         Brand B
+----------------------------------------------------------------------
+94.11764705882352  Luccheti                        Lucchetti
+94.11764705882352  F. Salzano (2003)               F. Salzano (2004)
+83.33333333333334  Marlo                           Marolio
+83.33333333333334  96* Villa Iris                  Villa Iris
+82.35294117647058  D. Felfort                      Felfort
+ 80.0  Vais                            Vanish
+ 80.0  Patito                          Pato
+ 80.0  Maria                           Mauri
+ 80.0  Imperial                        Imperio
+ 80.0  Elementos                       Mentos
+ 80.0  Candela                         Cañuelas
+ 80.0  Bravio                          Brio

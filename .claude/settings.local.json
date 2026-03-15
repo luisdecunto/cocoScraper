@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(netstat -ano)",
+      "Bash(ss -tlnp)",
+      "Bash(taskkill //F //PID 323748)",
+      "Bash(source .venv/Scripts/activate)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(python analysis/santamaria/selector_debug.py)",
+      "Bash(python analysis/santamaria/_probe_selectors.py)",
+      "Bash(python analysis/santamaria/_test_scrape.py)",
+      "Bash(PYTHONPATH=/c/Users/luisd/Documents/Luis/cocoScraper python analysis/santamaria/_test_scrape.py)",
+      "Bash(PGPASSWORD=supercoco \"/c/Users/luisd/Documents/pgsql/bin/psql\" -U scraper -d prices -c \":*)",
+      "Bash(python -m scraper.postprocess.maxiconsumo)",
+      "Bash(python -c \":*)",
+      "Bash(/c/Users/luisd/miniconda3/python -c \":*)",
+      "Bash(python -:*)"
+    ]
+  }
+}

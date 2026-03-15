@@ -1,0 +1,51 @@
+Brand similarity groups (threshold=82%)
+Total unique brands: 1018
+Groups found: 47
+
+[95%]  100 Ducados  |  100ducados
+[86%]  Ala  |  Alka
+[92%]  Alteza  |  Altezza
+[86%]  Axe  |  Axel
+[83%]  Baron  |  Baron B
+[86%]  Blem  |  Lem
+[86%]  Cabaña Don Tomas  |  Cabaña Tomas
+[82%]  Cachamai  |  Cachamate
+[83%]  Cactus  |  Cantus
+[87%]  Campagnola  |  La Campagnola
+[83%]  Campari  |  Capri
+[88%]  Chelita  |  Lechelita
+[82%]  Chester  |  Manchester
+[95%]  Chocolina  |  Chocolinas
+[96%]  Don Antonino  |  Don Antonio
+[84%]  Don Nicanor  |  Don Nino
+[94%]  Dr Lemon  |  Dr. Lemon  |  Dr.lemon
+[89%]  Drax  |  Dura  |  Durax
+[91%]  Federico Alvear  |  Federico de Alvear
+[86%]  Fiesta  |  Fiestita
+[94%]  Freegells  |  Freegels
+[83%]  Gancia  |  Garcia
+[84%]  Gauchita  |  La Gauchita
+[93%]  Gillete  |  Gillette
+[93%]  Gomes Da Costa  |  Gomes de Costa
+[83%]  Gramby  |  Granby
+[83%]  Havana  |  Ravana
+[95%]  Hellmann's  |  Hellmanns
+[89%]  Insectisol  |  Sectisol
+[82%]  Krachitos  |  Ranchito
+[82%]  La Banda  |  La Blanca
+[92%]  La Serenisa  |  La Serenisima
+[91%]  La Tranque  |  La Tranquera
+[86%]  Lia  |  Lina  |  Lira
+[84%]  Lucchetini  |  Lucchetti
+[83%]  Magica  |  Maglia
+[89%]  Magna  |  Mana
+[83%]  Marlo  |  Marolio
+[83%]  Milka  |  Milkaut
+[86%]  Mr Pops  |  Mr.pops
+[82%]  Palanca  |  Pasablanca
+[90%]  Prestobar  |  Prestobarba
+[95%]  Simonaggio  |  Simonagio
+[86%]  Sky  |  Skyy
+[84%]  Tia Maria  |  Tia Maruca
+[83%]  Twist  |  Twistos
+[89%]  Uvita  |  Vita

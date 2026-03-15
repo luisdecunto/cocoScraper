@@ -1,0 +1,17 @@
+# Vital brand similarity analysis
+# 815 distinct brands, 11 pairs above 82% similarity
+
+======================================================================
+NEAR-DUPLICATES (similarity >= 82%)
+======================================================================
+  0.89  'Chocolia'                               (  1x)  vs  'Chocolinas' (5x)
+  0.86  'Ala'                                    ( 39x)  vs  'Alka' (1x)
+  0.86  'Amor'                                   (  2x)  vs  'Mor' (5x)
+  0.86  'Ana'                                    (  3x)  vs  'Mana' (5x)
+  0.86  'Melitas'                                (  1x)  vs  'Melitta' (1x)
+  0.84  'Chocolinas'                             (  5x)  vs  'Chocolino' (2x)
+  0.84  'Tia Maria'                              (  2x)  vs  'Tia Maruca' (1x)
+  0.83  'Ivess'                                  (  4x)  vs  'St Ives' (2x)
+  0.83  'Milka'                                  (  8x)  vs  'Milkaut' (2x)
+  0.82  'Cachamai'                               ( 10x)  vs  'Cachamate' (8x)
+  0.82  'Chocolia'                               (  1x)  vs  'Chocolino' (2x)
