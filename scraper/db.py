@@ -43,6 +43,24 @@ async def init_schema(pool: asyncpg.Pool) -> None:
             ALTER TABLE products ADD COLUMN IF NOT EXISTS units_per_package INT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS packs_per_pallet  INT;
 
+            -- Step 3: Add normalized product fields
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS product_id       TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS brand            TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS product_type     TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS size_value       NUMERIC(12,4);
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS size_unit        TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS category_dept    TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS category_sub     TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS canonical_key    TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS features_version INT DEFAULT 0;
+
+            -- Indexes for new columns
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_products_product_id ON products(product_id)
+                WHERE product_id IS NOT NULL;
+            CREATE INDEX IF NOT EXISTS idx_products_canonical_key ON products(canonical_key)
+                WHERE canonical_key IS NOT NULL;
+            CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_dept, category_sub);
+
             CREATE TABLE IF NOT EXISTS price_snapshots (
                 id          BIGSERIAL   PRIMARY KEY,
                 sku         TEXT        NOT NULL,
@@ -101,6 +119,10 @@ async def upsert_product(pool: asyncpg.Pool, supplier: str, product_dict: dict) 
                     category          = EXCLUDED.category,
                     units_per_package = COALESCE(EXCLUDED.units_per_package, products.units_per_package),
                     packs_per_pallet  = COALESCE(EXCLUDED.packs_per_pallet,  products.packs_per_pallet),
+                    features_version  = CASE
+                        WHEN products.name IS DISTINCT FROM EXCLUDED.name THEN NULL
+                        ELSE products.features_version
+                    END,
                     updated_at        = NOW()
             """,
             product_dict["sku"],
@@ -190,3 +212,64 @@ async def update_run_categories_total(pool: asyncpg.Pool, run_id: int, total: in
         await conn.execute(
             "UPDATE run_log SET categories_total=$2 WHERE id=$1", run_id, total
         )
+
+
+async def upsert_product_features(
+    pool: asyncpg.Pool,
+    sku: str,
+    supplier: str,
+    product_id: str,
+    brand: str | None,
+    product_type: str | None,
+    size_value: float | None,
+    size_unit: str | None,
+    category_dept: str | None,
+    category_sub: str | None,
+    canonical_key: str | None,
+    features_version: int,
+) -> None:
+    """
+    Write normalized features to an existing products row.
+    Called by the postprocess pipeline after feature extraction.
+    """
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            UPDATE products
+            SET product_id       = $3,
+                brand            = $4,
+                product_type     = $5,
+                size_value       = $6,
+                size_unit        = $7,
+                category_dept    = $8,
+                category_sub     = $9,
+                canonical_key    = $10,
+                features_version = $11
+            WHERE sku = $1 AND supplier = $2
+            """,
+            sku, supplier, product_id, brand, product_type, size_value, size_unit,
+            category_dept, category_sub, canonical_key, features_version,
+        )
+
+
+async def fetch_products_for_postprocess(
+    pool: asyncpg.Pool,
+    supplier: str,
+    min_version: int = 0,
+) -> list:
+    """
+    Return products needing postprocessing.
+    Filters by features_version < min_version or IS NULL.
+    """
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT sku, name, category
+            FROM products
+            WHERE supplier = $1
+              AND (features_version IS NULL OR features_version < $2)
+            ORDER BY sku
+            """,
+            supplier, min_version,
+        )
+        return rows
