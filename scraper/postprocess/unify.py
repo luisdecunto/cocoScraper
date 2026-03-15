@@ -1,20 +1,19 @@
 """
 Cross-supplier product unification.
 
-Matches products across suppliers using normalized features extracted by each
-supplier's postprocessor (brand, product_type, weight_g / volume_ml).
+Matches products across suppliers using normalized features extracted by the
+centralized pipeline (brand, product_type, size, canonical_key).
 
-Supported suppliers: maxiconsumo, santamaria, vital
-Luvik and Nini do not yet have postprocessors and are excluded.
+Supported suppliers: maxiconsumo, santamaria, luvik, vital, nini
 
-Match key: ascii_fold(brand) + "|" + ascii_fold(product_type) + "|" + measurement
-  where measurement = "W<grams>" (weight) or "V<ml>" (volume) or "?" (unknown)
+Match key: canonical_key from products table (or computed dynamically)
+  BRAND|PRODUCTTYPE|MEASUREMENT where measurement = "W<grams>", "V<ml>", or "?"
 
 Run as a standalone pass:
     python -m scraper.postprocess.unify
 
 Output: products found in 2+ suppliers, sorted by brand + product_type, with
-latest prices from each supplier side-by-side.
+latest prices from each supplier side-by-side and low_confidence flag.
 """
 
 import asyncio
@@ -30,101 +29,21 @@ import asyncpg
 from dotenv import load_dotenv
 
 from scraper.postprocess._utils import _ascii_fold
-from scraper.postprocess import maxiconsumo as _maxi
-from scraper.postprocess import santamaria as _sm
-from scraper.postprocess import vital as _vital
+from scraper.postprocess.pipeline import extract_unified
+from scraper.config import SUPPLIERS
 
 logger = logging.getLogger(__name__)
 
-_SUPPORTED_SUPPLIERS = ("maxiconsumo", "santamaria", "vital")
+_SUPPORTED_SUPPLIERS = tuple(s["id"] for s in SUPPLIERS)
 
 
 # ---------------------------------------------------------------------------
-# Feature normalization
+# Canonical match key helper
 # ---------------------------------------------------------------------------
 
-def _meas_from_dict(d: dict | None) -> float | None:
-    """Extract float from {"value": float, "unit": str} (Maxi/Vital format)."""
-    return d["value"] if isinstance(d, dict) else d
-
-
-def extract_unified(supplier: str, name: str, category: str) -> dict:
-    """
-    Dispatch to the correct postprocessor and return a normalized feature dict.
-
-    All suppliers produce the same output keys:
-        brand, product_type, variant, weight_g, volume_ml, units_in_name,
-        clean_name, category_norm
-    """
-    if supplier == "maxiconsumo":
-        f = _maxi.extract_features(name)
-        c = _maxi.parse_category(category)
-        return {
-            "brand":         f["brand"],
-            "product_type":  f["product_type"],
-            "variant":       f["variant"],
-            "weight_g":      _meas_from_dict(f.get("weight")),
-            "volume_ml":     _meas_from_dict(f.get("volume")),
-            "units_in_name": f["units_in_name"],
-            "clean_name":    f["clean_name"],
-            "category_norm": c["leaf"] or c["section"] or category,
-        }
-    elif supplier == "santamaria":
-        f = _sm.extract_features(name)
-        return {
-            "brand":         f["brand"],
-            "product_type":  f["product_type"],
-            "variant":       f["variant"],
-            "weight_g":      f["weight_g"],
-            "volume_ml":     f["volume_ml"],
-            "units_in_name": f["units_in_name"],
-            "clean_name":    f["clean_name"],
-            "category_norm": _sm.normalize_category(category),
-        }
-    elif supplier == "vital":
-        f = _vital.extract_features(name)
-        return {
-            "brand":         f["brand"],
-            "product_type":  f["product_type"],
-            "variant":       f["variant"],
-            "weight_g":      _meas_from_dict(f.get("weight")),
-            "volume_ml":     _meas_from_dict(f.get("volume")),
-            "units_in_name": f["units_in_name"],
-            "clean_name":    f["clean_name"],
-            "category_norm": category,
-        }
-    else:
-        return {
-            "brand": None, "product_type": None, "variant": None,
-            "weight_g": None, "volume_ml": None, "units_in_name": None,
-            "clean_name": name, "category_norm": category,
-        }
-
-
-# ---------------------------------------------------------------------------
-# Canonical match key
-# ---------------------------------------------------------------------------
-
-def canonical_key(brand: str | None, product_type: str | None,
-                  weight_g: float | None, volume_ml: float | None) -> str:
-    """
-    Build a canonical key for cross-supplier product matching.
-
-    Two products match when they share the same brand, product type, and
-    measurement (weight or volume, rounded to nearest gram/ml).
-    Keys are accent-insensitive and space-normalized.
-    """
-    b = _ascii_fold(brand or "").upper().replace(" ", "")
-    t = _ascii_fold(product_type or "").upper().replace(" ", "")
-
-    if weight_g and weight_g > 0:
-        m = f"W{round(weight_g)}"
-    elif volume_ml and volume_ml > 0:
-        m = f"V{round(volume_ml)}"
-    else:
-        m = "?"
-
-    return f"{b}|{t}|{m}"
+def get_low_confidence(canonical_key: str) -> bool:
+    """Return True if key ends with |? (unknown size)."""
+    return canonical_key.endswith("|?")
 
 
 # ---------------------------------------------------------------------------
@@ -137,6 +56,11 @@ _FETCH_SQL = """
         p.supplier,
         p.name,
         p.category,
+        p.brand,
+        p.product_type,
+        p.size_value,
+        p.size_unit,
+        p.canonical_key,
         s.price_unit,
         s.price_bulk,
         s.stock,
@@ -161,7 +85,7 @@ _FETCH_SQL = """
 
 def build_matches(rows: list) -> dict[str, list[dict]]:
     """
-    Group all rows by canonical key.
+    Group all rows by canonical key (from products.canonical_key).
 
     Returns {key: [product_dict, ...]} where each product_dict contains
     supplier, raw name, features, and latest prices.
@@ -169,20 +93,22 @@ def build_matches(rows: list) -> dict[str, list[dict]]:
     groups: dict[str, list[dict]] = defaultdict(list)
 
     for r in rows:
-        feat = extract_unified(r["supplier"], r["name"], r["category"])
-        key = canonical_key(
-            feat["brand"], feat["product_type"],
-            feat["weight_g"], feat["volume_ml"]
-        )
+        # Use canonical_key from DB (already computed and stored during pipeline)
+        key = r.get("canonical_key") or "?|?|?"
+
         groups[key].append({
-            "supplier":    r["supplier"],
-            "sku":         r["sku"],
-            "name":        r["name"],
-            "price_unit":  r["price_unit"],
-            "price_bulk":  r["price_bulk"],
-            "stock":       r["stock"],
-            "scraped_at":  r["scraped_at"],
-            **feat,
+            "supplier":       r["supplier"],
+            "sku":            r["sku"],
+            "name":           r["name"],
+            "brand":          r["brand"],
+            "product_type":   r["product_type"],
+            "size_value":     r["size_value"],
+            "size_unit":      r["size_unit"],
+            "price_unit":     r["price_unit"],
+            "price_bulk":     r["price_bulk"],
+            "stock":          r["stock"],
+            "scraped_at":     r["scraped_at"],
+            "low_confidence": get_low_confidence(key),
         })
 
     return dict(groups)
@@ -204,7 +130,9 @@ def filter_multi_supplier(groups: dict[str, list[dict]]) -> dict[str, list[dict]
 _SUPPLIER_COLS = {
     "maxiconsumo": "MAXI",
     "santamaria":  "SM",
+    "luvik":       "LV",
     "vital":       "VIT",
+    "nini":        "NN",
 }
 
 
@@ -253,13 +181,14 @@ def print_comparison(matches: dict[str, list[dict]], max_rows: int = 0) -> None:
         brand = rep["brand"] or ""
         ptype = rep["product_type"] or ""
 
-        # Measurement label
-        if rep["weight_g"]:
-            w = rep["weight_g"]
-            meas = f"{w:.0f}g" if w < 1000 else f"{w/1000:.1f}kg"
-        elif rep["volume_ml"]:
-            v = rep["volume_ml"]
-            meas = f"{v:.0f}ml" if v < 1000 else f"{v/1000:.2f}L"
+        # Measurement label from canonical key
+        meas_part = key.split("|")[2] if "|" in key else "?"
+        if meas_part.startswith("W"):
+            grams = int(meas_part[1:])
+            meas = f"{grams}g" if grams < 1000 else f"{grams/1000:.1f}kg"
+        elif meas_part.startswith("V"):
+            ml = int(meas_part[1:])
+            meas = f"{ml}ml" if ml < 1000 else f"{ml/1000:.2f}L"
         else:
             meas = "?"
 
@@ -295,17 +224,16 @@ def to_csv(matches: dict[str, list[dict]]) -> str:
     out = io.StringIO()
     writer = csv.writer(out)
     writer.writerow([
-        "key", "supplier", "sku", "name", "brand", "product_type", "variant",
-        "weight_g", "volume_ml", "units_in_name", "category_norm",
+        "key", "supplier", "sku", "name", "brand", "product_type",
+        "size_value", "size_unit", "low_confidence",
         "price_unit", "price_bulk", "stock", "scraped_at",
     ])
     for key, products in sorted(matches.items()):
         for p in products:
             writer.writerow([
                 key, p["supplier"], p["sku"], p["name"],
-                p["brand"], p["product_type"], p["variant"],
-                p["weight_g"], p["volume_ml"], p["units_in_name"],
-                p["category_norm"],
+                p["brand"], p["product_type"],
+                p["size_value"], p["size_unit"], p["low_confidence"],
                 p["price_unit"], p["price_bulk"], p["stock"], p["scraped_at"],
             ])
     return out.getvalue()

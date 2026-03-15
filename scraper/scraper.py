@@ -8,7 +8,7 @@ import logging
 
 import httpx
 
-from scraper.config import SUPPLIERS, get_supplier_config, load_supplier_class
+from scraper.config import SUPPLIERS, get_supplier_config, get_short_code, load_supplier_class
 from scraper.db import (
     finish_run,
     start_run,
@@ -16,6 +16,7 @@ from scraper.db import (
     upsert_product,
     upsert_snapshot,
 )
+from scraper.postprocess.pipeline import run_pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +86,14 @@ async def run_supplier(supplier_id: str, pool, max_products: int | None = None) 
     else:
         logger.info(f"{supplier_id}: done — {products_scraped} products, "
                     f"{snapshots_written} snapshots written")
+
+    # Run post-scrape feature extraction pipeline
+    try:
+        short_code = get_short_code(supplier_id)
+        updated = await run_pipeline(pool, supplier_id, short_code)
+        logger.info(f"{supplier_id}: pipeline extracted features for {updated} products")
+    except Exception as e:
+        logger.warning(f"{supplier_id}: pipeline failed — {e}")
 
 
 async def run_all(pool) -> None:
