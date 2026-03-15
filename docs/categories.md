@@ -11,13 +11,15 @@ Reference guide for the unified category hierarchy used across all suppliers.
 | Subcategory | Product Types |
 |---|---|
 | **Aceites y Grasas** | Aceite, Grasa |
-| **Arroz y Legumbres** | Arroz, Arveja, Frijol, Garbanzo, Lenteja |
-| **Conservas** | Aceituna, Arvejas, Choclo, Palmitos, Tomate |
-| **Condimentos** | Aji, Caldo, Especias, Mostaza, Pimienta, Sal, Vinagre |
-| **Galletitas** | Galletita |
-| **Pastas** | Fideos, Tapa |
-| **Harinas y Panificados** | Harina, Levadura, Pan |
-| **Desayuno** | Chocolate, Dulce, Mermelada, Miel, Tostadas |
+| **Arroz y Legumbres** | Arroz, Garbanzos, Lentejas, Porotos |
+| **Conservas** | Aceitunas, Arvejas, Choclo, Palmitos, Tomate |
+| **Condimentos** | Aji, Aji Molido, Aderezo, Ajo, Albahaca, Azafran, Caldo, Canela, Cebolla, Comino, Condimento, Condimento para Arroz, Condimento para Pizza, Especias, Mezcla de Especias, Mix de Sabor, Mostaza, Nuez Moscada, Oregano, Perejil, Pimienta, Pimenton, Provenzal, Romero, Saborizador, Sal, Salero, Tomillo, Vegetales Deshidratados, Vinagre |
+| **Galletitas** | Galletitas |
+| **Pastas** | Fideos |
+| **Harinas y Panificados** | Bicarbonato, Harina, Levadura, Pan, Tapas para empanadas |
+| **Salsas y Aderezos** | Aceto, Chimichurri, Ketchup, Mayonesa, Salsa, Salsa Blanca, Salsa Golf |
+| **Sopas** | Sopa |
+| **Desayuno** | Avena, Cereal, Chocolate, Copo, Copos, Dulce, Granola, Mermelada, Miel, Semilla, Tostadas |
 | **Yerba y Té** | Té, Yerba |
 | **Café** | Café |
 | **Azúcar** | Azúcar |

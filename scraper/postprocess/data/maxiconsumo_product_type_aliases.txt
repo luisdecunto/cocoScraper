@@ -40,6 +40,10 @@ SEMILLAS GIRASOL=SEMILLAS DE GIRASOL
 
 # ── Condiments ───────────────────────────────────────────────────────────────
 CONDIMENTO PIZZA=CONDIMENTO PARA PIZZA
+PIM.=PIMIENTA
+PIMENTO=PIMENTON
+CONDIM=CONDIMENTO
+CHIMICH=CHIMICHURRI
 
 # ── Glass / serving dishes ───────────────────────────────────────────────────
 FUENTE VIDRIO=FUENTE DE VIDRIO

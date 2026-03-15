@@ -10,32 +10,69 @@
 Almacén|Aceites y Grasas|Aceite
 Almacén|Aceites y Grasas|Grasa
 Almacén|Arroz y Legumbres|Arroz
-Almacén|Arroz y Legumbres|Arveja
-Almacén|Arroz y Legumbres|Frijol
-Almacén|Arroz y Legumbres|Garbanzo
-Almacén|Arroz y Legumbres|Lenteja
-Almacén|Conservas|Aceituna
+Almacén|Arroz y Legumbres|Porotos
+Almacén|Arroz y Legumbres|Garbanzos
+Almacén|Arroz y Legumbres|Lentejas
+Almacén|Conservas|Aceitunas
 Almacén|Conservas|Arvejas
 Almacén|Conservas|Choclo
 Almacén|Conservas|Palmitos
 Almacén|Conservas|Tomate
 Almacén|Condimentos|Aji
+Almacén|Condimentos|Aji Molido
+Almacén|Condimentos|Aderezo
+Almacén|Condimentos|Ajo
+Almacén|Condimentos|Albahaca
+Almacén|Condimentos|Azafran
 Almacén|Condimentos|Caldo
+Almacén|Condimentos|Canela
+Almacén|Condimentos|Cebolla
+Almacén|Condimentos|Comino
+Almacén|Condimentos|Condimento
+Almacén|Condimentos|Condimento para Arroz
+Almacén|Condimentos|Condimento para Pizza
 Almacén|Condimentos|Especias
+Almacén|Condimentos|Mezcla de Especias
+Almacén|Condimentos|Mix de Sabor
 Almacén|Condimentos|Mostaza
+Almacén|Condimentos|Nuez Moscada
+Almacén|Condimentos|Oregano
+Almacén|Condimentos|Perejil
 Almacén|Condimentos|Pimienta
+Almacén|Condimentos|Pimenton
+Almacén|Condimentos|Provenzal
+Almacén|Condimentos|Romero
+Almacén|Condimentos|Saborizador
 Almacén|Condimentos|Sal
+Almacén|Condimentos|Salero
+Almacén|Condimentos|Tomillo
+Almacén|Condimentos|Vegetales Deshidratados
 Almacén|Condimentos|Vinagre
-Almacén|Galletitas|Galletita
+Almacén|Galletitas|Galletitas
 Almacén|Pastas|Fideos
-Almacén|Pastas|Tapa
+Almacén|Harinas y Panificados|Bicarbonato
 Almacén|Harinas y Panificados|Harina
 Almacén|Harinas y Panificados|Levadura
 Almacén|Harinas y Panificados|Pan
+Almacén|Harinas y Panificados|Tapas para empanadas
+Almacén|Salsas y Aderezos|Aceto
+Almacén|Salsas y Aderezos|Chimichurri
+Almacén|Salsas y Aderezos|Ketchup
+Almacén|Salsas y Aderezos|Mayonesa
+Almacén|Salsas y Aderezos|Salsa
+Almacén|Salsas y Aderezos|Salsa Blanca
+Almacén|Salsas y Aderezos|Salsa Golf
+Almacén|Sopas|Sopa
+Almacén|Desayuno|Avena
+Almacén|Desayuno|Cereal
 Almacén|Desayuno|Chocolate
+Almacén|Desayuno|Copo
+Almacén|Desayuno|Copos
 Almacén|Desayuno|Dulce
+Almacén|Desayuno|Granola
 Almacén|Desayuno|Mermelada
 Almacén|Desayuno|Miel
+Almacén|Desayuno|Semilla
 Almacén|Desayuno|Tostadas
 Almacén|Yerba y Té|Té
 Almacén|Yerba y Té|Yerba
