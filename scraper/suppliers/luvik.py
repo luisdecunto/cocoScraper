@@ -5,8 +5,8 @@ Platform: Shopify
 Approach: httpx JSON API (/products.json) — no HTML parsing
 Auth: none (public store — verified 2026-03-10: 30 products visible guest in girasol collection)
 Price format: standard decimal string ("63480.00") — parse with float()
-SKU: Shopify variants[0].sku — 6-digit internal supplier code (not EAN)
-     Fallback: "{product_id}-{variant_id}" when sku field is empty.
+SKU: Shopify variant ID — unique per variant, stable over time.
+     (Previously used v["sku"] 6-digit internal code, but supplier has duplicates causing overwrites.)
 """
 
 import asyncio
@@ -131,7 +131,8 @@ class LuvikSupplier(BaseSupplier):
           p["title"]              → product name
           p["handle"]             → URL slug
           p["vendor"]             → brand name (not stored — not in schema)
-          v["sku"]                → 6-digit internal supplier code e.g. "270038"
+          v["id"]                 → Shopify variant ID (unique, stable) — used as SKU
+          v["sku"]                → 6-digit internal supplier code (has duplicates, not used)
           v["price"]              → decimal string e.g. "63480.00"
           v["compare_at_price"]   → same as price when no discount
           v["available"]          → bool — inventory_quantity not present in API response
@@ -150,8 +151,8 @@ class LuvikSupplier(BaseSupplier):
                 else:
                     name = base_name
 
-                # Prefer v["sku"]; fall back to composite id if empty
-                sku = v.get("sku") or f"{p['id']}-{v['id']}"
+                # Use Shopify variant ID as SKU (unique per variant, stable over time)
+                sku = str(v["id"])
                 price_unit = self.parse_price(v.get("price"))
                 stock = "disponible" if v.get("available") else "sin stock"
 

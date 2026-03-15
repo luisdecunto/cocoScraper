@@ -12,6 +12,7 @@ load_dotenv()
 SUPPLIERS: list[dict] = [
     {
         "id": "maxiconsumo",
+        "short_code": "mx",
         "class": "MaxiconsumoSupplier",
         "module": "scraper.suppliers.maxiconsumo",
         "base_url": "https://maxiconsumo.com/sucursal_moreno",
@@ -37,6 +38,7 @@ SUPPLIERS: list[dict] = [
     },
     {
         "id": "santamaria",
+        "short_code": "sm",
         "class": "SantaMariaSupplier",
         "module": "scraper.suppliers.santamaria",
         "base_url": "https://tienda.santamariasa.com.ar/comercio",
@@ -67,6 +69,7 @@ SUPPLIERS: list[dict] = [
     },
     {
         "id": "luvik",
+        "short_code": "lv",
         "class": "LuvikSupplier",
         "module": "scraper.suppliers.luvik",
         "base_url": "https://tiendaluvik.com.ar",
@@ -81,6 +84,7 @@ SUPPLIERS: list[dict] = [
     },
     {
         "id": "vital",
+        "short_code": "vt",
         "class": "VitalSupplier",
         "module": "scraper.suppliers.vital",
         "base_url": "https://tiendaonline.vital.com.ar",
@@ -95,6 +99,7 @@ SUPPLIERS: list[dict] = [
     },
     {
         "id": "nini",
+        "short_code": "nn",
         "class": "NiniSupplier",
         "module": "scraper.suppliers.nini",
         "base_url": "http://ecommerce.nini.com.ar:8081",
@@ -116,6 +121,12 @@ def get_supplier_config(supplier_id: str) -> dict:
         if s["id"] == supplier_id:
             return s
     raise ValueError(f"Unknown supplier: '{supplier_id}'. Available: {[s['id'] for s in SUPPLIERS]}")
+
+
+def get_short_code(supplier_id: str) -> str:
+    """Return the short code (e.g. 'mx', 'lv') for a supplier id."""
+    config = get_supplier_config(supplier_id)
+    return config["short_code"]
 
 
 def load_supplier_class(config: dict):
