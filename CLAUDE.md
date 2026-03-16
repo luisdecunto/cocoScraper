@@ -53,8 +53,13 @@ cocoScraper/
 │   └── 04_new_supplier_template.md
 │
 └── docs/
+    ├── 01_update_strategy.md          # How to handle product updates, dedup, re-scraping
+    ├── 02_client_delivery.md          # SaaS architecture, FastAPI API, multi-tenancy roadmap
+    ├── 03_unification_strategy.md     # Cross-supplier matching, unified taxonomy, 7-10 week plan
     ├── adding_a_supplier.md
-    └── decisions.md
+    ├── decisions.md
+    ├── categories.md
+    └── flujo_de_datos.md
 ```
 
 ---
@@ -248,13 +253,18 @@ streamlit run dashboard/app.py
 - [x] Price history schema (price_history table with first_seen/last_seen periods, gap-and-islands migration)
 - [x] Dashboard: stock filter (Hide out of stock + Disponibilidad crítica), show products without prices
 - [x] Export: CSV + XLSX comparison reports (scraper/export.py)
+- [x] Dashboard redesign: DanSpil-inspired UI, advanced filtering, professional sidebar navigation
+- [x] Strategic plans: Update strategy, client delivery, unification strategy (3 docs in docs/)
 
 ### In Progress
 
 ### Planned
-- [ ] API: FastAPI + JWT auth
-- [ ] User management
-- [ ] Unify: 5-supplier cross-matching with unified taxonomy (brands, product types, categories)
+- [ ] Phase 1: Postprocessing optimization (Santa Maria brand extraction, size standardization)
+- [ ] Phase 2: Unified taxonomy (master brand/type/category lists, 90%+ canonical matching)
+- [ ] Phase 3: API foundation (FastAPI + JWT auth)
+- [ ] Phase 4: Multi-tenancy (tenant_id, RLS, user management)
+- [ ] Phase 5: Client features (shopping lists, price alerts)
+- [ ] Phase 6: Production hosting (self-hosted or serverless deployment)
 
 ---
 

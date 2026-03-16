@@ -126,11 +126,15 @@ cp .env.example .env
 
 Edit `.env` with:
 ```
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
+
+# Optional local fallback if you prefer separate variables
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=prices
 DB_USER=scraper
 DB_PASS=your_password
+DB_SSLMODE=
 
 MAXICONSUMO_USER=your_username
 MAXICONSUMO_PASS=your_password
@@ -177,6 +181,24 @@ streamlit run dashboard/app.py
 ```
 
 Opens at `http://localhost:8501`
+
+### 7. Deploy on Streamlit Community Cloud
+
+Use `dashboard/app.py` as the app entrypoint and keep `requirements.txt` at the repo root.
+
+Set secrets in Streamlit Community Cloud:
+```toml
+DATABASE_URL = "postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
+```
+
+For local Streamlit-only development, you can also create `.streamlit/secrets.toml` from `.streamlit/secrets.toml.example`.
+
+If the app connects but the tables are missing, initialize the schema from the scraper environment:
+```bash
+python -m scraper.main db init
+```
+
+Then run at least one scrape so the dashboard has data to display.
 
 ---
 

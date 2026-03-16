@@ -1,15 +1,17 @@
 from __future__ import annotations
 
-import os
-
 import pandas as pd
 import plotly.express as px
 import psycopg2
 import psycopg2.extras
 import streamlit as st
-from dotenv import load_dotenv
 
 try:
+    from .db.connection import (
+        get_psycopg2_connection_kwargs,
+        has_database_config,
+        test_database_connection,
+    )
     from .filters import AdvancedFilterPanel
     from .sidebar import render_sidebar
     from .ui import (
@@ -27,6 +29,11 @@ try:
         style_figure,
     )
 except ImportError:
+    from db.connection import (
+        get_psycopg2_connection_kwargs,
+        has_database_config,
+        test_database_connection,
+    )
     from filters import AdvancedFilterPanel
     from sidebar import render_sidebar
     from ui import (
@@ -43,17 +50,6 @@ except ImportError:
         render_section_intro,
         style_figure,
     )
-
-
-load_dotenv()
-
-
-def _secret(key: str, default: str | None = None) -> str | None:
-    """Read from st.secrets (Streamlit Cloud) with fallback to os.getenv (local/.env)."""
-    try:
-        return st.secrets[key]
-    except (KeyError, AttributeError, FileNotFoundError):
-        return os.getenv(key, default)
 
 
 st.set_page_config(
@@ -105,15 +101,7 @@ PAGE_META = {
 
 @st.cache_data(ttl=120, show_spinner=False)
 def query(sql: str, *args: object) -> pd.DataFrame:
-    sslmode = _secret("DB_SSLMODE")
-    conn = psycopg2.connect(
-        host=_secret("DB_HOST", "localhost"),
-        port=int(_secret("DB_PORT", "5432")),
-        dbname=_secret("DB_NAME", "prices"),
-        user=_secret("DB_USER"),
-        password=_secret("DB_PASS"),
-        **({"sslmode": sslmode} if sslmode else {}),
-    )
+    conn = psycopg2.connect(**get_psycopg2_connection_kwargs())
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
             cursor.execute(sql, args if args else None)
@@ -652,12 +640,41 @@ def render_logs_page() -> None:
 
 
 def main() -> None:
+    if not has_database_config():
+        render_sidebar(PAGE_META, None, "Database not configured yet.")
+        render_empty_state(
+            "Set DATABASE_URL in Streamlit secrets or in your local environment to load the dashboard."
+        )
+        st.caption("Local fallback is still supported via DB_HOST, DB_PORT, DB_NAME, DB_USER, and DB_PASS.")
+        return
+
     snapshot = None
     snapshot_error = None
     try:
         snapshot = workspace_snapshot()
     except Exception as exc:
         snapshot_error = f"Workspace snapshot unavailable: {exc}"
+        try:
+            connected_at = test_database_connection()
+        except Exception as connection_exc:
+            render_sidebar(PAGE_META, None, "Database connection unavailable.")
+            render_empty_state(f"Database connection failed: {connection_exc}")
+            st.caption("Check the DATABASE_URL secret or environment variable and try again.")
+            return
+
+        render_sidebar(PAGE_META, None, snapshot_error)
+        error_text = str(exc).lower()
+        if "does not exist" in error_text or "undefinedtable" in error_text or "relation " in error_text:
+            render_empty_state(
+                "The database is reachable, but the pricing tables are not ready yet. Initialize the schema and run at least one scrape."
+            )
+            st.code("python -m scraper.main db init")
+        else:
+            render_empty_state(f"Database query failed before the dashboard could load: {exc}")
+        st.caption(
+            f"Connection test succeeded with SELECT NOW(): {format_timestamp(connected_at) if connected_at else 'connected'}"
+        )
+        return
 
     page = render_sidebar(PAGE_META, snapshot, snapshot_error)
 

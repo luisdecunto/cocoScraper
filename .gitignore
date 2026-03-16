@@ -3,8 +3,10 @@
 __pycache__/
 *.pyc
 *.pyo
+.env.local
 logs/*.log
 *.egg-info/
 dist/
 .DS_Store
 .streamlit/secrets.toml
+backup.sql
