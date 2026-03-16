@@ -14,7 +14,12 @@
       "Bash(python -m scraper.postprocess.maxiconsumo)",
       "Bash(python -c \":*)",
       "Bash(/c/Users/luisd/miniconda3/python -c \":*)",
-      "Bash(python -:*)"
+      "Bash(python -:*)",
+      "Bash(git add scraper/config.py scraper/suppliers/luvik.py)",
+      "Bash(git commit -m \"Step 1 & 2: Add supplier short_codes and fix Luvik SKU to use Shopify variant ID\")",
+      "Bash(git push origin main)",
+      "Bash(psql -U postgres -c \"DROP DATABASE IF EXISTS prices;\")",
+      "Bash(python:*)"
     ]
   }
 }

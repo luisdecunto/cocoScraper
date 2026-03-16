@@ -24,8 +24,9 @@ async def get_pool() -> asyncpg.Pool:
 
 
 async def init_schema(pool: asyncpg.Pool) -> None:
-    """Create all tables and indexes if they don't exist."""
+    """Create all tables and indexes if they don't exist. Migrates price_snapshots on first run."""
     async with pool.acquire() as conn:
+        # ── Core tables and all column migrations ──────────────────────────
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS products (
                 sku                 TEXT        NOT NULL,
@@ -39,14 +40,13 @@ async def init_schema(pool: asyncpg.Pool) -> None:
                 PRIMARY KEY (sku, supplier)
             );
 
-            -- Migrate existing databases: add columns if they don't exist yet
             ALTER TABLE products ADD COLUMN IF NOT EXISTS units_per_package INT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS packs_per_pallet  INT;
-
-            -- Step 3: Add normalized product fields
             ALTER TABLE products ADD COLUMN IF NOT EXISTS product_id       TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS brand            TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS product_type     TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS variant          TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS size             TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS size_value       NUMERIC(12,4);
             ALTER TABLE products ADD COLUMN IF NOT EXISTS size_unit        TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS category_dept    TEXT;
@@ -55,7 +55,11 @@ async def init_schema(pool: asyncpg.Pool) -> None:
             ALTER TABLE products ADD COLUMN IF NOT EXISTS features_version INT DEFAULT 0;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS last_scraped_at  TIMESTAMPTZ;
 
-            -- Indexes for new columns
+            -- Current price/stock — updated on every scrape (no history here)
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS price_unit  NUMERIC(12,2);
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS price_bulk  NUMERIC(12,2);
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS stock       TEXT;
+
             CREATE UNIQUE INDEX IF NOT EXISTS idx_products_product_id ON products(product_id)
                 WHERE product_id IS NOT NULL;
             CREATE INDEX IF NOT EXISTS idx_products_canonical_key ON products(canonical_key)
@@ -63,6 +67,7 @@ async def init_schema(pool: asyncpg.Pool) -> None:
             CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_dept, category_sub);
             CREATE INDEX IF NOT EXISTS idx_products_last_scraped ON products(last_scraped_at DESC);
 
+            -- price_snapshots kept for reference / backward compat — not written to after migration
             CREATE TABLE IF NOT EXISTS price_snapshots (
                 id          BIGSERIAL   PRIMARY KEY,
                 sku         TEXT        NOT NULL,
@@ -72,6 +77,17 @@ async def init_schema(pool: asyncpg.Pool) -> None:
                 price_bulk  NUMERIC(12,2),
                 stock       TEXT,
                 UNIQUE (sku, supplier, scraped_at),
+                FOREIGN KEY (sku, supplier) REFERENCES products(sku, supplier)
+            );
+
+            -- Price history: one row per stable price period per product
+            CREATE TABLE IF NOT EXISTS price_history (
+                id          BIGSERIAL   PRIMARY KEY,
+                sku         TEXT        NOT NULL,
+                supplier    TEXT        NOT NULL,
+                price_unit  NUMERIC(12,2),
+                first_seen  DATE        NOT NULL DEFAULT CURRENT_DATE,
+                last_seen   DATE        NOT NULL DEFAULT CURRENT_DATE,
                 FOREIGN KEY (sku, supplier) REFERENCES products(sku, supplier)
             );
 
@@ -97,6 +113,8 @@ async def init_schema(pool: asyncpg.Pool) -> None:
                 created_at    TIMESTAMPTZ DEFAULT NOW()
             );
 
+            CREATE INDEX IF NOT EXISTS idx_price_history_sku_supplier
+                ON price_history(sku, supplier, first_seen DESC);
             CREATE INDEX IF NOT EXISTS idx_snapshots_sku_supplier
                 ON price_snapshots(sku, supplier);
             CREATE INDEX IF NOT EXISTS idx_snapshots_date
@@ -104,6 +122,44 @@ async def init_schema(pool: asyncpg.Pool) -> None:
             CREATE INDEX IF NOT EXISTS idx_run_log_supplier
                 ON run_log(supplier);
         """)
+
+        # ── One-time migration: collapse price_snapshots → price_history ──
+        history_count = await conn.fetchval("SELECT COUNT(*) FROM price_history")
+        if history_count == 0:
+            snapshots_count = await conn.fetchval("SELECT COUNT(*) FROM price_snapshots")
+            if snapshots_count > 0:
+                await conn.execute("""
+                    INSERT INTO price_history (sku, supplier, price_unit, first_seen, last_seen)
+                    SELECT sku, supplier, price_unit, MIN(scraped_at), MAX(scraped_at)
+                    FROM (
+                        SELECT sku, supplier, price_unit, scraped_at,
+                               ROW_NUMBER() OVER (PARTITION BY sku, supplier ORDER BY scraped_at) -
+                               ROW_NUMBER() OVER (PARTITION BY sku, supplier, price_unit ORDER BY scraped_at) AS grp
+                        FROM price_snapshots
+                        WHERE price_unit IS NOT NULL
+                    ) g
+                    GROUP BY sku, supplier, price_unit, grp
+                    ORDER BY sku, supplier, MIN(scraped_at)
+                """)
+                migrated = await conn.fetchval("SELECT COUNT(*) FROM price_history")
+                logger.info(f"Migration: collapsed {snapshots_count} snapshots → {migrated} price_history periods")
+
+                # Also back-fill current price/stock on products from latest snapshot
+                await conn.execute("""
+                    UPDATE products p
+                    SET price_unit = s.price_unit,
+                        price_bulk = s.price_bulk,
+                        stock      = s.stock
+                    FROM price_snapshots s
+                    WHERE s.sku = p.sku
+                      AND s.supplier = p.supplier
+                      AND s.scraped_at = (
+                          SELECT MAX(scraped_at) FROM price_snapshots
+                          WHERE sku = p.sku AND supplier = p.supplier
+                      )
+                """)
+                logger.info("Migration: back-filled price_unit/price_bulk/stock on products table")
+
     logger.info("Schema initialized.")
 
 
@@ -138,7 +194,7 @@ async def upsert_product(pool: asyncpg.Pool, supplier: str, product_dict: dict) 
         )
 
 
-async def upsert_snapshot(
+async def upsert_price_history(
     pool: asyncpg.Pool,
     sku: str,
     supplier: str,
@@ -147,30 +203,43 @@ async def upsert_snapshot(
     stock: str,
 ) -> bool:
     """
-    Insert a price snapshot only if prices changed vs. the last recorded row.
-    Returns True if a row was written, False if skipped (no change).
+    Update current price/stock on products, then manage price_history periods.
+    - If price_unit unchanged from the last period: extend last_seen to today.
+    - If price_unit changed (or no history yet): open a new period row.
+    Returns True if a new price period was opened (price changed), False otherwise.
     """
     async with pool.acquire() as conn:
-        last = await conn.fetchrow(
-            "SELECT price_unit, price_bulk FROM price_snapshots "
-            "WHERE sku=$1 AND supplier=$2 ORDER BY scraped_at DESC LIMIT 1",
-            sku, supplier,
-        )
-        if last and last["price_unit"] == price_unit and last["price_bulk"] == price_bulk:
-            return False
-
+        # Always update current price/stock on the products row
         await conn.execute(
-            """
-            INSERT INTO price_snapshots (sku, supplier, scraped_at, price_unit, price_bulk, stock)
-            VALUES ($1, $2, CURRENT_DATE, $3, $4, $5)
-            ON CONFLICT (sku, supplier, scraped_at) DO UPDATE
-                SET price_unit = EXCLUDED.price_unit,
-                    price_bulk = EXCLUDED.price_bulk,
-                    stock      = EXCLUDED.stock
-            """,
+            "UPDATE products SET price_unit=$3, price_bulk=$4, stock=$5 "
+            "WHERE sku=$1 AND supplier=$2",
             sku, supplier, price_unit, price_bulk, stock,
         )
-        return True
+
+        # Only track non-NULL prices in history
+        if price_unit is None:
+            return False
+
+        # Check whether the most recent period has the same price_unit
+        last = await conn.fetchrow(
+            "SELECT id, (price_unit IS NOT DISTINCT FROM $3::NUMERIC) AS same_price "
+            "FROM price_history WHERE sku=$1 AND supplier=$2 "
+            "ORDER BY first_seen DESC LIMIT 1",
+            sku, supplier, price_unit,
+        )
+        if last and last["same_price"]:
+            await conn.execute(
+                "UPDATE price_history SET last_seen=CURRENT_DATE WHERE id=$1",
+                last["id"],
+            )
+            return False
+        else:
+            await conn.execute(
+                "INSERT INTO price_history (sku, supplier, price_unit, first_seen, last_seen) "
+                "VALUES ($1, $2, $3, CURRENT_DATE, CURRENT_DATE)",
+                sku, supplier, price_unit,
+            )
+            return True
 
 
 async def start_run(pool: asyncpg.Pool, supplier: str) -> int:
@@ -224,6 +293,8 @@ async def upsert_product_features(
     product_id: str,
     brand: str | None,
     product_type: str | None,
+    variant: str | None,
+    size: str | None,
     size_value: float | None,
     size_unit: str | None,
     category_dept: str | None,
@@ -242,16 +313,19 @@ async def upsert_product_features(
             SET product_id       = $3,
                 brand            = $4,
                 product_type     = $5,
-                size_value       = $6,
-                size_unit        = $7,
-                category_dept    = $8,
-                category_sub     = $9,
-                canonical_key    = $10,
-                features_version = $11
+                variant          = $6,
+                size             = $7,
+                size_value       = $8,
+                size_unit        = $9,
+                category_dept    = $10,
+                category_sub     = $11,
+                canonical_key    = $12,
+                features_version = $13
             WHERE sku = $1 AND supplier = $2
             """,
-            sku, supplier, product_id, brand, product_type, size_value, size_unit,
-            category_dept, category_sub, canonical_key, features_version,
+            sku, supplier, product_id, brand, product_type, variant, size,
+            size_value, size_unit, category_dept, category_sub, canonical_key,
+            features_version,
         )
 
 

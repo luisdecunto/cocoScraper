@@ -22,15 +22,11 @@ async def export_latest(pool: asyncpg.Pool, output_path: str) -> None:
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     async with pool.acquire() as conn:
         rows = await conn.fetch("""
-            SELECT p.name, p.sku, p.supplier, p.category,
-                   s.price_unit, s.price_bulk, s.stock, s.scraped_at
-            FROM products p
-            JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier
-            WHERE s.scraped_at = (
-                SELECT MAX(scraped_at) FROM price_snapshots
-                WHERE sku = p.sku AND supplier = p.supplier
-            )
-            ORDER BY p.supplier, p.name;
+            SELECT name, sku, supplier, category,
+                   price_unit, price_bulk, stock, last_scraped_at AS scraped_at
+            FROM products
+            WHERE price_unit IS NOT NULL
+            ORDER BY supplier, name;
         """)
 
     with open(output_path, "w", newline="", encoding="utf-8") as f:
@@ -54,20 +50,20 @@ async def export_history(
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     async with pool.acquire() as conn:
         rows = await conn.fetch("""
-            SELECT s.scraped_at, s.price_unit, s.price_bulk, s.stock,
-                   p.name, p.category
-            FROM price_snapshots s
-            JOIN products p ON p.sku = s.sku AND p.supplier = s.supplier
-            WHERE s.sku = $1 AND s.supplier = $2
-            ORDER BY s.scraped_at ASC;
+            SELECT h.first_seen, h.last_seen, h.price_unit,
+                   p.price_bulk, p.stock, p.name, p.category
+            FROM price_history h
+            JOIN products p ON p.sku = h.sku AND p.supplier = h.supplier
+            WHERE h.sku = $1 AND h.supplier = $2
+            ORDER BY h.first_seen ASC;
         """, sku, supplier)
 
     with open(output_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["scraped_at", "price_unit", "price_bulk", "stock", "name", "category"])
+        writer.writerow(["first_seen", "last_seen", "price_unit", "price_bulk", "stock", "name", "category"])
         for r in rows:
-            writer.writerow([r["scraped_at"], r["price_unit"], r["price_bulk"],
-                              r["stock"], r["name"], r["category"]])
+            writer.writerow([r["first_seen"], r["last_seen"], r["price_unit"],
+                              r["price_bulk"], r["stock"], r["name"], r["category"]])
 
     logger.info(f"export_history: {len(rows)} rows ->{output_path}")
 
@@ -85,15 +81,11 @@ async def export_comparison(
 
     async with pool.acquire() as conn:
         rows = await conn.fetch("""
-            SELECT p.name, p.sku, p.supplier, p.category,
-                   s.price_unit, s.price_bulk, s.scraped_at
-            FROM products p
-            JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier
-            WHERE s.scraped_at = (
-                SELECT MAX(scraped_at) FROM price_snapshots
-                WHERE sku = p.sku AND supplier = p.supplier
-            )
-            ORDER BY p.name, p.supplier;
+            SELECT name, sku, supplier, category,
+                   price_unit, price_bulk, last_scraped_at AS scraped_at
+            FROM products
+            WHERE price_unit IS NOT NULL
+            ORDER BY name, supplier;
         """)
 
     # Collect all supplier names in sorted order

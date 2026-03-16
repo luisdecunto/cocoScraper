@@ -52,30 +52,22 @@ def get_low_confidence(canonical_key: str) -> bool:
 
 _FETCH_SQL = """
     SELECT
-        p.sku,
-        p.supplier,
-        p.name,
-        p.category,
-        p.brand,
-        p.product_type,
-        p.size_value,
-        p.size_unit,
-        p.canonical_key,
-        s.price_unit,
-        s.price_bulk,
-        s.stock,
-        s.scraped_at
-    FROM products p
-    LEFT JOIN price_snapshots s
-        ON  s.sku      = p.sku
-        AND s.supplier = p.supplier
-        AND s.scraped_at = (
-            SELECT MAX(scraped_at)
-            FROM   price_snapshots
-            WHERE  sku = p.sku AND supplier = p.supplier
-        )
-    WHERE p.supplier = ANY($1)
-    ORDER BY p.supplier, p.name
+        sku,
+        supplier,
+        name,
+        category,
+        brand,
+        product_type,
+        size_value,
+        size_unit,
+        canonical_key,
+        price_unit,
+        price_bulk,
+        stock,
+        last_scraped_at AS scraped_at
+    FROM products
+    WHERE supplier = ANY($1)
+    ORDER BY supplier, name
 """
 
 

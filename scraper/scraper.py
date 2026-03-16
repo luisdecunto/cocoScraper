@@ -14,7 +14,7 @@ from scraper.db import (
     start_run,
     update_run_categories_total,
     upsert_product,
-    upsert_snapshot,
+    upsert_price_history,
 )
 from scraper.postprocess.pipeline import run_pipeline
 
@@ -55,13 +55,18 @@ async def run_supplier(supplier_id: str, pool, max_products: int | None = None) 
                     products = await supplier.scrape_category(client, url, sem)
                     for p in products:
                         await upsert_product(pool, supplier_id, p)
-                        wrote = await upsert_snapshot(
+                        wrote = await upsert_price_history(
                             pool, p["sku"], supplier_id,
                             p["price_unit"], p["price_bulk"], p["stock"],
                         )
                         products_scraped += 1
                         if wrote:
                             snapshots_written += 1
+                        if products_scraped % 500 == 0:
+                            logger.info(
+                                f"{supplier_id}: -- {products_scraped} products scraped "
+                                f"({categories_done}/{len(urls)} categories done) --"
+                            )
                     categories_done += 1
                     logger.info(f"{supplier_id}: {url} — {len(products)} products")
                 except Exception as e:

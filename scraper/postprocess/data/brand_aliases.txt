@@ -1,0 +1,235 @@
+# Brand aliases — VARIANT=CANONICAL
+# Keys are already in normalized form (uppercase, no accents, punctuation stripped).
+# Applied by normalize_brand() after basic normalization.
+# Add new aliases here; pipeline --force will apply them to all products.
+
+# Group #3: Taragui typo
+TARAGUIFI=TARAGUI
+
+# Group #8: Hellmann's — apostrophe normalization
+HELLMANN S=HELLMANS
+
+# Group #11: Johnson's — apostrophe normalization
+JOHNSON S=JOHNSONS
+JOHNSON=JOHNSONS
+
+# Group #12: Bulldog — space removed
+BULL DOG=BULLDOG
+
+# Group #13: Familia Gascon — abbreviation expanded
+FAM GASCON=FAMILIA GASCON
+
+# Group #14: Maná — encoding artifact
+MAN=MANA
+
+# Group #15: Felfort — space removed
+FEL FORT=FELFORT
+
+# Group #16: Kellogg's — missing G
+KELLOGS=KELLOGGS
+
+# Group #19: Lay's — apostrophe normalization
+LAY S=LAYS
+
+# Group #20: Dura → Duracell (wrong extraction — only 1 product)
+DURA=DURACELL
+
+# Group #21: Butter Toffees — typo
+BUTTER TOFFES=BUTTER TOFFEES
+
+# Group #22: Chuker — spelling variant
+CHUCKER=CHUKER
+
+# Group #24: Sky → Skyy (brand uses double Y)
+SKY=SKYY
+
+# Group #25: Bar&Pubs — punctuation variants
+BAR PUB S=BAR PUBS
+
+# Group #26: Cerealitas — missing S
+CEREALITA=CEREALITAS
+
+# Group #27: Menthoplus — space removed
+MENTHO PLUS=MENTHOPLUS
+
+# Group #29: Tic Tac — hyphen+variant
+TIC TACMIX=TIC TAC
+
+# Group #30: Hall's apostrophe
+HALL S=HALLS
+
+# Group #32: Nobleza Gaucha — abbreviated
+NOBLEZA=NOBLEZA GAUCHA
+
+# Group #35: Estiba I — missing suffix
+ESTIBA=ESTIBA I
+
+# Group #36: Freegells — typo
+FREEGELS=FREEGELLS
+
+# Group #39: Cruz Malta — typo + compound
+CRUZ ALTA=CRUZ MALTA
+CRUZ=CRUZ MALTA
+
+# Group #40: Media Tarde — merged word
+MEDIATARDE=MEDIA TARDE
+
+# Group #41: Delicias de la Nona — double N typo
+DELICIAS DE LA NONNA=DELICIAS DE LA NONA
+
+# Group #42: Elementos — missing S
+ELEMENTO=ELEMENTOS
+
+# Group #44: Prestobarba — typo + suffix
+PRESOBARBA3=PRESTOBARBA
+
+# Group #46: Curitas — missing S
+CURITA=CURITAS
+
+# Group #47: Doble V — missing V
+DOBLE=DOBLE V
+
+# Group #48: Hershey's — missing S
+HERSHEY=HERSHEYS
+
+# Group #50: Bar belongs to Bar&Pubs
+BAR=BAR PUBS
+
+# Group #52: Cordero con Piel de Lobo — missing preposition
+CORDERO PIEL DE LOBO=CORDERO CON PIEL DE LOBO
+
+# Group #53: Gloucester — truncated
+GLOUCESTE=GLOUCESTER
+
+# Group #54: Macrobiotica — truncated
+MACROBIOT=MACROBIOTICA
+
+# Group #55: Mosquitrap — hyphen variant
+MOSQUI TRAP=MOSQUITRAP
+
+# Group #56: Ballantines — typo
+BALLENTINE=BALLANTINES
+
+# Group #57: Gordon's apostrophe
+GORDON S=GORDONS
+
+# Group #59: Nutrifoods — space variant
+NUTRI FOODS=NUTRIFOODS
+
+# Group #61: Yervita — hyphen variant
+YER VITA=YERVITA
+
+# Group #62: Aguantadora — truncated
+AGUANTADA=AGUANTADORA
+
+# Group #63: Kit Kat — merged word
+KITKAT=KIT KAT
+
+# Group #64: Lechelita — OCR typo
+LECHELISTA=LECHELITA
+
+# Group #65: Molino Natural — truncated
+MOLINO NAT=MOLINO NATURAL
+
+# Group #66: Pond's apostrophe
+POND S=PONDS
+
+# Group #67: Valle de Luna — missing preposition
+VALLE LUNA=VALLE DE LUNA
+
+# Group #68: Villamanaos — space variant
+VILLA MANAOS=VILLAMANAOS
+
+# Group #70: Merengadas — missing S
+MERENGADA=MERENGADAS
+
+# Group #71: Muñeco Rebelde — OCR split
+MUNEO REBELDE=MUNECO REBELDE
+
+# Group #72: Porteñitas — OCR split
+PORTE ITA=PORTENITAS
+
+# Group #73: Alcoprotec — space variant
+ALCO PROTECT=ALCOPROTEC
+
+# Group #74 (report): Coffee Mate — typo
+COFFE MATE=COFFEE MATE
+
+# Group #79: Saenz Briones — year suffix stripped
+SAENZ BRIONES 1888=SAENZ BRIONES
+
+# Group #80: Baron B — missing B
+BARON=BARON B
+
+# Group #82: Cucatrap — hyphen variant
+CUCA TRAP=CUCATRAP
+
+# Group #81: Carolina/Carilina — wrong extraction, real brand is Molinos Ana
+CAROLINA=MOLINOS ANA
+CARILINA=MOLINOS ANA
+
+# Group #83: Finca Natalina — truncated
+FINCA NATALIA=FINCA NATALINA
+
+# Group #84: H2Oh — missing H
+H2O=H2OH
+
+# Group #85: Jim Beam — typo
+JIM BEAN=JIM BEAM
+
+# Group #86: Mentitas — missing S
+MENTITA=MENTITAS
+
+# Group #87: Michel Torino — first name typo
+MICHAEL TORINO=MICHEL TORINO
+
+# Group #89: Boca de Dama — missing preposition
+BOCA DAMA=BOCA DE DAMA
+
+# Group #90: Buenas y Santas — missing Y
+BUENAS SANTAS=BUENAS Y SANTAS
+
+# Group #91: Premium — typo
+PREMIUN=PREMIUM
+
+# Group #92: Raffaello — missing F
+RAFAELLO=RAFFAELLO
+
+# Group #95: Unipox — hyphen variant
+UNI POX=UNIPOX
+
+# Group #96: White Horse — typo
+WHITE HOURSE=WHITE HORSE
+
+# Group #97: Parodontax — truncated typo
+PARADONTA=PARODONTAX
+
+# Group #98: Pic Nic — merged word
+PICNIC=PIC NIC
+
+# Group #99: Spirito Blu — typo
+SPIRITU BLU=SPIRITO BLU
+
+# Manual corrections — abbreviated/alternate names found in Section 3
+F ALVEAR=FEDERICO DE ALVEAR
+TRANQUERA=LA TRANQUERA
+MORENITA=LA MORENITA
+LEQ=LE Q
+E MENDOZA=ESTANCIA MENDOZA
+S GOTTARD=SAINT GOTTARD
+SAINT GOTTARD=SAINT GOTTARD
+STA JULIA=SANTA JULIA
+1 1=RINDE DOS
+RINDE 2=RINDE DOS
+3 PLUMAS=TRES PLUMAS
+T PLUMAS=TRES PLUMAS
+3 TORRES=TRES TORRES
+S P=S&P
+CAMPAGNOLA=LA CAMPAGNOLA
+D NONNA=DELICIAS DE LA NONA
+GR HILLS=GREEN HILLS
+G DA COSTA=GOMES DA COSTA
+GOMES=GOMES DA COSTA
+CUMBRECITA=LA CUMBRECITA
+F SALZANO=SALZANO
+ESC GASCON=ESCORIHUELA GASCON

@@ -58,19 +58,14 @@ with tab1:
 
     try:
         df = query("""
-            SELECT p.product_id, p.name, p.brand, p.product_type, p.supplier,
-                   p.category_dept, p.category_sub, p.size_value, p.size_unit,
-                   s.price_unit, s.price_bulk, s.stock, s.scraped_at
-            FROM products p
-            JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier
-            WHERE s.scraped_at = (
-                SELECT MAX(scraped_at) FROM price_snapshots
-                WHERE sku = p.sku AND supplier = p.supplier
-            )
-            ORDER BY s.price_unit ASC NULLS LAST;
+            SELECT product_id, name, brand, product_type, variant,
+                   supplier, category_dept, category_sub, size,
+                   price_unit, price_bulk, stock, last_scraped_at AS scraped_at
+            FROM products
+            ORDER BY price_unit ASC NULLS LAST;
         """)
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
         with col1:
             suppliers = ["All"] + sorted(df["supplier"].dropna().unique().tolist())
             sel_supplier = st.multiselect("Supplier", suppliers[1:], key="t1_supplier")
@@ -79,6 +74,8 @@ with tab1:
             sel_dept = st.multiselect("Department", depts, key="t1_dept")
         with col3:
             search = st.text_input("Search by product_id or name", key="t1_search")
+        with col4:
+            hide_no_stock = st.checkbox("Hide out of stock", value=True, key="t1_hide_no_stock")
 
         filtered = df.copy()
         if sel_supplier:
@@ -90,13 +87,26 @@ with tab1:
                 (filtered["product_id"].str.contains(search, case=False, na=False)) |
                 (filtered["name"].str.contains(search, case=False, na=False))
             ]
+        _NO_STOCK_VALUES = {"sin stock", "disponibilidad crítica", "disponibilidad critica"}
+        if hide_no_stock:
+            filtered = filtered[~filtered["stock"].str.lower().str.strip().isin(_NO_STOCK_VALUES)]
+
+        df["price_unit"] = pd.to_numeric(df["price_unit"], errors="coerce")
+        df["price_bulk"] = pd.to_numeric(df["price_bulk"], errors="coerce")
 
         st.caption(f"{len(filtered)} rows")
-        # Display key columns: product_id, brand, type, category, prices
-        display_cols = ["product_id", "brand", "product_type", "category_dept",
-                       "category_sub", "size_value", "size_unit", "supplier",
-                       "price_unit", "price_bulk", "stock", "scraped_at"]
-        st.dataframe(filtered[display_cols], width="stretch", hide_index=True)
+        display_cols = ["product_id", "name", "brand", "product_type", "variant",
+                        "size", "category_dept", "category_sub", "supplier",
+                        "price_unit", "price_bulk", "stock", "scraped_at"]
+        st.dataframe(
+            filtered[display_cols],
+            width="stretch",
+            hide_index=True,
+            column_config={
+                "price_unit": st.column_config.NumberColumn(format="$%.2f"),
+                "price_bulk": st.column_config.NumberColumn(format="$%.2f"),
+            },
+        )
 
     except Exception as e:
         st.error(f"Could not load data: {e}")
@@ -111,16 +121,15 @@ with tab2:
 
     try:
         df2 = query("""
-            SELECT p.product_id, p.name, p.brand, p.product_type, p.canonical_key,
-                   p.category_dept, p.category_sub, p.supplier,
-                   s.price_unit, s.scraped_at
-            FROM products p
-            JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier
-            WHERE s.scraped_at = (
-                SELECT MAX(scraped_at) FROM price_snapshots
-                WHERE sku = p.sku AND supplier = p.supplier
-            );
+            SELECT canonical_key, brand, product_type, size,
+                   category_dept, category_sub, supplier, price_unit
+            FROM products
+            WHERE canonical_key IS NOT NULL
+              AND canonical_key != '?|?|?'
+              AND price_unit IS NOT NULL;
         """)
+
+        df2["price_unit"] = pd.to_numeric(df2["price_unit"], errors="coerce")
 
         suppliers_in_data = df2["supplier"].nunique()
         if suppliers_in_data < 2:
@@ -132,16 +141,18 @@ with tab2:
             filtered2 = df2 if sel_cat2 == "All" else df2[df2["category_dept"] == sel_cat2]
 
             pivot = filtered2.pivot_table(
-                index=["product_id", "brand", "product_type", "category_dept", "category_sub"],
+                index=["canonical_key", "brand", "product_type", "size", "category_dept", "category_sub"],
                 columns="supplier",
                 values="price_unit",
-                aggfunc="first",
+                aggfunc="min",
             ).reset_index()
             pivot.columns.name = None
 
-            supplier_cols = [c for c in pivot.columns if c not in ("product_id", "brand", "product_type", "category_dept", "category_sub")]
+            # Only keep rows that appear in 2+ suppliers
+            supplier_cols = [c for c in pivot.columns if c not in ("canonical_key", "brand", "product_type", "size", "category_dept", "category_sub")]
+            pivot = pivot[pivot[supplier_cols].notna().sum(axis=1) >= 2]
 
-            if supplier_cols:
+            if supplier_cols and not pivot.empty:
                 price_data = pivot[supplier_cols]
                 pivot["cheapest"] = price_data.idxmin(axis=1)
                 pivot["max_price"] = price_data.max(axis=1)
@@ -149,7 +160,8 @@ with tab2:
                 pivot["diff_pct"] = (
                     (pivot["max_price"] - pivot["min_price"]) / pivot["min_price"] * 100
                 ).round(2)
-                pivot = pivot.drop(columns=["max_price", "min_price"])
+                pivot = pivot.drop(columns=["max_price", "min_price", "canonical_key"])
+                st.caption(f"{len(pivot)} cross-supplier matches")
 
                 def highlight_min(row):
                     styles = [""] * len(row)
@@ -159,10 +171,16 @@ with tab2:
                         styles[idx] = "background-color: #00B050; color: white"
                     return styles
 
+                price_col_config = {
+                    col: st.column_config.NumberColumn(format="$%.2f")
+                    for col in supplier_cols
+                }
+                price_col_config["diff_pct"] = st.column_config.NumberColumn(format="%.2f%%")
                 st.dataframe(
                     pivot.style.apply(highlight_min, axis=1),
                     width="stretch",
                     hide_index=True,
+                    column_config=price_col_config,
                 )
 
     except Exception as e:
@@ -178,54 +196,78 @@ with tab3:
 
     try:
         products_df = query("""
-            SELECT DISTINCT p.product_id, p.name, p.sku, p.brand, p.product_type
-            FROM products p
-            JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier
-            ORDER BY p.product_id;
+            SELECT product_id, name, supplier, brand, product_type, size
+            FROM products
+            WHERE product_id IS NOT NULL AND price_unit IS NOT NULL
+            ORDER BY product_id;
         """)
 
-        search3 = st.text_input("Search by product_id, name, or SKU", key="t3_search")
+        search3 = st.text_input("Search by name, brand, or product_type", key="t3_search")
 
         if search3:
             mask = (
                 products_df["product_id"].str.contains(search3, case=False, na=False) |
                 products_df["name"].str.contains(search3, case=False, na=False) |
-                products_df["sku"].str.contains(search3, case=False, na=False)
+                products_df["brand"].str.contains(search3, case=False, na=False) |
+                products_df["product_type"].str.contains(search3, case=False, na=False)
             )
-            matches = products_df[mask]
+            found = products_df[mask]
         else:
-            matches = products_df
+            found = products_df.head(200)
 
-        if matches.empty:
+        if found.empty:
             st.info("No products found.")
         else:
-            options = {f"{r['product_id']} — {r['name']} ({r['brand']})": r["sku"]
-                      for _, r in matches.iterrows()}
-            selected_label = st.selectbox("Select product", list(options.keys()), key="t3_product")
-            selected_sku = options[selected_label]
+            options = {
+                f"{r['product_id']} — {r['name']} [{r['supplier']}]": r["product_id"]
+                for _, r in found.iterrows()
+            }
+            selected_labels = st.multiselect(
+                "Select products to compare (pick from any supplier)",
+                list(options.keys()),
+                key="t3_product",
+            )
 
-            history = query("""
-                SELECT s.scraped_at, s.price_unit, s.price_bulk, s.supplier, p.product_id
-                FROM price_snapshots s
-                JOIN products p ON p.sku = s.sku AND p.supplier = s.supplier
-                WHERE s.sku = %s
-                ORDER BY s.scraped_at ASC;
-            """, selected_sku)
+            if selected_labels:
+                selected_ids = [options[lbl] for lbl in selected_labels]
+                placeholders = ", ".join(["%s"] * len(selected_ids))
+                history = query(f"""
+                    SELECT h.first_seen, h.last_seen, h.price_unit,
+                           p.product_id, p.supplier, p.name, p.brand,
+                           p.product_type, p.size, p.price_bulk
+                    FROM price_history h
+                    JOIN products p ON p.sku = h.sku AND p.supplier = h.supplier
+                    WHERE p.product_id IN ({placeholders})
+                    ORDER BY h.first_seen ASC;
+                """, *selected_ids)
 
-            if not history.empty:
-                fig = px.line(
-                    history,
-                    x="scraped_at",
-                    y="price_unit",
-                    color="supplier",
-                    title=f"Price history — {selected_label}",
-                    labels={"scraped_at": "Date", "price_unit": "Unit Price"},
-                    markers=True,
-                )
-                st.plotly_chart(fig, use_container_width=True)
-                st.dataframe(history, width="stretch", hide_index=True)
+                if not history.empty:
+                    history["price_unit"] = pd.to_numeric(history["price_unit"], errors="coerce")
+                    history["price_bulk"] = pd.to_numeric(history["price_bulk"], errors="coerce")
+                    history["label"] = history["product_id"] + " · " + history["name"].str[:40]
+                    fig = px.line(
+                        history,
+                        x="first_seen",
+                        y="price_unit",
+                        color="label",
+                        title="Price history (each point = price change date)",
+                        labels={"first_seen": "Date", "price_unit": "Unit Price", "label": "Product"},
+                        markers=True,
+                        line_shape="hv",
+                    )
+                    fig.update_yaxes(tickformat=".2f")
+                    st.plotly_chart(fig, use_container_width=True)
+                    st.dataframe(
+                        history[["first_seen", "last_seen", "product_id", "supplier", "name", "size", "price_unit", "price_bulk"]],
+                        width="stretch",
+                        hide_index=True,
+                        column_config={
+                            "price_unit": st.column_config.NumberColumn(format="$%.2f"),
+                            "price_bulk": st.column_config.NumberColumn(format="$%.2f"),
+                        },
+                    )
             else:
-                st.info("No snapshot history for this product.")
+                st.info("Search and select one or more products above.")
 
     except Exception as e:
         st.error(f"Could not load data: {e}")

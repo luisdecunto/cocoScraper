@@ -80,7 +80,8 @@ SUPPLIERS: list[dict] = [
         },
         "selectors": {},        # Not used — JSON API
         "category_urls": [],
-        "concurrency": 4,       # Shopify unauthenticated rate limit: ~2 req/s
+        "concurrency": 2,       # HTML scraping — lower limit than JSON API to avoid 429s
+        "http_verify_ssl": False,  # tiendaluvik.com.ar SSL cert doesn't cover subdomain
     },
     {
         "id": "vital",

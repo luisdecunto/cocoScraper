@@ -565,12 +565,9 @@ if __name__ == "__main__":
             password=os.getenv("DB_PASS"),
         )
         rows = await pool.fetch(
-            "SELECT p.sku, p.name, p.category, s.stock "
-            "FROM products p "
-            "LEFT JOIN price_snapshots s ON s.sku = p.sku AND s.supplier = p.supplier "
-            "  AND s.scraped_at = (SELECT MAX(scraped_at) FROM price_snapshots "
-            "                      WHERE sku = p.sku AND supplier = p.supplier) "
-            "WHERE p.supplier = 'santamaria' "
+            "SELECT sku, name, category, stock "
+            "FROM products "
+            "WHERE supplier = 'santamaria' "
             "ORDER BY RANDOM() LIMIT 20"
         )
         await pool.close()

@@ -14,10 +14,18 @@ Almacén|Arroz y Legumbres|Porotos
 Almacén|Arroz y Legumbres|Garbanzos
 Almacén|Arroz y Legumbres|Lentejas
 Almacén|Conservas|Aceitunas
+Almacén|Conservas|Aceituna
 Almacén|Conservas|Arvejas
+Almacén|Conservas|Arveja
 Almacén|Conservas|Choclo
 Almacén|Conservas|Palmitos
+Almacén|Conservas|Palmito
 Almacén|Conservas|Tomate
+Almacén|Conservas|Atun
+Almacén|Conservas|Caballa
+Almacén|Conservas|Champignon
+Almacén|Conservas|Picadillo
+Almacén|Conservas|Remolachas
 Almacén|Condimentos|Aji
 Almacén|Condimentos|Aji Molido
 Almacén|Condimentos|Aderezo
@@ -49,12 +57,30 @@ Almacén|Condimentos|Tomillo
 Almacén|Condimentos|Vegetales Deshidratados
 Almacén|Condimentos|Vinagre
 Almacén|Galletitas|Galletitas
+Almacén|Galletitas|Galletita
+Almacén|Galletitas|Gallet.
+Almacén|Galletitas|Crackers
+Almacén|Galletitas|Pepas
+Almacén|Galletitas|Oblea
+Almacén|Galletitas|Obleas
+Almacén|Galletitas|Tostada
 Almacén|Pastas|Fideos
+Almacén|Pastas|Fideo
+Almacén|Pastas|Ravioles
+Almacén|Pastas|Canelones
+Almacén|Pastas|Lasagna
 Almacén|Harinas y Panificados|Bicarbonato
 Almacén|Harinas y Panificados|Harina
 Almacén|Harinas y Panificados|Levadura
 Almacén|Harinas y Panificados|Pan
 Almacén|Harinas y Panificados|Tapas para empanadas
+Almacén|Harinas y Panificados|Premezcla
+Almacén|Harinas y Panificados|Bizcochuelo
+Almacén|Harinas y Panificados|Budin
+Almacén|Harinas y Panificados|Magdalenas
+Almacén|Harinas y Panificados|Magdalena
+Almacén|Harinas y Panificados|Rebozador
+Almacén|Harinas y Panificados|Polenta
 Almacén|Salsas y Aderezos|Aceto
 Almacén|Salsas y Aderezos|Chimichurri
 Almacén|Salsas y Aderezos|Ketchup
@@ -73,11 +99,17 @@ Almacén|Desayuno|Granola
 Almacén|Desayuno|Mermelada
 Almacén|Desayuno|Miel
 Almacén|Desayuno|Semilla
+Almacén|Desayuno|Semillas
 Almacén|Desayuno|Tostadas
+Almacén|Desayuno|Cacao
+Almacén|Desayuno|Mate Cocido
+Almacén|Desayuno|Bizcochos
 Almacén|Yerba y Té|Té
 Almacén|Yerba y Té|Yerba
 Almacén|Café|Café
 Almacén|Azúcar|Azúcar
+Almacén|Azúcar|Edulcorante
+Almacén|Azúcar|Stevia
 
 # ============================================================================
 # Bebidas (Beverages)
@@ -87,16 +119,22 @@ Bebidas|Gaseosas|Agua
 Bebidas|Gaseosas|Gaseosa
 Bebidas|Gaseosas|Jugo
 Bebidas|Gaseosas|Soda
+Bebidas|Gaseosas|Jugo en Polvo
 Bebidas|Cerveza|Cerveza
 Bebidas|Vino|Espumante
 Bebidas|Vino|Vino
+Bebidas|Vino|Champagne
+Bebidas|Vino|Sidra
+Bebidas|Vino|Vermouth
 Bebidas|Bebidas Alcohólicas|Aperitivo
+Bebidas|Bebidas Alcohólicas|Amargo
 Bebidas|Bebidas Alcohólicas|Fernet
 Bebidas|Bebidas Alcohólicas|Gin
 Bebidas|Bebidas Alcohólicas|Licor
 Bebidas|Bebidas Alcohólicas|Ron
 Bebidas|Bebidas Alcohólicas|Whisky
 Bebidas|Bebidas Alcohólicas|Vodka
+Bebidas|Bebidas Alcohólicas|Tequila
 Bebidas|Bebidas Energizantes|Energizante
 Bebidas|Bebidas Energizantes|Isotonica
 
@@ -109,6 +147,10 @@ Lácteos|Yoghurt|Yoghurt
 Lácteos|Queso|Queso
 Lácteos|Manteca y Crema|Crema
 Lácteos|Manteca y Crema|Manteca
+Lácteos|Postres|Gelatina
+Lácteos|Postres|Flan
+Lácteos|Postres|Postre
+Lácteos|Postres|Helado
 
 # ============================================================================
 # Fiambres y Embutidos (Deli & Cold Meats)
@@ -125,12 +167,27 @@ Fiambres|Fiambre|Mortadela
 
 Limpieza|Detergentes|Detergente
 Limpieza|Detergentes|Jabón
+Limpieza|Detergentes|Jabon Liquido
+Limpieza|Detergentes|Jabon en Polvo
+Limpieza|Detergentes|Lavavajilla
+Limpieza|Detergentes|Lavavajillas
+Limpieza|Detergentes|Suavizante
 Limpieza|Limpiadores|Desengrasante
 Limpieza|Limpiadores|Lavandina
 Limpieza|Limpiadores|Limpiador
+Limpieza|Limpiadores|Desinfectante
+Limpieza|Limpiadores|Insecticida
+Limpieza|Limpiadores|Quitamanchas
+Limpieza|Limpiadores|Cera
+Limpieza|Limpiadores|Lustramuebles
+Limpieza|Limpiadores|Autobrillo
+Limpieza|Limpiadores|Repelente
 Limpieza|Papel|Papel Higiénico
 Limpieza|Papel|Rollo
 Limpieza|Papel|Servilleta
+Limpieza|Papel|Servilletas
+Limpieza|Papel|Bolsa
+Limpieza|Papel|Bolsas
 
 # ============================================================================
 # Higiene y Cuidado Personal (Personal Care & Hygiene)
@@ -138,12 +195,33 @@ Limpieza|Papel|Servilleta
 
 Higiene|Shampoo y Acondicionador|Acondicionador
 Higiene|Shampoo y Acondicionador|Shampoo
+Higiene|Shampoo y Acondicionador|Tintura
+Higiene|Shampoo y Acondicionador|Coloracion
+Higiene|Shampoo y Acondicionador|Gel
 Higiene|Desodorante|Desodorante
+Higiene|Desodorante|Antitranspirante
+Higiene|Desodorante|Antitranspirante Femenino
+Higiene|Desodorante|Talco
+Higiene|Desodorante|Colonia
+Higiene|Desodorante|Perfume
 Higiene|Jabón y Cremas|Crema Facial
 Higiene|Jabón y Cremas|Jabón Tocador
+Higiene|Jabón y Cremas|Jabon de Tocador
 Higiene|Dental|Cepillo Dental
 Higiene|Dental|Pasta Dental
+Higiene|Dental|Crema Dental
+Higiene|Dental|Enjuague Bucal
 Higiene|Pañales|Pañal
+Higiene|Pañales|Pañales
+Higiene|Protección Femenina|Toalla Femenina
+Higiene|Protección Femenina|Toallas Femeninas
+Higiene|Protección Femenina|Protector
+Higiene|Protección Femenina|Protectores
+Higiene|Protección Femenina|Tampones
+Higiene|Farmacia|Alcohol
+Higiene|Farmacia|Hisopos
+Higiene|Farmacia|Pomada
+Higiene|Farmacia|Esponja
 
 # ============================================================================
 # Mascotas (Pet Products)
@@ -152,6 +230,38 @@ Higiene|Pañales|Pañal
 Mascotas|Alimento Gatos|Alimento Gato
 Mascotas|Alimento Perros|Alimento Perro
 Mascotas|Accesorios|Accesorio Mascota
+
+# ============================================================================
+# Golosinas (Confectionery & Sweets)
+# ============================================================================
+
+Golosinas|Alfajores|Alfajor
+Golosinas|Caramelos|Caramelos
+Golosinas|Caramelos|Caramelo
+Golosinas|Caramelos|Gomitas
+Golosinas|Caramelos|Pastillas
+Golosinas|Chocolates|Bombon
+Golosinas|Chocolates|Chocolate
+Golosinas|Chupetines|Chupetines
+Golosinas|Chupetines|Chupetin
+Golosinas|Turrones|Turron
+Golosinas|Turrones|Turrón
+Golosinas|Varios|Barras de Cereal
+Golosinas|Varios|Oblea
+Golosinas|Varios|Obleas
+Golosinas|Varios|Chicles
+Golosinas|Varios|Huevo de Pascua
+
+# ============================================================================
+# Snacks (Savory Snacks)
+# ============================================================================
+
+Snacks|Papas|Papas Fritas
+Snacks|Snacks|Snack
+Snacks|Snacks|Snacks
+Snacks|Snacks|Nachos
+Snacks|Snacks|Mani
+Snacks|Snacks|Pochoclo
 
 # ============================================================================
 # Otros (Catch-all for unmapped product types)

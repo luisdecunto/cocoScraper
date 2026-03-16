@@ -25,6 +25,8 @@ from pathlib import Path
 
 import asyncpg
 
+from scraper.postprocess._utils import normalize_brand
+
 logger = logging.getLogger(__name__)
 
 # Bump this version when extraction logic changes.
@@ -155,10 +157,41 @@ def extract_unified(
         else:
             features = extract_features(name)
 
-        # Normalize size fields: Luvik/Nini return (size_value, size_unit),
-        # while others may return nested dicts. Ensure we have both forms.
+        # Normalize size across all 5 supplier formats:
+        #   luvik/nini:          size_value (float) + size_unit (str)
+        #   maxiconsumo/vital:   weight={'value': X, 'unit': 'g'} / volume={'value': X, 'unit': 'ml'}
+        #   santamaria:          weight_g (float) / volume_ml (float)
         size_value = features.get("size_value")
         size_unit = features.get("size_unit")
+
+        if size_value is None:
+            # Try maxiconsumo/vital nested dict format
+            weight_dict = features.get("weight")
+            volume_dict = features.get("volume")
+            if isinstance(weight_dict, dict) and weight_dict.get("value") is not None:
+                size_value = float(weight_dict["value"])
+                size_unit = weight_dict.get("unit", "g")
+            elif isinstance(volume_dict, dict) and volume_dict.get("value") is not None:
+                size_value = float(volume_dict["value"])
+                size_unit = volume_dict.get("unit", "ml")
+            # Try santamaria flat format
+            elif features.get("weight_g") is not None:
+                size_value = float(features["weight_g"])
+                size_unit = "g"
+            elif features.get("volume_ml") is not None:
+                size_value = float(features["volume_ml"])
+                size_unit = "ml"
+
+        # Build human-readable merged size string
+        size: str | None = None
+        if size_value is not None and size_unit is not None:
+            if size_unit in ("g", "ml") and size_value >= 1000:
+                # Display as kg / L
+                display_val = size_value / 1000
+                display_unit = "kg" if size_unit == "g" else "L"
+                size = f"{display_val:g} {display_unit}"
+            else:
+                size = f"{size_value:g} {size_unit}"
 
         # Bridge: convert size_unit to weight_g/volume_ml for canonical_key
         weight_g = None
@@ -174,17 +207,20 @@ def extract_unified(
         category_dept, category_sub = _get_canonical_category(product_type, category_map)
 
         # Build cross-supplier matching key
+        brand = normalize_brand(features.get("brand"))
+
         canonical_key = _canonical_key(
-            features.get("brand"),
+            brand,
             product_type,
             weight_g,
             volume_ml,
         )
 
         return {
-            "brand": features.get("brand"),
+            "brand": brand,
             "product_type": product_type,
             "variant": features.get("variant"),
+            "size": size,
             "size_value": size_value,
             "size_unit": size_unit,
             "weight_g": weight_g,
@@ -205,6 +241,7 @@ def _empty_features() -> dict:
         "brand": None,
         "product_type": None,
         "variant": None,
+        "size": None,
         "size_value": None,
         "size_unit": None,
         "weight_g": None,
@@ -283,6 +320,8 @@ async def run_pipeline(
                 product_id=product_id,
                 brand=features.get("brand"),
                 product_type=features.get("product_type"),
+                variant=features.get("variant"),
+                size=features.get("size"),
                 size_value=features.get("size_value"),
                 size_unit=features.get("size_unit"),
                 category_dept=features.get("category_dept"),
