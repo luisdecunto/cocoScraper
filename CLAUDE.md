@@ -234,24 +234,27 @@ streamlit run dashboard/app.py
 ### Done
 - [x] Project setup
 - [x] Scraper core engine
-- [x] Supplier: Maxiconsumo (code complete — pending live DB + credentials for steps 3–6)
+- [x] Supplier: Maxiconsumo (code complete — 8,918 products scraped)
 - [x] Exploration dashboard (Streamlit)
-- [x] Supplier: Santa Maria (code complete, selectors verified, full scrape 2237 products)
+- [x] Supplier: Santa Maria (code complete, selectors verified, 1,782 products)
 - [x] Postprocess: Santa Maria (scraper/postprocess/santamaria.py — 100% brand, 99.6% type, category map)
-- [x] Unify: cross-supplier matcher (scraper/postprocess/unify.py — 774 matches from 16k products, exports/unified_prices.csv)
-- [x] Supplier: Luvik (code complete, single-category test passed — 30 products, requires_login: False)
-- [x] Supplier: Vital (code complete, multi-category test passed — 75 products Mascotas, 15 products Piletas)
-- [x] Supplier: Nini (code complete, full scrape passed — 7,717 products, 116 sectors, 8 departments)
+- [x] Supplier: Luvik (code complete, Shopify API discovery via sitemap.xml, 5,194 products; SSL verify fix applied)
+- [x] Supplier: Vital (code complete, VTEX IS API, 4,858 products)
+- [x] Supplier: Nini (code complete, custom API, 7,717 products)
 - [x] Postprocess: Nini (scraper/postprocess/nini.py — 100% brand, 100% type, 99.9% size, category normalization)
 - [x] Postprocess: Luvik (scraper/postprocess/luvik.py — 100% brand, 99.6% size, category normalization)
 - [x] Postprocess: Vital (scraper/postprocess/vital.py — 100.0% brand lookup, OCR artifact cleanup, category normalization)
+- [x] Unify: cross-supplier matcher (scraper/postprocess/unify.py — initial 774 matches from 16k products)
+- [x] Price history schema (price_history table with first_seen/last_seen periods, gap-and-islands migration)
+- [x] Dashboard: stock filter (Hide out of stock + Disponibilidad crítica), show products without prices
+- [x] Export: CSV + XLSX comparison reports (scraper/export.py)
 
 ### In Progress
 
 ### Planned
-- [ ] Export: CSV + XLSX comparison
 - [ ] API: FastAPI + JWT auth
 - [ ] User management
+- [ ] Unify: 5-supplier cross-matching with unified taxonomy (brands, product types, categories)
 
 ---
 
