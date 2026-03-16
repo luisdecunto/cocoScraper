@@ -7,3 +7,4 @@ logs/*.log
 *.egg-info/
 dist/
 .DS_Store
+.streamlit/secrets.toml
