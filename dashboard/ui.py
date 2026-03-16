@@ -390,24 +390,12 @@ def apply_global_styles() -> None:
         }
 
         /* ── Mobile sidebar slide ─────────────────────────────── */
-        @media (max-width: 768px) {
-            /* Show Streamlit's native collapse toggle as a hamburger */
-            [data-testid="collapsedControl"] {
-                display: flex !important;
-                position: fixed !important;
-                top: 10px !important;
-                left: 10px !important;
-                z-index: 1000000 !important;
-                background: var(--surface) !important;
-                border: 1px solid var(--border) !important;
-                border-radius: 4px !important;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.10) !important;
-                padding: 6px 9px !important;
-                cursor: pointer !important;
-                color: var(--text-primary) !important;
-                align-items: center !important;
-            }
+        /* collapsedControl is hidden on ALL sizes — we use our own injected button */
+        [data-testid="collapsedControl"] {
+            display: none !important;
+        }
 
+        @media (max-width: 768px) {
             /* Sidebar: full-height overlay that slides in from left */
             [data-testid="stSidebar"] {
                 position: fixed !important;
@@ -435,12 +423,6 @@ def apply_global_styles() -> None:
                 max-width: 100% !important;
                 padding-left: 0.5rem !important;
                 padding-right: 0.5rem !important;
-            }
-        }
-
-        @media (min-width: 769px) {
-            [data-testid="collapsedControl"] {
-                display: none !important;
             }
         }
         </style>
