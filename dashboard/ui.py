@@ -8,6 +8,11 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+try:
+    from .i18n import t
+except ImportError:
+    from i18n import t
+
 
 CHART_COLORS = [
     "#1f1f1f",
@@ -383,6 +388,61 @@ def apply_global_styles() -> None:
                 padding: 0.1rem 0.2rem 0.24rem;
             }
         }
+
+        /* ── Mobile sidebar slide ─────────────────────────────── */
+        @media (max-width: 768px) {
+            /* Show Streamlit's native collapse toggle as a hamburger */
+            [data-testid="collapsedControl"] {
+                display: flex !important;
+                position: fixed !important;
+                top: 10px !important;
+                left: 10px !important;
+                z-index: 1000000 !important;
+                background: var(--surface) !important;
+                border: 1px solid var(--border) !important;
+                border-radius: 4px !important;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.10) !important;
+                padding: 6px 9px !important;
+                cursor: pointer !important;
+                color: var(--text-primary) !important;
+                align-items: center !important;
+            }
+
+            /* Sidebar: full-height overlay that slides in from left */
+            [data-testid="stSidebar"] {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                height: 100vh !important;
+                z-index: 999999 !important;
+                transform: translateX(-110%) !important;
+                transition: transform 220ms cubic-bezier(0.2, 0, 0, 1) !important;
+                box-shadow: 2px 0 12px rgba(0,0,0,0.18) !important;
+                width: var(--sidebar-width) !important;
+                min-width: var(--sidebar-width) !important;
+                max-width: var(--sidebar-width) !important;
+            }
+
+            [data-testid="stSidebar"][aria-expanded="true"] {
+                transform: translateX(0) !important;
+            }
+
+            /* Main content takes full width on mobile */
+            [data-testid="stAppViewContainer"] > section:last-child,
+            [data-testid="block-container"] {
+                margin-left: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            [data-testid="collapsedControl"] {
+                display: none !important;
+            }
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -496,7 +556,7 @@ def format_count(value: object) -> str:
 
 def format_currency(value: object) -> str:
     if value is None or pd.isna(value):
-        return "No price"
+        return t("no_price")
     try:
         return f"${float(value):,.2f}"
     except (TypeError, ValueError):
@@ -514,7 +574,7 @@ def format_percent(value: object, decimals: int = 1) -> str:
 
 def format_timestamp(value: object) -> str:
     if value is None or pd.isna(value):
-        return "Not available"
+        return t("not_available")
 
     if isinstance(value, pd.Timestamp):
         timestamp = value.to_pydatetime()

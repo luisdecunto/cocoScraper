@@ -51,6 +51,11 @@ except ImportError:
         style_figure,
     )
 
+try:
+    from .i18n import t
+except ImportError:
+    from i18n import t
+
 
 st.set_page_config(
     page_title="cocoScraper",
@@ -60,43 +65,33 @@ st.set_page_config(
 apply_global_styles()
 
 
-PAGE_META = {
-    "Dashboard": {
-        "eyebrow": "Dashboard",
-        "title": "Dashboard",
-        "description": (
-            "Latest supplier prices in one table."
-        ),
-        "sidebar": "Main catalog table with direct filtering and export.",
-    },
-    "Comparison": {
-        "eyebrow": "Price matrix",
-        "title": "Cross-supplier comparison",
-        "description": (
-            "Compare normalized product matches side by side, identify the cheapest supplier per row, "
-            "and surface the largest price spreads."
-        ),
-        "sidebar": "Use canonical matches to compare supplier pricing and spot the biggest deltas worth investigating.",
-    },
-    "History": {
-        "eyebrow": "Change tracking",
-        "title": "Price history",
-        "description": (
-            "Overlay products from any supplier, inspect their movement over time, and verify the raw "
-            "intervals behind the chart."
-        ),
-        "sidebar": "Search the catalog, pick the products you care about, and inspect how prices evolved over time.",
-    },
-    "Logs": {
-        "eyebrow": "Operational view",
-        "title": "Scrape run health",
-        "description": (
-            "Track recent scrape runs, watch for silent failures, and confirm that each supplier feed is "
-            "writing snapshots as expected."
-        ),
-        "sidebar": "Monitor scrape activity, zero-snapshot runs, and recent failures before they affect analysis quality.",
-    },
-}
+def get_page_meta() -> dict[str, dict[str, str]]:
+    return {
+        "Dashboard": {
+            "eyebrow": t("page_dashboard_eyebrow"),
+            "title": t("page_dashboard_title"),
+            "description": t("page_dashboard_desc"),
+            "sidebar": t("page_dashboard_sidebar"),
+        },
+        "Comparison": {
+            "eyebrow": t("page_comparison_eyebrow"),
+            "title": t("page_comparison_title"),
+            "description": t("page_comparison_desc"),
+            "sidebar": t("page_comparison_sidebar"),
+        },
+        "History": {
+            "eyebrow": t("page_history_eyebrow"),
+            "title": t("page_history_title"),
+            "description": t("page_history_desc"),
+            "sidebar": t("page_history_sidebar"),
+        },
+        "Logs": {
+            "eyebrow": t("page_logs_eyebrow"),
+            "title": t("page_logs_title"),
+            "description": t("page_logs_desc"),
+            "sidebar": t("page_logs_sidebar"),
+        },
+    }
 
 
 @st.cache_data(ttl=120, show_spinner=False)
@@ -122,7 +117,7 @@ def workspace_snapshot() -> dict[str, str]:
         """
     )
     if snapshot.empty:
-        return {"products": "0", "suppliers": "0", "updated": "Not available"}
+        return {"products": "0", "suppliers": "0", "updated": t("not_available")}
 
     row = snapshot.iloc[0]
     return {
@@ -177,7 +172,7 @@ def render_export_button(
             st.caption(caption)
     with action_col:
         st.download_button(
-            "Export CSV",
+            t("btn_export_csv"),
             data,
             file_name=file_name,
             mime="text/csv",
@@ -209,14 +204,14 @@ def render_browse_page() -> None:
     )
 
     render_page_header(
-        PAGE_META["Dashboard"]["eyebrow"],
-        PAGE_META["Dashboard"]["title"],
-        PAGE_META["Dashboard"]["description"],
-        context=f"Workspace updated {format_timestamp(df['scraped_at'].max())}" if not df.empty else None,
+        get_page_meta()["Dashboard"]["eyebrow"],
+        get_page_meta()["Dashboard"]["title"],
+        get_page_meta()["Dashboard"]["description"],
+        context=t("dashboard_workspace_ctx", ts=format_timestamp(df['scraped_at'].max())) if not df.empty else None,
     )
 
     if df.empty:
-        render_empty_state("No products are available yet. Run at least one supplier scrape to populate the catalog.")
+        render_empty_state(t("dashboard_no_products"))
         return
 
     df["price_unit"] = pd.to_numeric(df["price_unit"], errors="coerce")
@@ -230,11 +225,11 @@ def render_browse_page() -> None:
         csv_data,
         file_name="catalog_slice.csv",
         key="dashboard_export",
-        caption=f"{format_count(len(filtered))} products",
+        caption=t("dashboard_count", n=format_count(len(filtered))),
     )
 
     if filtered.empty:
-        render_empty_state("No products match the current filters. Reset the panel or widen the search criteria.")
+        render_empty_state(t("dashboard_no_match"))
         return
 
     display_table(filtered[visible_columns], height=980)
@@ -260,51 +255,51 @@ def render_comparison_page() -> None:
     )
 
     render_page_header(
-        PAGE_META["Comparison"]["eyebrow"],
-        PAGE_META["Comparison"]["title"],
-        PAGE_META["Comparison"]["description"],
-        context=f"{format_count(df['supplier'].nunique())} suppliers currently contribute comparable products." if not df.empty else None,
+        get_page_meta()["Comparison"]["eyebrow"],
+        get_page_meta()["Comparison"]["title"],
+        get_page_meta()["Comparison"]["description"],
+        context=t("comparison_ctx", n=format_count(df['supplier'].nunique())) if not df.empty else None,
     )
 
     if df.empty:
-        render_empty_state("No canonical product matches are available yet. Generate more normalized products before using the comparison matrix.")
+        render_empty_state(t("comparison_no_data"))
         return
 
     df["price_unit"] = pd.to_numeric(df["price_unit"], errors="coerce")
     if df["supplier"].nunique() < 2:
         render_metric_row(
             [
-                ("Matched products", format_count(df["canonical_key"].nunique()), "Comparable records with canonical keys"),
-                ("Suppliers", format_count(df["supplier"].nunique()), "Distinct suppliers contributing matched products"),
+                (t("comparison_metric_matched"), format_count(df["canonical_key"].nunique()), "Comparable records with canonical keys"),
+                (t("comparison_metric_suppliers"), format_count(df["supplier"].nunique()), "Distinct suppliers contributing matched products"),
                 ("Median price", format_currency(df["price_unit"].median()), "Across comparable rows"),
                 ("Largest dept", df["category_dept"].mode().iat[0] if not df["category_dept"].mode().empty else "n/a", "Department with the most matches"),
             ]
         )
-        st.info("Add more suppliers to enable cross-supplier comparison.")
+        st.info(t("comparison_need_more"))
         return
 
     render_section_intro(
-        "Scope",
-        "Comparison filters",
-        "Filter by department and search text to narrow matched rows.",
+        t("comparison_scope_eyebrow"),
+        t("comparison_scope_title"),
+        t("comparison_scope_desc"),
     )
 
     filter_col, search_col = st.columns([0.34, 0.66])
     with filter_col:
-        department_options = ["All departments"] + sorted(df["category_dept"].dropna().unique().tolist())
+        department_options = [t("comparison_dept_all")] + sorted(df["category_dept"].dropna().unique().tolist())
         selected_department = st.selectbox(
-            "Department",
+            t("comparison_dept_label"),
             department_options,
             key="comparison_department",
         )
     with search_col:
         comparison_search = st.text_input(
-            "Search rows",
-            placeholder="brand, product type, size, or subcategory",
+            t("comparison_search_label"),
+            placeholder=t("comparison_search_ph"),
             key="comparison_search",
         )
 
-    filtered = df if selected_department == "All departments" else df[df["category_dept"] == selected_department]
+    filtered = df if selected_department == t("comparison_dept_all") else df[df["category_dept"] == selected_department]
 
     pivot = filtered.pivot_table(
         index=[
@@ -336,7 +331,7 @@ def render_comparison_page() -> None:
         pivot = pivot[search_mask]
 
     if pivot.empty:
-        render_empty_state("The current department does not have products listed by at least two suppliers.")
+        render_empty_state(t("comparison_no_dept"))
         return
 
     price_data = pivot[supplier_columns]
@@ -348,17 +343,17 @@ def render_comparison_page() -> None:
 
     render_metric_row(
         [
-            ("Matched products", format_count(len(pivot)), "Rows that appear in at least two supplier columns"),
-            ("Suppliers compared", format_count(len(supplier_columns)), "Supplier columns in the current matrix"),
-            ("Median spread", format_percent(pivot["diff_pct"].median()), "Typical gap between cheapest and highest price"),
-            ("Largest spread", format_percent(pivot["diff_pct"].max()), "Most pronounced gap in the current slice"),
+            (t("comparison_metric_matched"), format_count(len(pivot)), t("comparison_metric_matched_note")),
+            (t("comparison_metric_suppliers"), format_count(len(supplier_columns)), t("comparison_metric_suppliers_note")),
+            (t("comparison_metric_spread"), format_percent(pivot["diff_pct"].median()), t("comparison_metric_spread_note")),
+            (t("comparison_metric_max"), format_percent(pivot["diff_pct"].max()), t("comparison_metric_max_note")),
         ]
     )
 
     render_section_intro(
-        "Matrix",
-        "Cross-supplier price view",
-        "The cheapest price in each row is highlighted. Sort the table or export it for offline review.",
+        t("comparison_scope_eyebrow"),
+        t("comparison_matrix_title"),
+        t("comparison_matrix_desc"),
     )
 
     export_frame = pivot.drop(columns=["max_price", "min_price", "cheapest", "canonical_key"])
@@ -397,34 +392,34 @@ def render_history_page() -> None:
     )
 
     render_page_header(
-        PAGE_META["History"]["eyebrow"],
-        PAGE_META["History"]["title"],
-        PAGE_META["History"]["description"],
-        context=f"{format_count(products_df['product_id'].nunique())} products currently have trackable price history." if not products_df.empty else None,
+        get_page_meta()["History"]["eyebrow"],
+        get_page_meta()["History"]["title"],
+        get_page_meta()["History"]["description"],
+        context=t("history_ctx", n=format_count(products_df['product_id'].nunique())) if not products_df.empty else None,
     )
 
     if products_df.empty:
-        render_empty_state("No products with price history are available yet. Run more scrapes before using this view.")
+        render_empty_state(t("history_no_data"))
         return
 
     render_metric_row(
         [
-            ("Tracked products", format_count(products_df["product_id"].nunique()), "Products with an id and a current price"),
-            ("Suppliers", format_count(products_df["supplier"].nunique()), "Supplier feeds represented in the history view"),
-            ("Brands", format_count(products_df["brand"].nunique()), "Distinct brands in the searchable catalog"),
-            ("Types", format_count(products_df["product_type"].nunique()), "Product types available to compare"),
+            (t("history_metric_tracked"), format_count(products_df["product_id"].nunique()), t("history_metric_tracked_note")),
+            (t("history_metric_suppliers"), format_count(products_df["supplier"].nunique()), t("history_metric_suppliers_note")),
+            (t("history_metric_brands"), format_count(products_df["brand"].nunique()), t("history_metric_brands_note")),
+            (t("history_metric_types"), format_count(products_df["product_type"].nunique()), t("history_metric_types_note")),
         ]
     )
 
     render_section_intro(
-        "Selection",
-        "Pick the products to overlay",
-        "Search by product id, name, brand, or product type and compare products from any supplier on the same chart.",
+        t("history_selection_eyebrow"),
+        t("history_selection_title"),
+        t("history_selection_desc"),
     )
 
     search = st.text_input(
-        "Search products",
-        placeholder="Search by product id, name, brand, or product type",
+        t("history_search_label"),
+        placeholder=t("history_search_ph"),
         key="history_search",
     )
     if search:
@@ -440,11 +435,11 @@ def render_history_page() -> None:
 
     render_filter_summary(
         [f'Search: "{search}"'] if search else [],
-        f"Showing the first {format_count(len(matches))} products until a search term is applied.",
+        t("history_showing", n=format_count(len(matches))),
     )
 
     if matches.empty:
-        render_empty_state("No products matched that search. Try a broader term or clear the field.")
+        render_empty_state(t("history_no_match"))
         return
 
     options = {
@@ -452,14 +447,14 @@ def render_history_page() -> None:
         for _, row in matches.iterrows()
     }
     selected_labels = st.multiselect(
-        "Products",
+        t("history_products_label"),
         list(options.keys()),
         key="history_products",
-        placeholder="Select one or more products to compare",
+        placeholder=t("history_products_ph"),
     )
 
     if not selected_labels:
-        render_empty_state("Select one or more products to load the chart and the raw change intervals.")
+        render_empty_state(t("history_select_prompt"))
         return
 
     selected_ids = [options[label] for label in selected_labels]
@@ -486,7 +481,7 @@ def render_history_page() -> None:
     )
 
     if history.empty:
-        render_empty_state("No history rows were found for the selected products.")
+        render_empty_state(t("history_no_rows"))
         return
 
     history["price_unit"] = pd.to_numeric(history["price_unit"], errors="coerce")
@@ -495,17 +490,17 @@ def render_history_page() -> None:
 
     render_metric_row(
         [
-            ("Selected products", format_count(len(selected_labels)), "Products currently overlaid in the chart"),
-            ("History rows", format_count(len(history)), "Raw intervals available for the selection"),
-            ("Suppliers in chart", format_count(history["supplier"].nunique()), "Supplier lines visible in the current comparison"),
-            ("Latest event", format_timestamp(history["last_seen"].max()), "Most recent interval end in the selected set"),
+            (t("history_metric_selected"), format_count(len(selected_labels)), t("history_metric_selected_note")),
+            (t("history_metric_rows"), format_count(len(history)), t("history_metric_rows_note")),
+            (t("history_metric_chart_suppliers"), format_count(history["supplier"].nunique()), t("history_metric_chart_suppliers_note")),
+            (t("history_metric_latest"), format_timestamp(history["last_seen"].max()), t("history_metric_latest_note")),
         ]
     )
 
     render_section_intro(
-        "Chart",
-        "Price movement over time",
-        "Each step marks the date when a product entered a new price interval. The table below keeps the raw intervals visible for audit work.",
+        t("history_chart_eyebrow"),
+        t("history_chart_title"),
+        t("history_chart_desc"),
     )
 
     figure = px.line(
@@ -517,9 +512,9 @@ def render_history_page() -> None:
         line_shape="hv",
         color_discrete_sequence=CHART_COLORS,
         labels={
-            "first_seen": "Date",
-            "price_unit": "Unit price",
-            "label": "Product",
+            "first_seen": t("history_chart_date"),
+            "price_unit": t("history_chart_price"),
+            "label": t("history_chart_product"),
         },
     )
     figure.update_traces(marker=dict(size=7, line=dict(width=1, color="#ffffff")), line=dict(width=2.4))
@@ -528,9 +523,9 @@ def render_history_page() -> None:
     st.plotly_chart(figure, use_container_width=True, config={"displayModeBar": False})
 
     render_section_intro(
-        "Audit trail",
-        "Raw price intervals",
-        "Use the raw table when validating a single product, checking supplier behavior, or exporting evidence for a review.",
+        t("history_audit_eyebrow"),
+        t("history_audit_title"),
+        t("history_audit_desc"),
     )
 
     render_export_button(
@@ -584,14 +579,14 @@ def render_logs_page() -> None:
     )
 
     render_page_header(
-        PAGE_META["Logs"]["eyebrow"],
-        PAGE_META["Logs"]["title"],
-        PAGE_META["Logs"]["description"],
-        context=f"Showing the 20 most recent run records." if not runs.empty else None,
+        get_page_meta()["Logs"]["eyebrow"],
+        get_page_meta()["Logs"]["title"],
+        get_page_meta()["Logs"]["description"],
+        context=t("logs_ctx") if not runs.empty else None,
     )
 
     if runs.empty:
-        render_empty_state("No scrape runs have been logged yet.")
+        render_empty_state(t("logs_no_data"))
         return
 
     zero_snapshot_runs = runs[(runs["status"] == "success") & (runs["snapshots_written"] == 0)]
@@ -600,31 +595,28 @@ def render_logs_page() -> None:
 
     render_metric_row(
         [
-            ("Recent runs", format_count(len(runs)), "Latest run records in the operational log"),
-            ("Success rate", format_percent(success_rate), "Share of recent runs with a success status"),
-            ("Zero snapshots", format_count(len(zero_snapshot_runs)), "Successful runs that wrote nothing"),
-            ("Last activity", format_timestamp(latest_activity), "Most recent start or finish time"),
+            (t("logs_metric_runs"), format_count(len(runs)), t("logs_metric_runs_note")),
+            (t("logs_metric_success"), format_percent(success_rate), t("logs_metric_success_note")),
+            (t("logs_metric_zero"), format_count(len(zero_snapshot_runs)), t("logs_metric_zero_note")),
+            (t("logs_metric_activity"), format_timestamp(latest_activity), t("logs_metric_activity_note")),
         ]
     )
 
     if not zero_snapshot_runs.empty:
-        st.warning(
-            f"{len(zero_snapshot_runs)} run(s) completed successfully but wrote 0 snapshots. "
-            "This usually means login broke silently or the supplier page structure changed."
-        )
+        st.warning(t("logs_zero_warning", n=len(zero_snapshot_runs)))
 
     latest_failure = runs[runs["status"] == "failed"].head(1)
     if not latest_failure.empty:
         failed_row = latest_failure.iloc[0]
         render_filter_summary(
-            [f"Latest failed supplier: {failed_row['supplier']}", f"Started: {format_timestamp(failed_row['started_at'])}"],
+            [t("logs_failed_supplier", supplier=failed_row['supplier']), t("logs_failed_started", ts=format_timestamp(failed_row['started_at']))],
             "No recent failed runs.",
         )
 
     render_section_intro(
-        "Operations",
-        "Recent run log",
-        "Watch this table for silent login issues, schema drift, or suppliers that stop producing snapshots.",
+        t("logs_table_eyebrow"),
+        t("logs_table_title"),
+        t("logs_table_desc"),
     )
 
     def color_status(value: object) -> str:
@@ -641,11 +633,9 @@ def render_logs_page() -> None:
 
 def main() -> None:
     if not has_database_config():
-        render_sidebar(PAGE_META, None, "Database not configured yet.")
-        render_empty_state(
-            "Set DATABASE_URL in Streamlit secrets or in your local environment to load the dashboard."
-        )
-        st.caption("Local fallback is still supported via DB_HOST, DB_PORT, DB_NAME, DB_USER, and DB_PASS.")
+        render_sidebar(get_page_meta(), None, t("db_not_configured_sidebar"))
+        render_empty_state(t("db_not_configured"))
+        st.caption(t("db_not_configured_caption"))
         return
 
     snapshot = None
@@ -657,26 +647,22 @@ def main() -> None:
         try:
             connected_at = test_database_connection()
         except Exception as connection_exc:
-            render_sidebar(PAGE_META, None, "Database connection unavailable.")
+            render_sidebar(get_page_meta(), None, t("db_connection_unavailable_sidebar"))
             render_empty_state(f"Database connection failed: {connection_exc}")
             st.caption("Check the DATABASE_URL secret or environment variable and try again.")
             return
 
-        render_sidebar(PAGE_META, None, snapshot_error)
+        render_sidebar(get_page_meta(), None, snapshot_error)
         error_text = str(exc).lower()
         if "does not exist" in error_text or "undefinedtable" in error_text or "relation " in error_text:
-            render_empty_state(
-                "The database is reachable, but the pricing tables are not ready yet. Initialize the schema and run at least one scrape."
-            )
-            st.code("python -m scraper.main db init")
+            render_empty_state(t("db_tables_not_ready"))
+            st.code(t("db_schema_hint"))
         else:
-            render_empty_state(f"Database query failed before the dashboard could load: {exc}")
-        st.caption(
-            f"Connection test succeeded with SELECT NOW(): {format_timestamp(connected_at) if connected_at else 'connected'}"
-        )
+            render_empty_state(t("db_query_failed", exc=exc))
+        st.caption(t("db_connection_ok", ts=format_timestamp(connected_at) if connected_at else "connected"))
         return
 
-    page = render_sidebar(PAGE_META, snapshot, snapshot_error)
+    page = render_sidebar(get_page_meta(), snapshot, snapshot_error)
 
     try:
         if page == "Dashboard":
