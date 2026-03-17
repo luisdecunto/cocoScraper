@@ -46,10 +46,6 @@ def _resolve_selected_page(options: list[str]) -> str:
             selected = options[0]
 
     st.session_state.dashboard_page = selected
-    expected_slug = _slug(selected)
-    if query_value != expected_slug:
-        st.query_params["section"] = expected_slug
-
     return selected
 
 
