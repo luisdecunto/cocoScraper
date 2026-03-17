@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import unicodedata
 import pandas as pd
 import plotly.express as px
 import psycopg2
@@ -95,6 +96,21 @@ def get_page_meta() -> dict[str, dict[str, str]]:
 
 
 @st.cache_data(ttl=120, show_spinner=False)
+def _fold(s: str) -> str:
+    """Accent-fold + lowercase for dedup comparisons."""
+    return unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode().lower()
+
+
+def _dedup_sorted(values: list[str]) -> list[str]:
+    """Return unique values, collapsing accent/case variants (keep first seen)."""
+    seen: dict[str, str] = {}
+    for v in sorted(values):
+        key = _fold(v)
+        if key not in seen:
+            seen[key] = v
+    return sorted(seen.values())
+
+
 def query(sql: str, *args: object) -> pd.DataFrame:
     conn = psycopg2.connect(**get_psycopg2_connection_kwargs())
     try:
@@ -277,15 +293,19 @@ def render_comparison_page() -> None:
         t("comparison_scope_desc"),
     )
 
+    # Only show brands/types that have at least one product with a price
+    df_priced = df[df["price_unit"].notna()]
+
     col_brand, col_type, col_desc, col_size = st.columns(4)
     with col_brand:
-        brand_options = ["Todas"] + sorted(df["brand"].dropna().unique().tolist())
+        brand_options = ["Todas"] + _dedup_sorted(df_priced["brand"].dropna().unique().tolist())
         selected_brand = st.selectbox("Marca", brand_options, key="comparison_brand")
 
-    brand_df = df if selected_brand == "Todas" else df[df["brand"] == selected_brand]
+    brand_df = df if selected_brand == "Todas" else df[df["brand"].apply(lambda x: _fold(str(x))) == _fold(selected_brand)]
 
     with col_type:
-        type_options = ["Todos"] + sorted(brand_df["product_type"].dropna().unique().tolist())
+        priced_brand_df = df_priced if selected_brand == "Todas" else df_priced[df_priced["brand"].apply(lambda x: _fold(str(x))) == _fold(selected_brand)]
+        type_options = ["Todos"] + _dedup_sorted(priced_brand_df["product_type"].dropna().unique().tolist())
         selected_product_type = st.selectbox("Producto", type_options, key="comparison_product_type")
 
     with col_desc:
@@ -293,23 +313,22 @@ def render_comparison_page() -> None:
     with col_size:
         size_search = st.text_input("Tamaño", placeholder="ej. 1 kg", key="comparison_size")
 
-    filtered = brand_df if selected_product_type == "Todos" else brand_df[brand_df["product_type"] == selected_product_type]
+    filtered = brand_df if selected_product_type == "Todos" else brand_df[brand_df["product_type"].apply(lambda x: _fold(str(x))) == _fold(selected_product_type)]
+
+    # Group by canonical_key only (accent/case-insensitive matching key).
+    # Display fields (brand, product_type, size, etc.) may differ across suppliers
+    # for the same product — take the first occurrence per canonical_key.
+    display_cols = ["canonical_key", "canonical_name", "brand", "product_type", "size", "category_dept", "category_sub"]
+    display_df = filtered.groupby("canonical_key", sort=False)[display_cols].first().reset_index(drop=True)
 
     pivot = filtered.pivot_table(
-        index=[
-            "canonical_key",
-            "canonical_name",
-            "brand",
-            "product_type",
-            "size",
-            "category_dept",
-            "category_sub",
-        ],
+        index="canonical_key",
         columns="supplier",
         values="price_unit",
         aggfunc="min",
     ).reset_index()
     pivot.columns.name = None
+    pivot = pivot.merge(display_df, on="canonical_key", how="left")
 
     fixed_columns = ["canonical_key", "canonical_name", "brand", "product_type", "size", "category_dept", "category_sub"]
     supplier_columns = [column for column in pivot.columns if column not in fixed_columns]
@@ -346,7 +365,8 @@ def render_comparison_page() -> None:
         t("comparison_matrix_desc"),
     )
 
-    export_frame = pivot.drop(columns=["max_price", "min_price", "cheapest", "canonical_key", "category_dept", "category_sub"])
+    ordered_columns = ["canonical_name"] + supplier_columns + ["brand", "product_type", "size", "diff_pct"]
+    export_frame = pivot[[c for c in ordered_columns if c in pivot.columns]]
     render_export_button(
         export_frame.to_csv(index=False).encode("utf-8"),
         file_name="comparison_matrix.csv",

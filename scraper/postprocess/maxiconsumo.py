@@ -443,6 +443,37 @@ def extract_features(name: str) -> dict:
     if variant == "":
         variant = None
 
+    # Product-specific overrides (known cases where the name omits key info)
+    if brand == "Billiken" and product_type == "Turron" and variant is None:
+        variant = "De Mani"
+    if _ascii_fold(brand or "").upper() == "8 HERMANOS" and product_type == "Anis":
+        product_type = "Licor"
+        variant = "Anis Azul"
+    if _ascii_fold(brand or "").upper() == "9 DE ORO":
+        if product_type == "Pepas" or (variant and re.search(r"\bPepas\b", variant, re.IGNORECASE)):
+            product_type = "Pepas"
+            variant = "Membrillo"
+        if variant == "Agridulce":
+            variant = "Agridulces"
+        if variant == "Agridulces Azucarados":
+            variant = "Agridulces"
+        if variant == "Azucaradas":
+            variant = "Azucarados"
+        if variant == "Clasico":
+            variant = "Clasicos"
+        if re.search(r"\b120\s*/\s*180\s*GR\b", name, re.IGNORECASE):
+            weight = {"value": 180, "unit": "g"}
+    if brand == "1882" and product_type == "Aperitivo" and _ascii_fold((variant or "").upper()) == "CON COLA":
+        product_type = "Fernet"
+    if (
+        brand == "1882"
+        and product_type == "Fernet"
+        and variant is None
+        and volume is not None
+        and int(round(volume["value"])) == 1008
+    ):
+        volume["value"] = 1000
+
     # 8. Build clean_name from structured parts
     parts = [p for p in [product_type, brand, variant] if p]
     clean = " ".join(parts)

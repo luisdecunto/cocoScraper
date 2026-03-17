@@ -105,6 +105,24 @@ _EXTRA_BRANDS_FOLDED: list[str] = sorted(
 # Product-type alias map: folded first-word → canonical product type string.
 _PT_ALIAS_MAP: dict[str, str] = _load_aliases("nini_product_type_aliases.txt")
 
+# Variant text normalizations: list of (compiled regex, replacement) pairs.
+# Applied to variant text after extraction.
+# Note: when abbreviation ends with "." and is concatenated with next word (no space),
+#   the period acts as a separator — the replacement must insert a space in that case.
+_VARIANT_NORMALIZATIONS: list[tuple] = [
+    # "Yog.Surtido" → "Yogur Surtido", "Yog. " → "Yogur "
+    (re.compile(r"\bYog\.(\S)",  re.IGNORECASE), r"Yogur \1"),
+    (re.compile(r"\bYog\.",      re.IGNORECASE), "Yogur"),
+    # "Surt.Esp." → "Surtidos Esp.", "Surt. " → "Surtidos "
+    (re.compile(r"\bSurt\.(\S)", re.IGNORECASE), r"Surtidos \1"),
+    (re.compile(r"\bSurt\.",     re.IGNORECASE), "Surtidos"),
+    (re.compile(r"\bSurtida\b",  re.IGNORECASE), "Surtidos"),   # normalize gender variant
+    (re.compile(r"\bAl\s+Hvo\.?\s+N(?:[°º?]\s*)?(\d+)\b", re.IGNORECASE), r"N\1 Huevo"),
+    (re.compile(r"\bN(?:[°º?]\s*)?(\d+)\b", re.IGNORECASE), r"N\1"),
+    (re.compile(r"\bAl\s+Hvo\.?(?=\s|$)", re.IGNORECASE), "Huevo"),
+    (re.compile(r"^\s*Cap\.\s*", re.IGNORECASE), ""),
+]
+
 # ---------------------------------------------------------------------------
 # Size extraction
 # ---------------------------------------------------------------------------
@@ -278,6 +296,60 @@ def extract_features(name: str, category: str = "") -> dict:
 
     # 4. Variant = rest after product type
     variant = after_type.strip() if after_type.strip() else None
+
+    # 5. Apply variant text normalizations (abbreviation expansions)
+    if variant:
+        for pattern, replacement in _VARIANT_NORMALIZATIONS:
+            variant = pattern.sub(replacement, variant)
+        # "Frutal" → "Frutales" only in candy contexts
+        _CANDY_TYPES = {"GOMITAS", "CARAMELOS", "CHUPETINES", "CHUPETIN", "CHICLES",
+                        "GOMITAS", "TURRON", "GOLOSINAS", "CONFITES", "PASTILLITAS"}
+        if _ascii_fold(product_type or "").upper() in _CANDY_TYPES:
+            variant = re.sub(r"\bFrutal\b", "Frutales", variant, flags=re.IGNORECASE)
+    if _ascii_fold(brand or "").upper() == "9 DE ORO":
+        if product_type == "Bizcochitos":
+            product_type = "Bizcochos"
+        if product_type == "Brownie":
+            product_type = "Bizcochuelo"
+            variant = "Brownie"
+        if product_type in {"Galleta", "Galletita"}:
+            product_type = "Galletitas"
+        if product_type == "Brigitte":
+            product_type = "Galletitas"
+            if variant:
+                variant = re.sub(r"^\s*Galletitas\s+", "", variant, flags=re.IGNORECASE)
+                variant = f"Brigitte {variant}".strip()
+            else:
+                variant = "Brigitte"
+        if product_type == "Snacks":
+            product_type = "Crujitas"
+            if variant:
+                variant = re.sub(r"^\s*Crujitas\s+", "", variant, flags=re.IGNORECASE)
+        if product_type == "Pepas" or (variant and re.search(r"\bPepas\b", variant, re.IGNORECASE)):
+            product_type = "Pepas"
+            variant = "Membrillo"
+        if product_type == "Con" and variant:
+            if re.fullmatch(r"Chips De Chocolate", variant, re.IGNORECASE):
+                product_type = "Galletitas"
+                variant = "Chips Chocolate"
+            elif re.fullmatch(r"Chips De Chocolate Bco\.", variant, re.IGNORECASE):
+                product_type = "Galletitas"
+                variant = "Chips Chocolate Blanco"
+        if variant == "Agridulce":
+            variant = "Agridulces"
+        if variant == "Agridulces Azucarados":
+            variant = "Agridulces"
+        if variant == "Azucaradas":
+            variant = "Azucarados"
+        if variant == "Clasico":
+            variant = "Clasicos"
+    if brand == "317" and product_type == "Tintura" and variant:
+        variant = re.sub(
+            r"^\s*Kit\s+N?(\d+(?:\.\d+)?)\b.*$",
+            r"Kit \1",
+            variant,
+            flags=re.IGNORECASE,
+        )
 
     return {
         "brand":        brand,

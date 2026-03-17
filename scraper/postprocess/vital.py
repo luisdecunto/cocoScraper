@@ -701,6 +701,13 @@ def extract_features(name: str) -> dict:
     text = re.sub(r"(\d)(cm)\b", r"\1 \2", text, flags=re.IGNORECASE)
     # OCR artifact: repeated dimension without "x" (e.g. "229229 cm" → "229x229 cm")
     text = re.sub(r"\b(\d{2,3})\1\s*(cm)\b", r"\1x\1 \2", text, flags=re.IGNORECASE)
+    # Strip leading "x" before number+unit FIRST (e.g. "x400ml" → "400ml", "x1.5lt" → "1.5lt")
+    # Must run before the "fix missing space" regex below, which would otherwise split "X800GR"
+    # into "X 800 GR" and leave an orphaned "X" token in the variant after size extraction.
+    text = re.sub(
+        r"\bx(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilos|gr|grs|gramos|g|lts?|litros?|ml|cc|cm3)\b",
+        r"\1 \2", text, flags=re.IGNORECASE,
+    )
     # Fix missing space between letter and number+unit (e.g. "pollo8 kg" → "pollo 8 kg")
     text = re.sub(
         r"([A-Z])(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilos|gr|grs|gramos|g|lts?|litros?|ml|cc|cm3)\b",
@@ -709,11 +716,6 @@ def extract_features(name: str) -> dict:
     # Fix missing space between container word and number (e.g. "botella250" → "botella 250")
     text = re.sub(
         r"\b(botella|pote|bolsa|caja|lata|frasco|sachet|saquito|barra|tira)(\d)",
-        r"\1 \2", text, flags=re.IGNORECASE,
-    )
-    # Strip leading "x" before number+unit (e.g. "x400ml" → "400ml", "x1.5lt" → "1.5lt")
-    text = re.sub(
-        r"\bx(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilos|gr|grs|gramos|g|lts?|litros?|ml|cc|cm3)\b",
         r"\1 \2", text, flags=re.IGNORECASE,
     )
     # Bare number after container word at end of string → assume CC (e.g. "lata 500" → "lata 500 CC")
@@ -921,9 +923,74 @@ def extract_features(name: str) -> dict:
         tokens = []
 
     product_type, brand, remaining = _extract_product_type_and_brand(tokens)
+
+    # Context-aware brand corrections (require product_type context, so applied here)
+    # "ALA" alone = detergent brand, but on rice/rice-snack products it's "Molinos Ala"
+    if brand is not None and _ascii_fold(brand).upper() == "ALA":
+        pt_folded = _ascii_fold(product_type or "").upper()
+        if "ARROZ" in pt_folded or pt_folded in {"CRACKERS", "TOSTADAS", "TOSTADITAS"}:
+            brand = "Molinos Ala"
+
     variant = clean_name(" ".join(remaining)) if remaining else None
     if variant == "":
         variant = None
+
+    # Variant text normalizations
+    if variant:
+        # Strip orphaned trailing "X" (artifact of "x<N>unit" patterns where x was consumed
+        # by size extraction but left a lone token, e.g. "G.Sel. X" → "G.Sel.")
+        variant = re.sub(r"(?<!\w)[Xx]$", "", variant).strip() or None
+    if variant:
+        # "Roll" (not "Roll On") → "Rollo"
+        variant = re.sub(r"\bRoll\b(?!\s+[Oo]n)", "Rollo", variant)
+        # "Frutal" → "Frutales" in candy contexts only
+        pt_upper = _ascii_fold(product_type or "").upper()
+        _CANDY_TYPES = {"GOMITAS", "CARAMELOS", "CHUPETINES", "CHUPETIN", "CHICLES",
+                        "PASTILLITAS", "TURRON", "GOLOSINAS", "CONFITES"}
+        if pt_upper in _CANDY_TYPES or pt_upper.startswith("CARAMELO"):
+            variant = re.sub(r"\bFrutal\b", "Frutales", variant, flags=re.IGNORECASE)
+    if _ascii_fold(brand or "").upper() == "3D":
+        if product_type == "Conos":
+            product_type = "Snack"
+        if variant and re.search(r"\bMega\s+Queso\b", variant, re.IGNORECASE):
+            variant = "Queso"
+        if re.search(r"\b143/150\s*gr\b", name, re.IGNORECASE):
+            weight = {"value": 143, "unit": "g"}
+    if _ascii_fold(name).upper() == "BATERIA DE COCINA 7 PZAS LINZ":
+        brand = "Linz"
+        product_type = "Bateria de Cocina"
+        variant = "7 Pzas"
+    if _ascii_fold(name).upper() == "TOPLINE 7 U LTRA RED BERRY 12 U 24 GR":
+        brand = "Topline"
+        product_type = "Chicles"
+        variant = "7 Ultra Red Berry"
+    if _ascii_fold(brand or "").upper() == "9 DE ORO":
+        if product_type in {"Galleta", "Galletas"}:
+            product_type = "Galletitas"
+        if product_type == "Pepas" or (variant and re.search(r"\bPepas\b", variant, re.IGNORECASE)):
+            product_type = "Pepas"
+            variant = "Membrillo"
+        if variant == "Agridulce":
+            variant = "Agridulces"
+        if variant == "Agridulces Azucarados":
+            variant = "Agridulces"
+        if variant == "Azucaradas":
+            variant = "Azucarados"
+        if variant == "Clasico":
+            variant = "Clasicos"
+    if brand == "317" and product_type == "Tintura":
+        units_in_name = 1
+        units_label = "uni"
+        if variant:
+            if re.fullmatch(r"Kit\s+Rubio\s+Oscuro", variant, re.IGNORECASE):
+                variant = "Kit 6"
+            else:
+                variant = re.sub(
+                    r"^\s*Kit\s+N?(\d+(?:\.\d+)?)\b.*$",
+                    r"Kit \1",
+                    variant,
+                    flags=re.IGNORECASE,
+                )
 
     parts = [p for p in [product_type, brand, variant] if p]
     clean = " ".join(parts)

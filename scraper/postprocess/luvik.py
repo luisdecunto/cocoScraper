@@ -456,8 +456,32 @@ def extract_features(name: str, category: str = "") -> dict:
     # 4b. Normalize brand (typos, encoding corruption, capitalization)
     brand = _BRAND_NORMALIZATIONS.get(_ascii_fold(brand).upper(), brand)
 
+    # 4c. Context-aware brand corrections
+    # "ALA" alone = detergent brand, but on rice/rice-snack products it's "Molinos Ala"
+    if _ascii_fold(brand).upper() == "ALA":
+        pt_folded = _ascii_fold(product_type or "").upper()
+        if "ARROZ" in pt_folded or pt_folded in {"CRACKERS", "TOSTADAS", "TOSTADITAS"}:
+            brand = "Molinos Ala"
+
     # 5. Variant = whatever is left
     variant = " ".join(remaining).strip() or None
+    if _ascii_fold(brand or "").upper() == "8 HERMANOS" and product_type == "Licor":
+        variant = "Anis Azul"
+    if _ascii_fold(brand or "").upper() == "9 DE ORO":
+        if product_type == "Brownie":
+            product_type = "Bizcochuelo"
+            variant = "Brownie"
+        if product_type == "Pepas" or (variant and re.search(r"\bPepas\b", variant, re.IGNORECASE)):
+            product_type = "Pepas"
+            variant = "Membrillo"
+        if variant == "Agridulce":
+            variant = "Agridulces"
+        if variant == "Agridulces Azucarados":
+            variant = "Agridulces"
+        if variant == "Azucaradas":
+            variant = "Azucarados"
+        if variant == "Clasico":
+            variant = "Clasicos"
 
     # 5b. Resolve bare number unit using product type context
     size_display: str | None = None

@@ -182,6 +182,32 @@ _BRAND_ALIASES: dict[str, str] = {
     "salzano":   "F. Salzano",  # F. initial stripped in step 3, restored here
 }
 
+# Post-extraction product_type aliases: normalise Santa Maria abbreviations to canonical form.
+# Keys are lowercase (after clean_name title-casing).
+# Values are either:
+#   str  → replace product_type directly
+#   tuple(str, str) → (new_product_type, variant_prefix) — prefix is prepended to variant
+_PRODUCT_TYPE_ALIASES: dict[str, str | tuple] = {
+    "past. goma":   "Gomitas",                        # "Pastilla de Goma" = gummy candy
+    "past.":        "Gomitas",                        # bare "Past." in SM catalog = soft gummy candy
+    "caram. mast.": ("Caramelos", "Masticables"),     # type=Caramelos, variant prefix=Masticables
+}
+
+# Variant text normalizations: list of (compiled regex, replacement) pairs.
+# Applied to variant after clean_name title-casing.
+_VARIANT_NORMALIZATIONS: list[tuple] = [
+    # "Tutti Fr." abbreviation and alternate spellings → canonical "Tutti Frutti"
+    (re.compile(r"\bTutti?\s+Fr\.",                re.IGNORECASE), "Tutti Frutti"),
+    (re.compile(r"\bTuttt+i\s+Frutti\b",           re.IGNORECASE), "Tutti Frutti"),
+    (re.compile(r"\bTuti\s+Fruti\b",               re.IGNORECASE), "Tutti Frutti"),
+    (re.compile(r"\bTutti\s+Frutti\b",             re.IGNORECASE), "Tutti Frutti"),  # normalize casing
+    # Flavor/variant abbreviation expansions
+    (re.compile(r"\bFrutal\b",                     re.IGNORECASE), "Frutales"),
+    (re.compile(r"\bD/[Mm]ani\b",                  re.IGNORECASE), "De Mani"),
+    (re.compile(r"\bYog\.",                        re.IGNORECASE), "Yogur"),
+    (re.compile(r"\bSurt\.",                       re.IGNORECASE), "Surtidos"),
+]
+
 
 def _is_brand_token(tok: str) -> bool:
     """Return True if token looks like part of an uppercase brand name."""
@@ -521,6 +547,45 @@ def extract_features(name: str) -> dict:
     # Apply post-extraction brand aliases (typos, on-site spelling variants)
     if brand and brand.lower() in _BRAND_ALIASES:
         brand = _BRAND_ALIASES[brand.lower()]
+
+    # Apply product_type aliases (Santa Maria abbreviations → canonical form)
+    if product_type and product_type.lower() in _PRODUCT_TYPE_ALIASES:
+        alias = _PRODUCT_TYPE_ALIASES[product_type.lower()]
+        if isinstance(alias, tuple):
+            product_type, prefix = alias
+            variant = f"{prefix} {variant}" if variant else prefix
+        else:
+            product_type = alias
+
+    # Apply variant text normalizations (abbreviation expansions, typo fixes)
+    if variant:
+        for pattern, replacement in _VARIANT_NORMALIZATIONS:
+            variant = pattern.sub(replacement, variant)
+    if (
+        brand == "1882"
+        and product_type == "Coctel"
+        and variant
+        and re.search(r"\bFernet\s*&\s*Cola\b", variant, re.IGNORECASE)
+    ):
+        product_type = "Fernet"
+        variant = "Con Cola"
+    if _ascii_fold(brand or "").upper() == "8 HERMANOS" and product_type == "Licor Anis":
+        product_type = "Licor"
+        variant = "Anis Azul"
+    if _ascii_fold(brand or "").upper() == "9 DE ORO":
+        if product_type == "Gallet.":
+            product_type = "Galletitas"
+        if product_type == "Pepas" or (variant and re.search(r"\bPepas\b", variant, re.IGNORECASE)):
+            product_type = "Pepas"
+            variant = "Membrillo"
+        if variant == "Agridulce":
+            variant = "Agridulces"
+        if variant == "Agridulces Azucarados":
+            variant = "Agridulces"
+        if variant == "Azucaradas":
+            variant = "Azucarados"
+        if variant == "Clasico":
+            variant = "Clasicos"
 
     # 8. Build clean_name from structured parts
     parts = [p for p in [product_type, brand, variant] if p]

@@ -144,3 +144,7 @@ VERMOUT=VERMOUTH
 # ── Dishwashing liquid ───────────────────────────────────────────────────────
 LAVAVAJ=LAVAVAJILLA
 LAVAVAJILLAS=LAVAVAJILLA
+
+# ── Candy / gummies ──────────────────────────────────────────────────────────
+PASTILL=GOMITAS
+PASTILLITAS=GOMITAS

@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 # Bump this version when extraction logic changes.
 # Products with features_version < FEATURES_VERSION will be re-extracted.
-FEATURES_VERSION = 4
+FEATURES_VERSION = 6
 
 
 # ============================================================================
@@ -102,14 +102,20 @@ def _canonical_name(
     size: str | None,
 ) -> str | None:
     """
-    Build a clean, human-readable product label from extracted features.
-    Example: "Harina Blancaflor Leudante 1 kg"
-    Parts are title-cased; None parts are omitted.
+    Build a normalized, human-readable product label from extracted features.
+    Format: "Title Case Type  UPPERCASE BRAND  lowercase variant  size"
+    All parts are accent-stripped for consistency across suppliers.
+    Example: "Harina BLANCAFLOR leudante 1 g"
     """
     parts = []
-    for part in (product_type, brand, variant, size):
-        if part:
-            parts.append(part.strip())
+    if product_type:
+        parts.append(_ascii_fold(product_type.strip()).title())
+    if brand:
+        parts.append(_ascii_fold(brand.strip()).upper())
+    if variant:
+        parts.append(_ascii_fold(variant.strip()).lower())
+    if size:
+        parts.append(size.strip())
     if not parts:
         return None
     return " ".join(parts)
@@ -135,8 +141,10 @@ def _canonical_key(
         ?         — unknown (m, W, cm, etc.)
     """
     brand_part = _ascii_fold(brand).upper() if brand else "?"
-    type_part = _ascii_fold(product_type).upper() if product_type else "?"
-    variant_part = _ascii_fold(variant).upper() if variant else "?"
+    type_part  = _ascii_fold(product_type).upper() if product_type else "?"
+    # Sort variant words so "Masticables Frutales" == "Frutales Masticables".
+    # Already accent-folded + uppercased → also handles accent and case differences.
+    variant_part = " ".join(sorted(_ascii_fold(variant).upper().split())) if variant else "?"
 
     if weight_g is not None:
         meas_part = f"W{int(round(weight_g))}"

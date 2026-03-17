@@ -20,6 +20,7 @@ Acondic.Bebé=Acondicionador Bebé
 P.Hig.=Papel Higiénico
 
 # ── Hair colour ──
+Coloración=Tintura
 Cr.Oxidante=Crema Oxidante
 
 # ── Confectionery ──
@@ -63,3 +64,4 @@ Cuad.Espiral.=Cuaderno Espiral
 
 # ── Confectionery ──
 Bomb.=Bombones
+Pastillitas=Gomitas
