@@ -13,7 +13,7 @@ try:
         has_database_config,
         test_database_connection,
     )
-    from .filters import AdvancedFilterPanel
+    from .filters import AdvancedFilterPanel, NO_STOCK_VALUES, normalize_text
     from .sidebar import render_sidebar
     from .ui import (
         CHART_COLORS,
@@ -35,7 +35,7 @@ except ImportError:
         has_database_config,
         test_database_connection,
     )
-    from filters import AdvancedFilterPanel
+    from filters import AdvancedFilterPanel, NO_STOCK_VALUES, normalize_text
     from sidebar import render_sidebar
     from ui import (
         CHART_COLORS,
@@ -264,7 +264,8 @@ def render_comparison_page() -> None:
             category_dept,
             category_sub,
             supplier,
-            price_unit
+            price_unit,
+            stock
         FROM products
         WHERE canonical_key IS NOT NULL
           AND canonical_key != '?|?|?|?';
@@ -283,6 +284,9 @@ def render_comparison_page() -> None:
         return
 
     df["price_unit"] = pd.to_numeric(df["price_unit"], errors="coerce")
+    # Treat out-of-stock products as having no price (will show N/A)
+    out_of_stock = df["stock"].map(normalize_text).isin(NO_STOCK_VALUES)
+    df.loc[out_of_stock, "price_unit"] = float("nan")
     if df["supplier"].nunique() < 2:
         st.info(t("comparison_need_more"))
         return
