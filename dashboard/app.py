@@ -286,22 +286,36 @@ def render_comparison_page() -> None:
         t("comparison_scope_desc"),
     )
 
-    filter_col, search_col = st.columns([0.34, 0.66])
-    with filter_col:
+    # Row 1: dept / brand / product_type dropdowns
+    col_dept, col_brand, col_type = st.columns(3)
+    with col_dept:
         department_options = [t("comparison_dept_all")] + sorted(df["category_dept"].dropna().unique().tolist())
         selected_department = st.selectbox(
             t("comparison_dept_label"),
             department_options,
             key="comparison_department",
         )
-    with search_col:
-        comparison_search = st.text_input(
-            t("comparison_search_label"),
-            placeholder=t("comparison_search_ph"),
-            key="comparison_search",
-        )
 
-    filtered = df if selected_department == t("comparison_dept_all") else df[df["category_dept"] == selected_department]
+    dept_df = df if selected_department == t("comparison_dept_all") else df[df["category_dept"] == selected_department]
+
+    with col_brand:
+        brand_options = ["Todas"] + sorted(dept_df["brand"].dropna().unique().tolist())
+        selected_brand = st.selectbox("Marca", brand_options, key="comparison_brand")
+
+    brand_df = dept_df if selected_brand == "Todas" else dept_df[dept_df["brand"] == selected_brand]
+
+    with col_type:
+        type_options = ["Todos"] + sorted(brand_df["product_type"].dropna().unique().tolist())
+        selected_product_type = st.selectbox("Producto", type_options, key="comparison_product_type")
+
+    # Row 2: description text / size text
+    col_desc, col_size = st.columns([0.7, 0.3])
+    with col_desc:
+        description_search = st.text_input("Descripción", placeholder="ej. Harina Blancaflor Leudante", key="comparison_description")
+    with col_size:
+        size_search = st.text_input("Tamaño", placeholder="ej. 1 kg, 500 ml", key="comparison_size")
+
+    filtered = brand_df if selected_product_type == "Todos" else brand_df[brand_df["product_type"] == selected_product_type]
 
     pivot = filtered.pivot_table(
         index=[
@@ -323,16 +337,10 @@ def render_comparison_page() -> None:
     supplier_columns = [column for column in pivot.columns if column not in fixed_columns]
     pivot = pivot[pivot[supplier_columns].notna().sum(axis=1) >= 2]
 
-    if comparison_search:
-        search_mask = (
-            pivot["canonical_name"].astype(str).str.contains(comparison_search, case=False, na=False)
-            | pivot["brand"].astype(str).str.contains(comparison_search, case=False, na=False)
-            | pivot["product_type"].astype(str).str.contains(comparison_search, case=False, na=False)
-            | pivot["size"].astype(str).str.contains(comparison_search, case=False, na=False)
-            | pivot["category_sub"].astype(str).str.contains(comparison_search, case=False, na=False)
-            | pivot["category_dept"].astype(str).str.contains(comparison_search, case=False, na=False)
-        )
-        pivot = pivot[search_mask]
+    if description_search:
+        pivot = pivot[pivot["canonical_name"].astype(str).str.contains(description_search, case=False, na=False)]
+    if size_search:
+        pivot = pivot[pivot["size"].astype(str).str.contains(size_search, case=False, na=False)]
 
     if pivot.empty:
         render_empty_state(t("comparison_no_dept"))
