@@ -340,6 +340,7 @@ def render_comparison_page() -> None:
         columns="supplier",
         values="price_unit",
         aggfunc="min",
+        dropna=False,
     ).reset_index()
     pivot.columns.name = None
     pivot = pivot.merge(display_df, on="canonical_key", how="left")
