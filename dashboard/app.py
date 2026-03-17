@@ -394,7 +394,7 @@ def render_comparison_page() -> None:
             has_product = [False] * len(display_frame)
         price_col = display_frame[sup]
         display_frame[sup] = [
-            f"${v:,.2f}" if pd.notna(v) else ("" if p else "N/A")
+            f"${v:,.2f}" if pd.notna(v) else ("N/A" if p else "")
             for v, p in zip(price_col, has_product)
         ]
 
