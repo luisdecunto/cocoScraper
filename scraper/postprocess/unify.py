@@ -42,8 +42,10 @@ _SUPPORTED_SUPPLIERS = tuple(s["id"] for s in SUPPLIERS)
 # ---------------------------------------------------------------------------
 
 def get_low_confidence(canonical_key: str) -> bool:
-    """Return True if key ends with |? (unknown size)."""
-    return canonical_key.endswith("|?")
+    """Return True if measurement part of key is unknown (ends with |?)."""
+    parts = canonical_key.split("|")
+    meas = parts[-1] if parts else "?"
+    return meas == "?"
 
 
 # ---------------------------------------------------------------------------
@@ -183,6 +185,8 @@ def print_comparison(matches: dict[str, list[dict]], max_rows: int = 0) -> None:
         elif meas_part.startswith("V"):
             ml = int(meas_part[1:])
             meas = f"{ml}ml" if ml < 1000 else f"{ml/1000:.2f}L"
+        elif meas_part.startswith("U"):
+            meas = f"{meas_part[1:]} uni"
         else:
             meas = "?"
 

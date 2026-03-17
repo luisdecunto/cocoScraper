@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 # Bump this version when extraction logic changes.
 # Products with features_version < FEATURES_VERSION will be re-extracted.
-FEATURES_VERSION = 2
+FEATURES_VERSION = 3
 
 
 # ============================================================================
@@ -120,13 +120,18 @@ def _canonical_key(
     variant: str | None,
     weight_g: float | None,
     volume_ml: float | None,
+    unit_count: float | None = None,
 ) -> str:
     """
     Build canonical matching key: BRAND|TYPE|VARIANT|MEASUREMENT
 
     Variant distinguishes sub-types of the same product (e.g. Leudante vs
     Integral for the same brand/type/size of harina).
-    Measurement is W<grams>, V<ml>, or ?
+    Measurement:
+        W<grams>  — weight in grams (kg already converted to g)
+        V<ml>     — volume in ml (litres already converted to ml)
+        U<n>      — unit count (e.g. U6 = pack of 6 units)
+        ?         — unknown (m, W, cm, etc.)
     """
     brand_part = _ascii_fold(brand).upper() if brand else "?"
     type_part = _ascii_fold(product_type).upper() if product_type else "?"
@@ -136,6 +141,8 @@ def _canonical_key(
         meas_part = f"W{int(round(weight_g))}"
     elif volume_ml is not None:
         meas_part = f"V{int(round(volume_ml))}"
+    elif unit_count is not None:
+        meas_part = f"U{int(round(unit_count))}"
     else:
         meas_part = "?"
 
@@ -207,6 +214,16 @@ def extract_unified(
                 size_value = float(features["volume_ml"])
                 size_unit = "ml"
 
+        # Normalize size_unit to canonical base units (g, ml, uni) for key building.
+        # Convert kg→g and l→ml so that "1 kg" and "1000 g" produce the same key.
+        if size_value is not None and size_unit is not None:
+            if size_unit == "kg":
+                size_value = size_value * 1000
+                size_unit = "g"
+            elif size_unit in ("l", "lt", "lts", "litro", "litros"):
+                size_value = size_value * 1000
+                size_unit = "ml"
+
         # Build human-readable merged size string
         size: str | None = None
         if size_value is not None and size_unit is not None:
@@ -218,14 +235,17 @@ def extract_unified(
             else:
                 size = f"{size_value:g} {size_unit}"
 
-        # Bridge: convert size_unit to weight_g/volume_ml for canonical_key
+        # Bridge: convert size_unit to weight_g/volume_ml/unit_count for canonical_key
         weight_g = None
         volume_ml = None
+        unit_count = None
         if size_value is not None:
             if size_unit == "g":
                 weight_g = size_value
             elif size_unit == "ml":
                 volume_ml = size_value
+            elif size_unit in ("uni", "u", "units"):
+                unit_count = size_value
 
         # Get canonical categories
         product_type = features.get("product_type")
@@ -235,7 +255,7 @@ def extract_unified(
         brand = normalize_brand(features.get("brand"))
 
         variant = features.get("variant")
-        canonical_key = _canonical_key(brand, product_type, variant, weight_g, volume_ml)
+        canonical_key = _canonical_key(brand, product_type, variant, weight_g, volume_ml, unit_count)
         canonical_name = _canonical_name(product_type, brand, variant, size)
 
         return {
