@@ -10,6 +10,16 @@ except ImportError:
     from i18n import LANG_DISPLAY, get_lang, t
 
 
+def _sync_lang_from_url() -> None:
+    """On a fresh page load (session state has no lang yet), read it from the URL."""
+    if "lang" not in st.session_state:
+        lang_from_url = st.query_params.get("lang")
+        if isinstance(lang_from_url, list):
+            lang_from_url = lang_from_url[0] if lang_from_url else None
+        if isinstance(lang_from_url, str) and lang_from_url in LANG_DISPLAY:
+            st.session_state.lang = lang_from_url
+
+
 PRIMARY_SECTIONS = ["Dashboard", "Comparison", "History"]
 SECONDARY_SECTIONS = ["Logs"]
 NAV_ICONS = {
@@ -50,13 +60,14 @@ def _resolve_selected_page(options: list[str]) -> str:
 
 
 def _build_nav_html(items: list[str], selected_page: str) -> str:
+    lang = get_lang()
     links: list[str] = []
     for item in items:
         active_class = " active" if item == selected_page else ""
         icon = NAV_ICONS.get(item, "&#8226;")
         label = t(_NAV_LABEL_KEY.get(item, item))
         links.append(
-            f'<a class="nav-item{active_class}" href="?section={_slug(item)}" target="_self">'
+            f'<a class="nav-item{active_class}" href="?section={_slug(item)}&lang={lang}" target="_self">'
             f'<span class="sidebar-nav-icon" aria-hidden="true">{icon}</span>'
             f"<span>{escape(label)}</span>"
             "</a>"
@@ -151,6 +162,7 @@ def render_sidebar(
     workspace_snapshot: dict[str, str] | None = None,
     snapshot_error: str | None = None,
 ) -> str:
+    _sync_lang_from_url()
     options = list(page_meta.keys())
     selected_page = _resolve_selected_page(options)
 
@@ -229,6 +241,7 @@ def render_sidebar(
         selected_lang = lang_options[lang_labels.index(selected_label)]
         if selected_lang != current_lang:
             st.session_state.lang = selected_lang
+            st.query_params["lang"] = selected_lang
             st.rerun()
 
         page_note = page_meta.get(selected_page, {}).get("sidebar")

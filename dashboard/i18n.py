@@ -383,7 +383,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
 
 
 def get_lang() -> str:
-    return st.session_state.get("lang", "en")
+    return st.session_state.get("lang", "es")
 
 
 def t(key: str, **kwargs: object) -> str:
