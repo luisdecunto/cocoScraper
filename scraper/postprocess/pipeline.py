@@ -94,6 +94,26 @@ def _get_canonical_category(
     return category_map.get(key, ("Otros", "Otros"))
 
 
+def _canonical_name(
+    product_type: str | None,
+    brand: str | None,
+    variant: str | None,
+    size: str | None,
+) -> str | None:
+    """
+    Build a clean, human-readable product label from extracted features.
+    Example: "Harina Blancaflor Leudante 1 kg"
+    Parts are title-cased; None parts are omitted.
+    """
+    parts = []
+    for part in (product_type, brand, variant, size):
+        if part:
+            parts.append(part.strip())
+    if not parts:
+        return None
+    return " ".join(parts)
+
+
 def _canonical_key(
     brand: str | None,
     product_type: str | None,
@@ -214,18 +234,14 @@ def extract_unified(
         # Build cross-supplier matching key
         brand = normalize_brand(features.get("brand"))
 
-        canonical_key = _canonical_key(
-            brand,
-            product_type,
-            features.get("variant"),
-            weight_g,
-            volume_ml,
-        )
+        variant = features.get("variant")
+        canonical_key = _canonical_key(brand, product_type, variant, weight_g, volume_ml)
+        canonical_name = _canonical_name(product_type, brand, variant, size)
 
         return {
             "brand": brand,
             "product_type": product_type,
-            "variant": features.get("variant"),
+            "variant": variant,
             "size": size,
             "size_value": size_value,
             "size_unit": size_unit,
@@ -234,6 +250,7 @@ def extract_unified(
             "category_dept": category_dept,
             "category_sub": category_sub,
             "canonical_key": canonical_key,
+            "canonical_name": canonical_name,
         }
 
     except Exception as e:
@@ -254,7 +271,8 @@ def _empty_features() -> dict:
         "volume_ml": None,
         "category_dept": "Otros",
         "category_sub": "Otros",
-        "canonical_key": "?|?|?",
+        "canonical_key": "?|?|?|?",
+        "canonical_name": None,
     }
 
 
@@ -333,6 +351,7 @@ async def run_pipeline(
                 category_dept=features.get("category_dept"),
                 category_sub=features.get("category_sub"),
                 canonical_key=features.get("canonical_key"),
+                canonical_name=features.get("canonical_name"),
                 features_version=FEATURES_VERSION,
             )
             updated += 1
@@ -404,6 +423,28 @@ async def list_unmapped_types(pool: asyncpg.Pool) -> None:
 # CLI
 # ============================================================================
 
+def _print_dry_run_table(rows_features: list[tuple[str, str, str, dict]]) -> None:
+    """Print a formatted debug table for dry-run mode."""
+    W = {"raw": 45, "type": 18, "brand": 18, "variant": 22, "size": 10, "name": 40}
+    header = (
+        f"{'SKU':<14} {'RAW NAME':<{W['raw']}} "
+        f"{'TYPE':<{W['type']}} {'BRAND':<{W['brand']}} "
+        f"{'VARIANT':<{W['variant']}} {'SIZE':<{W['size']}} "
+        f"{'CANONICAL NAME':<{W['name']}}"
+    )
+    print(header)
+    print("-" * len(header))
+    for supplier, sku, raw_name, f in rows_features:
+        print(
+            f"{sku:<14} {(raw_name or '')[:W['raw']]:<{W['raw']}} "
+            f"{(f.get('product_type') or '')[:W['type']]:<{W['type']}} "
+            f"{(f.get('brand') or '')[:W['brand']]:<{W['brand']}} "
+            f"{(f.get('variant') or '')[:W['variant']]:<{W['variant']}} "
+            f"{(f.get('size') or '')[:W['size']]:<{W['size']}} "
+            f"{(f.get('canonical_name') or '')[:W['name']]:<{W['name']}}"
+        )
+
+
 async def main():
     """CLI entry point."""
     import argparse
@@ -412,29 +453,14 @@ async def main():
     load_dotenv()
 
     parser = argparse.ArgumentParser(description="Post-scrape feature extraction pipeline")
-    parser.add_argument(
-        "--supplier",
-        type=str,
-        default=None,
-        help="Process specific supplier only",
-    )
-    parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Re-extract all products, not just unprocessed",
-    )
-    parser.add_argument(
-        "--list-unmapped",
-        action="store_true",
-        help="Show unmapped product_types for review",
-    )
+    parser.add_argument("--supplier", type=str, default=None, help="Process specific supplier only")
+    parser.add_argument("--force", action="store_true", help="Re-extract all products, not just unprocessed")
+    parser.add_argument("--list-unmapped", action="store_true", help="Show unmapped product_types for review")
+    parser.add_argument("--dry-run", action="store_true", help="Print extracted features without writing to DB")
+    parser.add_argument("--sample", type=int, default=0, metavar="N", help="With --dry-run: limit to N products (default: all)")
     args = parser.parse_args()
 
-    # Setup logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(name)s — %(message)s",
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s — %(message)s")
 
     from scraper.db import get_pool
 
@@ -443,10 +469,24 @@ async def main():
     try:
         if args.list_unmapped:
             await list_unmapped_types(pool)
+        elif args.dry_run:
+            # Dry-run: extract features and print table, no DB writes
+            category_map = _load_category_map("unified_categories.txt")
+            suppliers_to_check = [args.supplier] if args.supplier else [s["id"] for s in __import__("scraper.config", fromlist=["SUPPLIERS"]).SUPPLIERS]
+            results: list[tuple] = []
+            for supplier_id in suppliers_to_check:
+                async with pool.acquire() as conn:
+                    query = "SELECT sku, name, category FROM products WHERE supplier = $1 ORDER BY RANDOM()"
+                    if args.sample:
+                        query += f" LIMIT {args.sample}"
+                    rows = await conn.fetch(query, supplier_id)
+                for row in rows:
+                    f = extract_unified(supplier_id, row["name"] or "", row["category"] or "", category_map)
+                    results.append((supplier_id, row["sku"], row["name"], f))
+            _print_dry_run_table(results)
+            print(f"\n{len(results)} products shown (dry-run — nothing written to DB)")
         elif args.supplier:
             from scraper.config import get_supplier_config, get_short_code
-
-            config = get_supplier_config(args.supplier)
             short_code = get_short_code(args.supplier)
             await run_pipeline(pool, args.supplier, short_code, force=args.force)
         else:

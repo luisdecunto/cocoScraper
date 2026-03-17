@@ -52,6 +52,7 @@ async def init_schema(pool: asyncpg.Pool) -> None:
             ALTER TABLE products ADD COLUMN IF NOT EXISTS category_dept    TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS category_sub     TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS canonical_key    TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS canonical_name   TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS features_version INT DEFAULT 0;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS last_scraped_at  TIMESTAMPTZ;
 
@@ -300,6 +301,7 @@ async def upsert_product_features(
     category_dept: str | None,
     category_sub: str | None,
     canonical_key: str | None,
+    canonical_name: str | None,
     features_version: int,
 ) -> None:
     """
@@ -320,12 +322,13 @@ async def upsert_product_features(
                 category_dept    = $10,
                 category_sub     = $11,
                 canonical_key    = $12,
-                features_version = $13
+                canonical_name   = $13,
+                features_version = $14
             WHERE sku = $1 AND supplier = $2
             """,
             sku, supplier, product_id, brand, product_type, variant, size,
             size_value, size_unit, category_dept, category_sub, canonical_key,
-            features_version,
+            canonical_name, features_version,
         )
 
 
