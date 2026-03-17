@@ -251,8 +251,7 @@ def render_comparison_page() -> None:
             price_unit
         FROM products
         WHERE canonical_key IS NOT NULL
-          AND canonical_key != '?|?|?|?'
-          AND price_unit IS NOT NULL;
+          AND canonical_key != '?|?|?|?';
         """
     )
 
@@ -278,8 +277,7 @@ def render_comparison_page() -> None:
         t("comparison_scope_desc"),
     )
 
-    # Row 1: brand / product_type dropdowns
-    col_brand, col_type = st.columns(2)
+    col_brand, col_type, col_desc, col_size = st.columns(4)
     with col_brand:
         brand_options = ["Todas"] + sorted(df["brand"].dropna().unique().tolist())
         selected_brand = st.selectbox("Marca", brand_options, key="comparison_brand")
@@ -290,12 +288,10 @@ def render_comparison_page() -> None:
         type_options = ["Todos"] + sorted(brand_df["product_type"].dropna().unique().tolist())
         selected_product_type = st.selectbox("Producto", type_options, key="comparison_product_type")
 
-    # Row 2: description text / size text
-    col_desc, col_size = st.columns([0.7, 0.3])
     with col_desc:
-        description_search = st.text_input("Descripción", placeholder="ej. Harina Blancaflor Leudante", key="comparison_description")
+        description_search = st.text_input("Descripción", placeholder="ej. Blancaflor Leudante", key="comparison_description")
     with col_size:
-        size_search = st.text_input("Tamaño", placeholder="ej. 1 kg, 500 ml", key="comparison_size")
+        size_search = st.text_input("Tamaño", placeholder="ej. 1 kg", key="comparison_size")
 
     filtered = brand_df if selected_product_type == "Todos" else brand_df[brand_df["product_type"] == selected_product_type]
 
