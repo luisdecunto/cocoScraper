@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 # Bump this version when extraction logic changes.
 # Products with features_version < FEATURES_VERSION will be re-extracted.
-FEATURES_VERSION = 3
+FEATURES_VERSION = 4
 
 
 # ============================================================================
@@ -189,15 +189,15 @@ def extract_unified(
         else:
             features = extract_features(name)
 
-        # Normalize size across all 5 supplier formats:
+        # Resolve size_value + size_unit from the 5 different supplier formats:
         #   luvik/nini:          size_value (float) + size_unit (str)
         #   maxiconsumo/vital:   weight={'value': X, 'unit': 'g'} / volume={'value': X, 'unit': 'ml'}
+        #                        OR units_in_name (int) + units_label (str)
         #   santamaria:          weight_g (float) / volume_ml (float)
         size_value = features.get("size_value")
         size_unit = features.get("size_unit")
 
         if size_value is None:
-            # Try maxiconsumo/vital nested dict format
             weight_dict = features.get("weight")
             volume_dict = features.get("volume")
             if isinstance(weight_dict, dict) and weight_dict.get("value") is not None:
@@ -206,45 +206,48 @@ def extract_unified(
             elif isinstance(volume_dict, dict) and volume_dict.get("value") is not None:
                 size_value = float(volume_dict["value"])
                 size_unit = volume_dict.get("unit", "ml")
-            # Try santamaria flat format
             elif features.get("weight_g") is not None:
                 size_value = float(features["weight_g"])
                 size_unit = "g"
             elif features.get("volume_ml") is not None:
                 size_value = float(features["volume_ml"])
                 size_unit = "ml"
+            # Fallback: count-based units (sobres, saquitos, uni, piezas, paños…)
+            elif features.get("units_in_name") is not None:
+                size_value = float(features["units_in_name"])
+                size_unit = features.get("units_label") or "uni"
 
-        # Normalize size_unit to canonical base units (g, ml, uni) for key building.
-        # Convert kg→g and l→ml so that "1 kg" and "1000 g" produce the same key.
-        if size_value is not None and size_unit is not None:
-            if size_unit == "kg":
-                size_value = size_value * 1000
-                size_unit = "g"
-            elif size_unit in ("l", "lt", "lts", "litro", "litros"):
-                size_value = size_value * 1000
-                size_unit = "ml"
-
-        # Build human-readable merged size string
+        # ── Display string ────────────────────────────────────────────────────
+        # Built from the ORIGINAL unit so the user sees "500 cc", "1 lt",
+        # "10 sobres" — not the internally-normalized equivalent.
         size: str | None = None
         if size_value is not None and size_unit is not None:
-            if size_unit in ("g", "ml") and size_value >= 1000:
-                # Display as kg / L
-                display_val = size_value / 1000
-                display_unit = "kg" if size_unit == "g" else "L"
-                size = f"{display_val:g} {display_unit}"
-            else:
-                size = f"{size_value:g} {size_unit}"
+            size = f"{size_value:g} {size_unit}"
 
-        # Bridge: convert size_unit to weight_g/volume_ml/unit_count for canonical_key
+        # ── Canonical normalization (key-building only) ───────────────────────
+        # Converts to comparable base units: kg→g, l/lt→ml, cc/cm3→ml.
+        # Does NOT change the stored size_value / size_unit / size display.
+        _UNIT_COUNT_LABELS = frozenset({
+            "uni", "u", "units", "unidades",
+            "sobres", "sobre", "saquito", "saquitos", "sachets",
+            "piezas", "pieza", "paños", "paño",
+        })
         weight_g = None
         volume_ml = None
         unit_count = None
-        if size_value is not None:
-            if size_unit == "g":
+        if size_value is not None and size_unit is not None:
+            u = size_unit.lower().rstrip(".")
+            if u == "g":
                 weight_g = size_value
-            elif size_unit == "ml":
+            elif u == "kg":
+                weight_g = size_value * 1000
+            elif u == "ml":
                 volume_ml = size_value
-            elif size_unit in ("uni", "u", "units"):
+            elif u in ("l", "lt", "lts", "litro", "litros"):
+                volume_ml = size_value * 1000
+            elif u in ("cc", "cm3"):
+                volume_ml = size_value
+            elif u in _UNIT_COUNT_LABELS:
                 unit_count = size_value
 
         # Get canonical categories
