@@ -326,6 +326,11 @@ def render_comparison_page() -> None:
 
     all_suppliers = sorted(df["supplier"].dropna().unique().tolist())
 
+    # Which (canonical_key, supplier) pairs exist in the DB (regardless of price)?
+    presence = (
+        df.groupby(["canonical_key", "supplier"]).size().unstack(fill_value=0).gt(0)
+    ).reindex(columns=all_suppliers, fill_value=False)
+
     pivot = filtered.pivot_table(
         index="canonical_key",
         columns="supplier",
@@ -377,7 +382,22 @@ def render_comparison_page() -> None:
     )
 
     ordered_columns = ["canonical_name"] + supplier_columns + ["brand", "product_type", "size", "diff_pct"]
-    export_frame = pivot[[c for c in ordered_columns if c in pivot.columns]]
+    export_frame = pivot[[c for c in ordered_columns if c in pivot.columns]].copy()
+
+    # Build display frame: format prices as strings, mark absent suppliers as "N/A"
+    display_frame = export_frame.copy()
+    ck_values = pivot["canonical_key"].values
+    for sup in supplier_columns:
+        if sup in presence.columns:
+            has_product = presence.reindex(index=ck_values)[sup].values
+        else:
+            has_product = [False] * len(display_frame)
+        price_col = display_frame[sup]
+        display_frame[sup] = [
+            f"${v:,.2f}" if pd.notna(v) else ("" if p else "N/A")
+            for v, p in zip(price_col, has_product)
+        ]
+
     render_export_button(
         export_frame.to_csv(index=False).encode("utf-8"),
         file_name="comparison_matrix.csv",
@@ -391,8 +411,8 @@ def render_comparison_page() -> None:
             styles[row.index.get_loc(cheapest)] = "background-color: #e6f0ed; color: #1d5b50; font-weight: 600"
         return styles
 
-    styled_frame = export_frame.style.apply(highlight_minimum, axis=1)
-    display_table(export_frame, supplier_columns=supplier_columns, use_style=styled_frame)
+    styled_frame = display_frame.style.apply(highlight_minimum, axis=1)
+    display_table(display_frame, use_style=styled_frame)
 
 
 def render_history_page() -> None:
