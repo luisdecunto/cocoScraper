@@ -11,7 +11,21 @@ logger = logging.getLogger(__name__)
 
 
 async def get_pool() -> asyncpg.Pool:
-    """Create and return an asyncpg connection pool."""
+    """Create and return an asyncpg connection pool.
+
+    Supports two connection modes:
+    - DATABASE_URL: full connection string (Neon, Supabase, etc.)
+      asyncpg does not parse ?sslmode=require, so ssl="require" is added
+      automatically when the DSN contains that param.
+    - DB_HOST / DB_PORT / DB_NAME / DB_USER / DB_PASS: individual vars (local dev)
+    """
+    database_url = os.getenv("DATABASE_URL")
+    if database_url:
+        # Strip unsupported query params and pass ssl separately if needed
+        ssl = "require" if "sslmode=require" in database_url else None
+        dsn = database_url.split("?")[0]
+        return await asyncpg.create_pool(dsn=dsn, ssl=ssl, min_size=2, max_size=10)
+
     return await asyncpg.create_pool(
         host=os.getenv("DB_HOST", "localhost"),
         port=int(os.getenv("DB_PORT", 5432)),
