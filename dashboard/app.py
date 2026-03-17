@@ -269,14 +269,6 @@ def render_comparison_page() -> None:
 
     df["price_unit"] = pd.to_numeric(df["price_unit"], errors="coerce")
     if df["supplier"].nunique() < 2:
-        render_metric_row(
-            [
-                (t("comparison_metric_matched"), format_count(df["canonical_key"].nunique()), "Comparable records with canonical keys"),
-                (t("comparison_metric_suppliers"), format_count(df["supplier"].nunique()), "Distinct suppliers contributing matched products"),
-                ("Median price", format_currency(df["price_unit"].median()), "Across comparable rows"),
-                ("Largest dept", df["category_dept"].mode().iat[0] if not df["category_dept"].mode().empty else "n/a", "Department with the most matches"),
-            ]
-        )
         st.info(t("comparison_need_more"))
         return
 
@@ -286,23 +278,13 @@ def render_comparison_page() -> None:
         t("comparison_scope_desc"),
     )
 
-    # Row 1: dept / brand / product_type dropdowns
-    col_dept, col_brand, col_type = st.columns(3)
-    with col_dept:
-        department_options = [t("comparison_dept_all")] + sorted(df["category_dept"].dropna().unique().tolist())
-        selected_department = st.selectbox(
-            t("comparison_dept_label"),
-            department_options,
-            key="comparison_department",
-        )
-
-    dept_df = df if selected_department == t("comparison_dept_all") else df[df["category_dept"] == selected_department]
-
+    # Row 1: brand / product_type dropdowns
+    col_brand, col_type = st.columns(2)
     with col_brand:
-        brand_options = ["Todas"] + sorted(dept_df["brand"].dropna().unique().tolist())
+        brand_options = ["Todas"] + sorted(df["brand"].dropna().unique().tolist())
         selected_brand = st.selectbox("Marca", brand_options, key="comparison_brand")
 
-    brand_df = dept_df if selected_brand == "Todas" else dept_df[dept_df["brand"] == selected_brand]
+    brand_df = df if selected_brand == "Todas" else df[df["brand"] == selected_brand]
 
     with col_type:
         type_options = ["Todos"] + sorted(brand_df["product_type"].dropna().unique().tolist())
@@ -335,7 +317,7 @@ def render_comparison_page() -> None:
 
     fixed_columns = ["canonical_key", "canonical_name", "brand", "product_type", "size", "category_dept", "category_sub"]
     supplier_columns = [column for column in pivot.columns if column not in fixed_columns]
-    pivot = pivot[pivot[supplier_columns].notna().sum(axis=1) >= 2]
+    # keep all products, including those from a single supplier
 
     if description_search:
         pivot = pivot[pivot["canonical_name"].astype(str).str.contains(description_search, case=False, na=False)]
