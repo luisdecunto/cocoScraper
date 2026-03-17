@@ -296,7 +296,7 @@ def render_comparison_page() -> None:
     # Only show brands/types that have at least one product with a price
     df_priced = df[df["price_unit"].notna()]
 
-    col_brand, col_type, col_desc, col_size = st.columns(4)
+    col_brand, col_type, col_desc, col_size, col_toggle = st.columns([1.2, 1.2, 1.2, 1.2, 0.8])
     with col_brand:
         brand_options = ["Todas"] + _dedup_sorted(df_priced["brand"].dropna().unique().tolist())
         selected_brand = st.selectbox("Marca", brand_options, key="comparison_brand")
@@ -312,6 +312,9 @@ def render_comparison_page() -> None:
         description_search = st.text_input("Descripción", placeholder="ej. Blancaflor Leudante", key="comparison_description")
     with col_size:
         size_search = st.text_input("Tamaño", placeholder="ej. 1 kg", key="comparison_size")
+    with col_toggle:
+        st.caption(" ")
+        hide_no_price = st.toggle("Ocultar sin precio", value=False, key="comparison_hide_no_price")
 
     filtered = brand_df if selected_product_type == "Todos" else brand_df[brand_df["product_type"].apply(lambda x: _fold(str(x))) == _fold(selected_product_type)]
 
@@ -338,6 +341,8 @@ def render_comparison_page() -> None:
         pivot = pivot[pivot["canonical_name"].astype(str).str.contains(description_search, case=False, na=False)]
     if size_search:
         pivot = pivot[pivot["size"].astype(str).str.contains(size_search, case=False, na=False)]
+    if hide_no_price:
+        pivot = pivot[pivot[supplier_columns].notna().any(axis=1)]
 
     if pivot.empty:
         render_empty_state(t("comparison_no_dept"))
