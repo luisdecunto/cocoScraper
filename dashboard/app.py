@@ -360,7 +360,7 @@ def render_comparison_page() -> None:
         t("comparison_matrix_desc"),
     )
 
-    export_frame = pivot.drop(columns=["max_price", "min_price", "cheapest", "canonical_key"])
+    export_frame = pivot.drop(columns=["max_price", "min_price", "cheapest", "canonical_key", "category_dept", "category_sub"])
     render_export_button(
         export_frame.to_csv(index=False).encode("utf-8"),
         file_name="comparison_matrix.csv",
