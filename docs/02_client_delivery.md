@@ -175,6 +175,84 @@ CREATE TABLE user_invites (
 
 ---
 
+## Phase 0 (Pre-MVP): Automated Scraping via GitHub Actions
+
+**Status: planned — blocked on scraper optimization first.**
+
+### Architecture
+
+```
+GitHub Actions (cron)          Neon PostgreSQL           Streamlit Community Cloud
+┌──────────────────┐           ┌──────────────┐          ┌─────────────────────────┐
+│  scrape.yml      │──writes──▶│  prices DB   │◀─reads───│  dashboard/app.py       │
+│  (daily cron)    │           │  (cloud)     │          │  (public URL for client) │
+└──────────────────┘           └──────────────┘          └─────────────────────────┘
+```
+
+Client only ever sees the Streamlit URL — the scraper is invisible.
+
+### Why GitHub Actions
+
+- Free for public repos (2,000 min/month on free tier)
+- GitHub Secrets for credentials — no secrets in code
+- `workflow_dispatch` for manual re-runs
+- Logs visible in Actions tab — easy debugging
+- No server to maintain for the scraper
+
+### Implementation plan (when scraper optimization is complete)
+
+1. Create `.github/workflows/scrape.yml`:
+   ```yaml
+   on:
+     schedule:
+       - cron: "0 6 * * *"   # 6 AM UTC daily
+     workflow_dispatch:        # manual trigger
+   jobs:
+     scrape:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v4
+         - uses: actions/setup-python@v5
+           with: { python-version: "3.11" }
+         - run: pip install -r requirements.txt
+         - run: python -m scraper.main scrape
+           env:
+             DATABASE_URL: ${{ secrets.DATABASE_URL }}
+             MAXICONSUMO_USER: ${{ secrets.MAXICONSUMO_USER }}
+             MAXICONSUMO_PASS: ${{ secrets.MAXICONSUMO_PASS }}
+             VITAL_USER: ${{ secrets.VITAL_USER }}
+             VITAL_PASS: ${{ secrets.VITAL_PASS }}
+             NINI_USER: ${{ secrets.NINI_USER }}
+             NINI_PASS: ${{ secrets.NINI_PASS }}
+   ```
+
+2. Add all secrets to GitHub repo Settings → Secrets → Actions
+
+3. Add `DATABASE_URL` support to `scraper/db.py` (currently uses individual `DB_*` vars)
+
+### Secrets required (GitHub repo Settings → Secrets → Actions)
+
+| Secret | Value |
+|--------|-------|
+| `DATABASE_URL` | Neon connection string (`postgresql://...?sslmode=require`) |
+| `MAXICONSUMO_USER` | Maxiconsumo account email |
+| `MAXICONSUMO_PASS` | Maxiconsumo account password |
+| `VITAL_USER` | Vital account email |
+| `VITAL_PASS` | Vital account password |
+| `NINI_USER` | Nini account email |
+| `NINI_PASS` | Nini account password |
+
+Luvik and Santa Maria need no credentials (public stores).
+
+### Blockers before implementing
+
+- [ ] Scraper optimization pass — all 5 suppliers must run cleanly and reliably
+- [ ] Validate each supplier produces 0 errors on a clean run
+- [ ] `DATABASE_URL` support in `scraper/db.py` (replaces individual `DB_*` vars)
+- [ ] Error notifications (email/Slack alert if a run fails or produces 0 snapshots)
+
+---
+
 ## Phase 4: Hosting & Deployment
 
 ### Option A: Self-Hosted (Recommended for MVP)

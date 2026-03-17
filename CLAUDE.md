@@ -255,10 +255,17 @@ streamlit run dashboard/app.py
 - [x] Export: CSV + XLSX comparison reports (scraper/export.py)
 - [x] Dashboard redesign: DanSpil-inspired UI, advanced filtering, professional sidebar navigation
 - [x] Strategic plans: Update strategy, client delivery, unification strategy (3 docs in docs/)
+- [x] i18n: English / Español / Conurbano language switcher (dashboard/i18n.py, sidebar selectbox)
+- [x] Mobile sidebar: slide-in nav, persistent hamburger button injected into document.body (CSS transform workaround)
+- [x] Streamlit Community Cloud deployment (dashboard/requirements.txt, dashboard/db/connection.py, Neon PostgreSQL)
+- [x] Data migration: 28k products + 23k snapshots + 20k price_history rows migrated to Neon
 
 ### In Progress
 
 ### Planned
+- [ ] Phase 0: Automated scraping via GitHub Actions (blocked on scraper optimization — see docs/02_client_delivery.md)
+- [ ] Scraper optimization: speed, reliability, error recovery across all 5 suppliers
+- [ ] DATABASE_URL support in scraper/db.py (needed for GitHub Actions)
 - [ ] Phase 1: Postprocessing optimization (Santa Maria brand extraction, size standardization)
 - [ ] Phase 2: Unified taxonomy (master brand/type/category lists, 90%+ canonical matching)
 - [ ] Phase 3: API foundation (FastAPI + JWT auth)
