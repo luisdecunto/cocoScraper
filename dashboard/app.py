@@ -324,6 +324,8 @@ def render_comparison_page() -> None:
     display_cols = ["canonical_key", "canonical_name", "brand", "product_type", "size", "category_dept", "category_sub"]
     display_df = filtered.groupby("canonical_key", sort=False)[display_cols].first().reset_index(drop=True)
 
+    all_suppliers = sorted(df["supplier"].dropna().unique().tolist())
+
     pivot = filtered.pivot_table(
         index="canonical_key",
         columns="supplier",
@@ -333,9 +335,13 @@ def render_comparison_page() -> None:
     pivot.columns.name = None
     pivot = pivot.merge(display_df, on="canonical_key", how="left")
 
+    # Ensure every supplier always has a column, even if all values are NaN
+    for sup in all_suppliers:
+        if sup not in pivot.columns:
+            pivot[sup] = float("nan")
+
     fixed_columns = ["canonical_key", "canonical_name", "brand", "product_type", "size", "category_dept", "category_sub"]
-    supplier_columns = [column for column in pivot.columns if column not in fixed_columns]
-    # keep all products, including those from a single supplier
+    supplier_columns = all_suppliers
 
     if description_search:
         pivot = pivot[pivot["canonical_name"].astype(str).str.contains(description_search, case=False, na=False)]
