@@ -21,6 +21,7 @@ Usage:
 import asyncio
 import logging
 import os
+import time
 from pathlib import Path
 
 import asyncpg
@@ -324,7 +325,7 @@ async def run_pipeline(
     category_map = _load_category_map("unified_categories.txt")
 
     # Fetch rows to process
-    from scraper.db import fetch_products_for_postprocess, upsert_product_features
+    from scraper.db import fetch_products_for_postprocess
 
     if force:
         # Fetch all products
@@ -344,59 +345,59 @@ async def run_pipeline(
         logger.info(f"{supplier}: no rows to process")
         return 0
 
-    logger.info(f"{supplier}: processing {len(rows)} products")
+    total = len(rows)
+    logger.info(f"{supplier}: extracting features for {total} products...")
 
-    updated = 0
+    # Phase 1: extract all features (CPU only, no DB I/O)
+    t_start = time.monotonic()
+    records = []
     for row in rows:
         sku = row["sku"]
-        name = row["name"] or ""
-        category = row["category"] or ""
+        features = extract_unified(supplier, row["name"] or "", row["category"] or "", category_map)
+        records.append((
+            sku,
+            supplier,
+            f"{short_code}_{sku}",
+            features.get("brand"),
+            features.get("product_type"),
+            features.get("variant"),
+            features.get("size"),
+            features.get("size_value"),
+            features.get("size_unit"),
+            features.get("category_dept"),
+            features.get("category_sub"),
+            features.get("canonical_key"),
+            features.get("canonical_name"),
+            FEATURES_VERSION,
+        ))
 
-        # Extract features
-        features = extract_unified(supplier, name, category, category_map)
+    extract_secs = time.monotonic() - t_start
+    logger.info(f"{supplier}: extraction done in {extract_secs:.1f}s — writing {total} rows to DB...")
 
-        # Generate product_id
-        product_id = f"{short_code}_{sku}"
+    # Phase 2: batch write all records in one round-trip
+    from scraper.db import batch_upsert_product_features
+    t_write = time.monotonic()
+    try:
+        await batch_upsert_product_features(pool, records)
+        updated = total
+    except Exception as e:
+        logger.error(f"{supplier}: batch write failed — {e}")
+        updated = 0
+    write_secs = time.monotonic() - t_write
 
-        # Write to DB
-        try:
-            await upsert_product_features(
-                pool,
-                sku=sku,
-                supplier=supplier,
-                product_id=product_id,
-                brand=features.get("brand"),
-                product_type=features.get("product_type"),
-                variant=features.get("variant"),
-                size=features.get("size"),
-                size_value=features.get("size_value"),
-                size_unit=features.get("size_unit"),
-                category_dept=features.get("category_dept"),
-                category_sub=features.get("category_sub"),
-                canonical_key=features.get("canonical_key"),
-                canonical_name=features.get("canonical_name"),
-                features_version=FEATURES_VERSION,
-            )
-            updated += 1
-        except Exception as e:
-            logger.error(f"Failed to update {sku} ({supplier}): {e}")
-
-    logger.info(f"{supplier}: updated {updated} products")
+    logger.info(f"{supplier}: done — {updated}/{total} updated in {write_secs:.1f}s")
     return updated
 
 
 async def run_all_suppliers(pool: asyncpg.Pool, force: bool = False) -> None:
-    """Run pipeline for all registered suppliers sequentially."""
+    """Run pipeline for all registered suppliers in parallel."""
     from scraper.config import SUPPLIERS
 
-    total_updated = 0
-    for supplier_config in SUPPLIERS:
-        supplier_id = supplier_config["id"]
-        short_code = supplier_config["short_code"]
-        updated = await run_pipeline(pool, supplier_id, short_code, force=force)
-        total_updated += updated
-
-    logger.info(f"Pipeline complete: {total_updated} total products updated")
+    results = await asyncio.gather(*[
+        run_pipeline(pool, s["id"], s["short_code"], force=force)
+        for s in SUPPLIERS
+    ])
+    logger.info(f"Pipeline complete: {sum(results)} total products updated")
 
 
 # ============================================================================

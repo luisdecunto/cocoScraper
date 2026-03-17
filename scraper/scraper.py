@@ -102,6 +102,5 @@ async def run_supplier(supplier_id: str, pool, max_products: int | None = None) 
 
 
 async def run_all(pool) -> None:
-    """Run scrape for all suppliers defined in config."""
-    for s in SUPPLIERS:
-        await run_supplier(s["id"], pool)
+    """Run scrape for all suppliers in parallel."""
+    await asyncio.gather(*[run_supplier(s["id"], pool) for s in SUPPLIERS])

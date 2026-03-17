@@ -10,6 +10,7 @@ import streamlit as st
 NO_STOCK_VALUES = {"sin stock", "disponibilidad critica"}
 DEFAULT_VISIBLE_COLUMNS = [
     "product_id",
+    "canonical_name",
     "name",
     "brand",
     "supplier",
@@ -21,6 +22,7 @@ DEFAULT_VISIBLE_COLUMNS = [
 ]
 ALL_COLUMNS = [
     "product_id",
+    "canonical_name",
     "name",
     "brand",
     "product_type",

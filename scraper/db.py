@@ -346,6 +346,39 @@ async def upsert_product_features(
         )
 
 
+async def batch_upsert_product_features(
+    pool: asyncpg.Pool,
+    records: list[tuple],
+) -> None:
+    """
+    Bulk-write normalized features using a single executemany call.
+    Each record is a tuple of 14 values matching upsert_product_features params:
+    (sku, supplier, product_id, brand, product_type, variant, size,
+     size_value, size_unit, category_dept, category_sub,
+     canonical_key, canonical_name, features_version)
+    """
+    async with pool.acquire() as conn:
+        await conn.executemany(
+            """
+            UPDATE products
+            SET product_id       = $3,
+                brand            = $4,
+                product_type     = $5,
+                variant          = $6,
+                size             = $7,
+                size_value       = $8,
+                size_unit        = $9,
+                category_dept    = $10,
+                category_sub     = $11,
+                canonical_key    = $12,
+                canonical_name   = $13,
+                features_version = $14
+            WHERE sku = $1 AND supplier = $2
+            """,
+            records,
+        )
+
+
 async def fetch_products_for_postprocess(
     pool: asyncpg.Pool,
     supplier: str,

@@ -186,6 +186,7 @@ def render_browse_page() -> None:
         """
         SELECT
             product_id,
+            canonical_name,
             name,
             brand,
             product_type,
@@ -240,6 +241,7 @@ def render_comparison_page() -> None:
         """
         SELECT
             canonical_key,
+            canonical_name,
             brand,
             product_type,
             size,
@@ -249,7 +251,7 @@ def render_comparison_page() -> None:
             price_unit
         FROM products
         WHERE canonical_key IS NOT NULL
-          AND canonical_key != '?|?|?'
+          AND canonical_key != '?|?|?|?'
           AND price_unit IS NOT NULL;
         """
     )
@@ -304,6 +306,7 @@ def render_comparison_page() -> None:
     pivot = filtered.pivot_table(
         index=[
             "canonical_key",
+            "canonical_name",
             "brand",
             "product_type",
             "size",
@@ -316,13 +319,14 @@ def render_comparison_page() -> None:
     ).reset_index()
     pivot.columns.name = None
 
-    fixed_columns = ["canonical_key", "brand", "product_type", "size", "category_dept", "category_sub"]
+    fixed_columns = ["canonical_key", "canonical_name", "brand", "product_type", "size", "category_dept", "category_sub"]
     supplier_columns = [column for column in pivot.columns if column not in fixed_columns]
     pivot = pivot[pivot[supplier_columns].notna().sum(axis=1) >= 2]
 
     if comparison_search:
         search_mask = (
-            pivot["brand"].astype(str).str.contains(comparison_search, case=False, na=False)
+            pivot["canonical_name"].astype(str).str.contains(comparison_search, case=False, na=False)
+            | pivot["brand"].astype(str).str.contains(comparison_search, case=False, na=False)
             | pivot["product_type"].astype(str).str.contains(comparison_search, case=False, na=False)
             | pivot["size"].astype(str).str.contains(comparison_search, case=False, na=False)
             | pivot["category_sub"].astype(str).str.contains(comparison_search, case=False, na=False)
