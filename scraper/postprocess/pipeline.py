@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 # Bump this version when extraction logic changes.
 # Products with features_version < FEATURES_VERSION will be re-extracted.
-FEATURES_VERSION = 1
+FEATURES_VERSION = 2
 
 
 # ============================================================================
@@ -97,15 +97,20 @@ def _get_canonical_category(
 def _canonical_key(
     brand: str | None,
     product_type: str | None,
+    variant: str | None,
     weight_g: float | None,
     volume_ml: float | None,
 ) -> str:
     """
-    Build canonical matching key: BRAND|TYPE|MEASUREMENT
+    Build canonical matching key: BRAND|TYPE|VARIANT|MEASUREMENT
+
+    Variant distinguishes sub-types of the same product (e.g. Leudante vs
+    Integral for the same brand/type/size of harina).
     Measurement is W<grams>, V<ml>, or ?
     """
     brand_part = _ascii_fold(brand).upper() if brand else "?"
     type_part = _ascii_fold(product_type).upper() if product_type else "?"
+    variant_part = _ascii_fold(variant).upper() if variant else "?"
 
     if weight_g is not None:
         meas_part = f"W{int(round(weight_g))}"
@@ -114,7 +119,7 @@ def _canonical_key(
     else:
         meas_part = "?"
 
-    return f"{brand_part}|{type_part}|{meas_part}"
+    return f"{brand_part}|{type_part}|{variant_part}|{meas_part}"
 
 
 # ============================================================================
@@ -212,6 +217,7 @@ def extract_unified(
         canonical_key = _canonical_key(
             brand,
             product_type,
+            features.get("variant"),
             weight_g,
             volume_ml,
         )

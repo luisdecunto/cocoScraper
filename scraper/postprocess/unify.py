@@ -7,7 +7,7 @@ centralized pipeline (brand, product_type, size, canonical_key).
 Supported suppliers: maxiconsumo, santamaria, luvik, vital, nini
 
 Match key: canonical_key from products table (or computed dynamically)
-  BRAND|PRODUCTTYPE|MEASUREMENT where measurement = "W<grams>", "V<ml>", or "?"
+  BRAND|PRODUCTTYPE|VARIANT|MEASUREMENT where measurement = "W<grams>", "V<ml>", or "?"
 
 Run as a standalone pass:
     python -m scraper.postprocess.unify
@@ -86,7 +86,7 @@ def build_matches(rows: list) -> dict[str, list[dict]]:
 
     for r in rows:
         # Use canonical_key from DB (already computed and stored during pipeline)
-        key = r.get("canonical_key") or "?|?|?"
+        key = r.get("canonical_key") or "?|?|?|?"
 
         groups[key].append({
             "supplier":       r["supplier"],
@@ -150,7 +150,7 @@ def print_comparison(matches: dict[str, list[dict]], max_rows: int = 0) -> None:
     col_abbr = list(_SUPPLIER_COLS.values())
 
     header = (
-        f"{'BRAND':<20} {'TYPE':<18} {'MEAS':<9} "
+        f"{'BRAND':<20} {'TYPE':<18} {'VARIANT':<20} {'MEAS':<9} "
         + "  ".join(f"{a+' p_unit':>12} {a+' p_bulk':>12}" for a in col_abbr)
         + f"  {'NOTES'}"
     )
@@ -173,8 +173,10 @@ def print_comparison(matches: dict[str, list[dict]], max_rows: int = 0) -> None:
         brand = rep["brand"] or ""
         ptype = rep["product_type"] or ""
 
-        # Measurement label from canonical key
-        meas_part = key.split("|")[2] if "|" in key else "?"
+        # Variant + measurement from canonical key (format: BRAND|TYPE|VARIANT|MEAS)
+        parts = key.split("|")
+        variant_part = parts[2] if len(parts) > 2 else "?"
+        meas_part = parts[3] if len(parts) > 3 else "?"
         if meas_part.startswith("W"):
             grams = int(meas_part[1:])
             meas = f"{grams}g" if grams < 1000 else f"{grams/1000:.1f}kg"
@@ -191,7 +193,8 @@ def print_comparison(matches: dict[str, list[dict]], max_rows: int = 0) -> None:
             if sup not in price_map:
                 price_map[sup] = p
 
-        row = f"{brand:<20} {ptype:<18} {meas:<9}"
+        variant_display = variant_part if variant_part != "?" else ""
+        row = f"{brand:<20} {ptype:<18} {variant_display:<20} {meas:<9}"
         prices_unit = []
         for sup in cols:
             p = price_map.get(sup)
