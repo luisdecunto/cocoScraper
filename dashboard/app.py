@@ -714,7 +714,8 @@ def render_comparison_page() -> None:
                 _insert_feedback(flagged_names, comment.strip())
                 st.session_state["comp_flagged_cks"] = set()
                 st.cache_data.clear()
-                st.success("Reporte guardado. ¡Gracias!")
+                st.toast("Reporte guardado. ¡Gracias!", icon="✅")
+                st.rerun()
         if cleared:
             st.session_state["comp_flagged_cks"] = set()
             st.rerun()
