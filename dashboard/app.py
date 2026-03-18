@@ -126,7 +126,7 @@ def query(sql: str, *args: object) -> pd.DataFrame:
 # TTL=120s keeps data fresh while absorbing rapid Streamlit reruns.
 # The sidebar Refresh button calls st.cache_data.clear() to force reload.
 # ---------------------------------------------------------------------------
-_CACHE_TTL = 120  # seconds
+_CACHE_TTL = 600  # seconds — 10 min; reduce for fresher data, increase to cut egress
 
 
 @st.cache_data(ttl=_CACHE_TTL, show_spinner=False)
