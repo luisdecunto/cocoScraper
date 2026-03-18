@@ -536,11 +536,16 @@ def render_comparison_page() -> None:
         sup = r["supplier"]
         detail_lookup.setdefault(ck, {}).setdefault(sup, []).append(r.to_dict())
 
+    # Flagged rows survive filter reruns via session state
+    if "comp_flagged_cks" not in st.session_state:
+        st.session_state["comp_flagged_cks"] = set()
+
     # AgGrid setup
     ag_frame = display_frame.copy()
     ag_frame["_ck"] = pivot["canonical_key"].values
     ag_frame["_cheapest"] = pivot["cheapest"].values
     ag_frame["_clicked_col"] = ""  # populated by onCellClicked JS handler
+    ag_frame["🚩"] = ag_frame["_ck"].isin(st.session_state["comp_flagged_cks"])
 
     min_cell_style = JsCode("""function(params) {
         if (params.data._cheapest && params.colDef.field === params.data._cheapest
@@ -555,6 +560,19 @@ def render_comparison_page() -> None:
     )
     gb.configure_default_column(resizable=True, sortable=True, filter=False, min_width=60,
                                 cellStyle={"fontSize": "12px"})
+    gb.configure_column(
+        "🚩",
+        editable=True,
+        cellRenderer="agCheckboxCellRenderer",
+        cellEditor="agCheckboxCellEditor",
+        width=40,
+        minWidth=40,
+        maxWidth=40,
+        pinned="left",
+        headerName="",
+        sortable=False,
+        suppressSizeToFit=True,
+    )
     for sup in supplier_columns:
         gb.configure_column(sup, cellStyle=min_cell_style, hide=(sup not in priced_supplier_cols))
     gb.configure_selection(selection_mode="single", use_checkbox=False)
@@ -565,10 +583,14 @@ def render_comparison_page() -> None:
         {"field": "_cheapest", "hide": True},
         {"field": "_clicked_col", "hide": True},
     ]
-    # Stamp clicked column into row data before selection fires
+    # Stamp clicked column into row data before selection fires.
+    # Skip setSelected for the flag column so checkbox toggling isn't disrupted.
     grid_options["onCellClicked"] = JsCode("""function(e) {
-        e.node.data['_clicked_col'] = e.colDef.field || '';
-        e.node.setSelected(true, true);
+        var field = e.colDef.field || '';
+        e.node.data['_clicked_col'] = field;
+        if (field !== '\uD83D\uDEA9') {
+            e.node.setSelected(true, true);
+        }
     }""")
 
     # Restore user-resized column widths from the previous render
@@ -587,7 +609,7 @@ def render_comparison_page() -> None:
         grid_response = AgGrid(
             ag_frame,
             gridOptions=grid_options,
-            update_mode=GridUpdateMode.SELECTION_CHANGED,
+            update_mode=GridUpdateMode.VALUE_CHANGED | GridUpdateMode.SELECTION_CHANGED,
             height=600,
             fit_columns_on_grid_load=False,
             allow_unsafe_jscode=True,
@@ -607,6 +629,12 @@ def render_comparison_page() -> None:
                 col_state.to_dict("records")
                 if hasattr(col_state, "to_dict")
                 else list(col_state)
+            )
+        # Read checkbox flag state back from the grid and persist it
+        resp_data = grid_response.get("data")
+        if resp_data is not None and "🚩" in resp_data.columns and "_ck" in resp_data.columns:
+            st.session_state["comp_flagged_cks"] = set(
+                resp_data.loc[resp_data["🚩"] == True, "_ck"].tolist()
             )
 
     with col_detail:
@@ -659,30 +687,39 @@ def render_comparison_page() -> None:
         else:
             st.caption("← Clic en una fila")
 
+    # Flagging panel — shows only when rows are checked
     st.divider()
-    with st.expander(f"⚑ {t('feedback_flag_title')}"):
-        st.caption(t("feedback_flag_desc"))
-        canonical_options = sorted(pivot["canonical_name"].dropna().unique().tolist())
-        with st.form("comp_feedback_form"):
-            flagged = st.multiselect(
-                "Productos con problema",
-                canonical_options,
-                placeholder="Seleccioná uno o más productos...",
-            )
+    flagged_cks = st.session_state.get("comp_flagged_cks", set())
+    flagged_names = (
+        pivot[pivot["canonical_key"].isin(flagged_cks)]["canonical_name"]
+        .dropna().unique().tolist()
+    )
+    if flagged_names:
+        preview = ", ".join(flagged_names[:4]) + ("…" if len(flagged_names) > 4 else "")
+        st.markdown(f"**🚩 {len(flagged_names)} producto(s) marcado(s):** {preview}")
+        with st.form("comp_flag_form"):
             comment = st.text_area(
                 "Comentario",
                 placeholder="Ej: estos productos no son equivalentes, el tamaño es diferente",
             )
-            submitted = st.form_submit_button("Enviar reporte")
+            col_send, col_clear, _ = st.columns([1, 1, 6])
+            with col_send:
+                submitted = st.form_submit_button("Enviar")
+            with col_clear:
+                cleared = st.form_submit_button("Limpiar")
         if submitted:
-            if not flagged:
-                st.warning("Seleccioná al menos un producto.")
-            elif not comment.strip():
-                st.warning("Escribí un comentario.")
+            if not comment.strip():
+                st.warning("Escribí un comentario antes de enviar.")
             else:
-                _insert_feedback(flagged, comment.strip())
+                _insert_feedback(flagged_names, comment.strip())
+                st.session_state["comp_flagged_cks"] = set()
                 st.cache_data.clear()
                 st.success("Reporte guardado. ¡Gracias!")
+        if cleared:
+            st.session_state["comp_flagged_cks"] = set()
+            st.rerun()
+    else:
+        st.caption("☐ Marcá filas con 🚩 para reportar un problema")
 
 
 def render_history_page() -> None:
