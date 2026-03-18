@@ -95,7 +95,6 @@ def get_page_meta() -> dict[str, dict[str, str]]:
     }
 
 
-@st.cache_data(ttl=120, show_spinner=False)
 def _fold(s: str) -> str:
     """Accent-fold + lowercase for dedup comparisons."""
     return unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode().lower()
@@ -122,6 +121,81 @@ def query(sql: str, *args: object) -> pd.DataFrame:
         conn.close()
 
 
+# ---------------------------------------------------------------------------
+# Cached data loaders — all heavy DB reads go through these.
+# TTL=120s keeps data fresh while absorbing rapid Streamlit reruns.
+# The sidebar Refresh button calls st.cache_data.clear() to force reload.
+# ---------------------------------------------------------------------------
+_CACHE_TTL = 120  # seconds
+
+
+@st.cache_data(ttl=_CACHE_TTL, show_spinner=False)
+def _load_browse_data() -> pd.DataFrame:
+    return query(
+        """
+        SELECT
+            product_id,
+            canonical_name,
+            name,
+            brand,
+            product_type,
+            variant,
+            supplier,
+            category_dept,
+            category_sub,
+            size,
+            price_unit,
+            price_bulk,
+            stock,
+            last_scraped_at AS scraped_at
+        FROM products
+        ORDER BY price_unit ASC NULLS LAST, supplier ASC, name ASC;
+        """
+    )
+
+
+@st.cache_data(ttl=_CACHE_TTL, show_spinner=False)
+def _load_comparison_data() -> pd.DataFrame:
+    return query(
+        """
+        SELECT
+            canonical_key,
+            canonical_name,
+            brand,
+            product_type,
+            size,
+            category_dept,
+            category_sub,
+            supplier,
+            price_unit,
+            stock
+        FROM products
+        WHERE canonical_key IS NOT NULL
+          AND canonical_key != '?|?|?|?';
+        """
+    )
+
+
+@st.cache_data(ttl=_CACHE_TTL, show_spinner=False)
+def _load_history_products() -> pd.DataFrame:
+    return query(
+        """
+        SELECT
+            product_id,
+            name,
+            supplier,
+            brand,
+            product_type,
+            size
+        FROM products
+        WHERE product_id IS NOT NULL
+          AND price_unit IS NOT NULL
+        ORDER BY product_id;
+        """
+    )
+
+
+@st.cache_data(ttl=_CACHE_TTL, show_spinner=False)
 def workspace_snapshot() -> dict[str, str]:
     snapshot = query(
         """
@@ -198,27 +272,7 @@ def render_export_button(
 
 
 def render_browse_page() -> None:
-    df = query(
-        """
-        SELECT
-            product_id,
-            canonical_name,
-            name,
-            brand,
-            product_type,
-            variant,
-            supplier,
-            category_dept,
-            category_sub,
-            size,
-            price_unit,
-            price_bulk,
-            stock,
-            last_scraped_at AS scraped_at
-        FROM products
-        ORDER BY price_unit ASC NULLS LAST, supplier ASC, name ASC;
-        """
-    )
+    df = _load_browse_data()
 
     render_page_header(
         get_page_meta()["Dashboard"]["eyebrow"],
@@ -253,24 +307,7 @@ def render_browse_page() -> None:
 
 
 def render_comparison_page() -> None:
-    df = query(
-        """
-        SELECT
-            canonical_key,
-            canonical_name,
-            brand,
-            product_type,
-            size,
-            category_dept,
-            category_sub,
-            supplier,
-            price_unit,
-            stock
-        FROM products
-        WHERE canonical_key IS NOT NULL
-          AND canonical_key != '?|?|?|?';
-        """
-    )
+    df = _load_comparison_data()
 
     render_page_header(
         get_page_meta()["Comparison"]["eyebrow"],
@@ -421,21 +458,7 @@ def render_comparison_page() -> None:
 
 
 def render_history_page() -> None:
-    products_df = query(
-        """
-        SELECT
-            product_id,
-            name,
-            supplier,
-            brand,
-            product_type,
-            size
-        FROM products
-        WHERE product_id IS NOT NULL
-          AND price_unit IS NOT NULL
-        ORDER BY product_id;
-        """
-    )
+    products_df = _load_history_products()
 
     render_page_header(
         get_page_meta()["History"]["eyebrow"],
@@ -607,8 +630,9 @@ def render_history_page() -> None:
     )
 
 
-def render_logs_page() -> None:
-    runs = query(
+@st.cache_data(ttl=_CACHE_TTL, show_spinner=False)
+def _load_run_log() -> pd.DataFrame:
+    return query(
         """
         SELECT
             supplier,
@@ -623,6 +647,10 @@ def render_logs_page() -> None:
         LIMIT 20;
         """
     )
+
+
+def render_logs_page() -> None:
+    runs = _load_run_log()
 
     render_page_header(
         get_page_meta()["Logs"]["eyebrow"],
