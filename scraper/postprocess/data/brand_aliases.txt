@@ -61,6 +61,9 @@ HALL S=HALLS
 # Group #32: Nobleza Gaucha — abbreviated
 NOBLEZA=NOBLEZA GAUCHA
 
+# Group #33: J&B — punctuation normalization
+J B=J&B
+
 # Group #35: Estiba I — missing suffix
 ESTIBA=ESTIBA I
 
@@ -70,6 +73,9 @@ FREEGELS=FREEGELLS
 # Group #39: Cruz Malta — typo + compound
 CRUZ ALTA=CRUZ MALTA
 CRUZ=CRUZ MALTA
+
+# Group #40: Viñas de Balbo — restore canonical accent
+VINAS DE BALBO=VIÑAS DE BALBO
 
 # Group #40: Media Tarde — merged word
 MEDIATARDE=MEDIA TARDE
@@ -176,6 +182,11 @@ H2O=H2OH
 
 # Group #85: Jim Beam — typo
 JIM BEAN=JIM BEAM
+
+# Group #85b: explicit brand merges from review
+BUHERO=BUHERO NEGRO
+EST MENDOZA=ESTANCIA MENDOZA
+ETCHART=ETCHART PRIVADO
 
 # Group #86: Mentitas — missing S
 MENTITA=MENTITAS

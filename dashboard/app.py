@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import json
 import unicodedata
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import psycopg2
 import psycopg2.extras
 import streamlit as st
+import streamlit.components.v1 as st_components
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, JsCode
 
 try:
     from .db.connection import (
@@ -168,7 +172,13 @@ def _load_comparison_data() -> pd.DataFrame:
             category_sub,
             supplier,
             price_unit,
-            stock
+            price_bulk,
+            stock,
+            units_per_package,
+            name,
+            url,
+            sku,
+            product_id
         FROM products
         WHERE canonical_key IS NOT NULL
           AND canonical_key != '?|?|?|?';
@@ -178,19 +188,27 @@ def _load_comparison_data() -> pd.DataFrame:
 
 @st.cache_data(ttl=_CACHE_TTL, show_spinner=False)
 def _load_history_products() -> pd.DataFrame:
+    """Only returns products that have at least one row in price_history."""
     return query(
         """
         SELECT
-            product_id,
-            name,
-            supplier,
-            brand,
-            product_type,
-            size
-        FROM products
-        WHERE product_id IS NOT NULL
-          AND price_unit IS NOT NULL
-        ORDER BY product_id;
+            p.product_id,
+            p.canonical_key,
+            p.canonical_name,
+            p.name,
+            p.supplier,
+            p.brand,
+            p.product_type,
+            p.size,
+            p.price_unit
+        FROM products p
+        WHERE p.canonical_key IS NOT NULL
+          AND p.canonical_key != '?|?|?|?'
+          AND EXISTS (
+              SELECT 1 FROM price_history ph
+              WHERE ph.sku = p.sku AND ph.supplier = p.supplier
+          )
+        ORDER BY p.canonical_name ASC, p.supplier ASC;
         """
     )
 
@@ -337,27 +355,37 @@ def render_comparison_page() -> None:
     # Only show brands/types that have at least one product with a price
     df_priced = df[df["price_unit"].notna()]
 
-    col_brand, col_type, col_desc, col_size, col_toggle = st.columns([1.2, 1.2, 1.2, 1.2, 0.8])
+    col_brand, col_type, col_size, col_desc, col_toggle = st.columns([1.2, 1.2, 1.2, 1.2, 0.8])
     with col_brand:
-        brand_options = ["Todas"] + _dedup_sorted(df_priced["brand"].dropna().unique().tolist())
-        selected_brand = st.selectbox("Marca", brand_options, key="comparison_brand")
+        brand_options = _dedup_sorted(df_priced["brand"].dropna().unique().tolist())
+        selected_brands = st.multiselect("Marca", brand_options, key="comparison_brand", placeholder="Todas")
 
-    brand_df = df if selected_brand == "Todas" else df[df["brand"].apply(lambda x: _fold(str(x))) == _fold(selected_brand)]
+    folded_brands = {_fold(b) for b in selected_brands}
+    brand_df = df if not selected_brands else df[df["brand"].apply(lambda x: _fold(str(x))).isin(folded_brands)]
 
     with col_type:
-        priced_brand_df = df_priced if selected_brand == "Todas" else df_priced[df_priced["brand"].apply(lambda x: _fold(str(x))) == _fold(selected_brand)]
-        type_options = ["Todos"] + _dedup_sorted(priced_brand_df["product_type"].dropna().unique().tolist())
-        selected_product_type = st.selectbox("Producto", type_options, key="comparison_product_type")
+        priced_brand_df = df_priced if not selected_brands else df_priced[df_priced["brand"].apply(lambda x: _fold(str(x))).isin(folded_brands)]
+        type_options = _dedup_sorted(priced_brand_df["product_type"].dropna().unique().tolist())
+        selected_types = st.multiselect("Producto", type_options, key="comparison_product_type", placeholder="Todos")
+
+    folded_types = {_fold(t) for t in selected_types}
+    filtered_by_type = brand_df if not selected_types else brand_df[brand_df["product_type"].apply(lambda x: _fold(str(x))).isin(folded_types)]
+
+    with col_size:
+        size_options = _dedup_sorted(
+            filtered_by_type[filtered_by_type["price_unit"].notna()]["size"].dropna().unique().tolist()
+        )
+        selected_sizes = st.multiselect("Tamaño", size_options, key="comparison_size", placeholder="Todos")
 
     with col_desc:
         description_search = st.text_input("Descripción", placeholder="ej. Blancaflor Leudante", key="comparison_description")
-    with col_size:
-        size_search = st.text_input("Tamaño", placeholder="ej. 1 kg", key="comparison_size")
     with col_toggle:
         st.caption(" ")
-        hide_no_price = st.toggle("Ocultar sin precio", value=False, key="comparison_hide_no_price")
+        hide_no_price = st.toggle("Ocultar sin precio", value=True, key="comparison_hide_no_price")
 
-    filtered = brand_df if selected_product_type == "Todos" else brand_df[brand_df["product_type"].apply(lambda x: _fold(str(x))) == _fold(selected_product_type)]
+    filtered = filtered_by_type
+    if selected_sizes:
+        filtered = filtered[filtered["size"].isin(selected_sizes)]
 
     # Group by canonical_key only (accent/case-insensitive matching key).
     # Display fields (brand, product_type, size, etc.) may differ across suppliers
@@ -392,14 +420,15 @@ def render_comparison_page() -> None:
 
     if description_search:
         pivot = pivot[pivot["canonical_name"].astype(str).str.contains(description_search, case=False, na=False)]
-    if size_search:
-        pivot = pivot[pivot["size"].astype(str).str.contains(size_search, case=False, na=False)]
     if hide_no_price:
         pivot = pivot[pivot[supplier_columns].notna().any(axis=1)]
 
     if pivot.empty:
         render_empty_state(t("comparison_no_dept"))
         return
+
+    # Suppliers with at least one price in the current filtered view
+    priced_supplier_cols = {sup for sup in supplier_columns if pivot[sup].notna().any()}
 
     price_data = pivot[supplier_columns]
     pivot["cheapest"] = price_data.idxmin(axis=1)
@@ -423,11 +452,12 @@ def render_comparison_page() -> None:
         t("comparison_matrix_desc"),
     )
 
-    ordered_columns = ["canonical_name"] + supplier_columns + ["brand", "product_type", "size", "diff_pct"]
-    export_frame = pivot[[c for c in ordered_columns if c in pivot.columns]].copy()
+    export_columns = ["canonical_name"] + supplier_columns + ["brand", "product_type", "size", "diff_pct"]
+    export_frame = pivot[[c for c in export_columns if c in pivot.columns]].copy()
 
-    # Build display frame: format prices as strings, mark absent suppliers as "N/A"
-    display_frame = export_frame.copy()
+    # Build display frame: narrower than export (no brand/product_type/size)
+    display_columns = ["canonical_name"] + supplier_columns + ["diff_pct"]
+    display_frame = pivot[[c for c in display_columns if c in pivot.columns]].copy()
     ck_values = pivot["canonical_key"].values
     for sup in supplier_columns:
         if sup in presence.columns:
@@ -446,15 +476,138 @@ def render_comparison_page() -> None:
         key="comparison_export",
     )
 
-    def highlight_minimum(row: pd.Series) -> list[str]:
-        styles = [""] * len(row)
-        cheapest = pivot.loc[row.name, "cheapest"]
-        if cheapest and cheapest in row.index:
-            styles[row.index.get_loc(cheapest)] = "background-color: #e6f0ed; color: #1d5b50; font-weight: 600"
-        return styles
+    # Build detail lookup: canonical_key -> {supplier -> [row_dict, ...]}
+    detail_cols = ["canonical_key", "supplier", "name", "url", "brand", "product_type",
+                   "size", "price_unit", "price_bulk", "stock", "units_per_package",
+                   "sku", "product_id"]
+    detail_lookup: dict[str, dict[str, list]] = {}
+    for _, r in filtered[[c for c in detail_cols if c in filtered.columns]].iterrows():
+        ck = r["canonical_key"]
+        sup = r["supplier"]
+        detail_lookup.setdefault(ck, {}).setdefault(sup, []).append(r.to_dict())
 
-    styled_frame = display_frame.style.apply(highlight_minimum, axis=1)
-    display_table(display_frame, use_style=styled_frame)
+    # AgGrid setup
+    ag_frame = display_frame.copy()
+    ag_frame["_ck"] = pivot["canonical_key"].values
+    ag_frame["_cheapest"] = pivot["cheapest"].values
+    ag_frame["_clicked_col"] = ""  # populated by onCellClicked JS handler
+
+    min_cell_style = JsCode("""function(params) {
+        if (params.data._cheapest && params.colDef.field === params.data._cheapest
+                && params.value && params.value.startsWith('$')) {
+            return {'background': '#e6f0ed', 'color': '#1d5b50', 'fontWeight': '600'};
+        }
+        return {};
+    }""")
+
+    gb = GridOptionsBuilder.from_dataframe(
+        ag_frame[[c for c in ag_frame.columns if not c.startswith("_")]]
+    )
+    gb.configure_default_column(resizable=True, sortable=True, filter=False, min_width=60,
+                                cellStyle={"fontSize": "12px"})
+    for sup in supplier_columns:
+        gb.configure_column(sup, cellStyle=min_cell_style, hide=(sup not in priced_supplier_cols))
+    gb.configure_selection(selection_mode="single", use_checkbox=False)
+    grid_options = gb.build()
+    # Pass hidden columns so they're available in cellStyle and detail panel
+    grid_options["columnDefs"] += [
+        {"field": "_ck", "hide": True},
+        {"field": "_cheapest", "hide": True},
+        {"field": "_clicked_col", "hide": True},
+    ]
+    # Stamp clicked column into row data before selection fires
+    grid_options["onCellClicked"] = JsCode("""function(e) {
+        e.node.data['_clicked_col'] = e.colDef.field || '';
+        e.node.setSelected(true, true);
+    }""")
+
+    # Restore user-resized column widths from the previous render
+    saved_col_state = st.session_state.get("comp_col_state", [])
+    if saved_col_state:
+        grid_options["onGridReady"] = JsCode(
+            "function(p){var s=%s;"
+            "var a=p.columnApi||p.api;"
+            "if(a&&a.applyColumnState)a.applyColumnState({state:s,applyOrder:false});}"
+            % json.dumps(saved_col_state)
+        )
+
+    col_table, col_detail = st.columns([4, 1])
+
+    with col_table:
+        grid_response = AgGrid(
+            ag_frame,
+            gridOptions=grid_options,
+            update_mode=GridUpdateMode.SELECTION_CHANGED,
+            height=600,
+            fit_columns_on_grid_load=False,
+            allow_unsafe_jscode=True,
+            use_container_width=True,
+            custom_css={
+                ".ag-header-cell-label": {"font-size": "12px !important"},
+                ".ag-cell": {"font-size": "12px !important", "padding-left": "2px !important", "padding-right": "2px !important"},
+                ".ag-header-cell": {"padding-left": "2px !important", "padding-right": "2px !important"},
+                ".ag-row": {"line-height": "24px !important"},
+                ".ag-header-row": {"height": "32px !important"},
+            },
+        )
+        # Persist column state so widths survive filter reruns
+        col_state = grid_response.get("column_state")
+        if col_state is not None and len(col_state) > 0:
+            st.session_state["comp_col_state"] = (
+                col_state.to_dict("records")
+                if hasattr(col_state, "to_dict")
+                else list(col_state)
+            )
+
+    with col_detail:
+        selected = grid_response.get("selected_rows")
+        if selected is not None and len(selected) > 0:
+            row = selected[0] if isinstance(selected, list) else selected.iloc[0]
+            ck = row.get("_ck", "")
+            canonical = row.get("canonical_name", ck)
+            st.markdown(f"**{canonical}**")
+            details = detail_lookup.get(ck, {})
+            clicked_col = row.get("_clicked_col", "")
+            if clicked_col in supplier_columns:
+                # User clicked a specific supplier cell — show only that supplier
+                active_suppliers = [clicked_col]
+            else:
+                # User clicked canonical_name or diff_pct — show all priced suppliers
+                active_suppliers = [
+                    sup for sup in supplier_columns
+                    if str(row.get(sup, "")) not in ("", "N/A", "nan", "None")
+                ]
+            for sup in active_suppliers:
+                products = details.get(sup)
+                if not products:
+                    continue
+                st.divider()
+                st.markdown(f"**{sup}**")
+                for p in products:
+                    def _val(key):
+                        v = p.get(key)
+                        return v if (v is not None and pd.notna(v)) else None
+                    if _val("name"):
+                        st.caption(str(_val("name")))
+                    fields = [
+                        ("SKU", _val("sku")),
+                        ("ID producto", _val("product_id")),
+                        ("Marca", _val("brand")),
+                        ("Tipo", _val("product_type")),
+                        ("Tamaño", _val("size")),
+                        ("Precio unit.", f"${float(_val('price_unit')):,.2f}" if _val("price_unit") else None),
+                        ("Precio bulto", f"${float(_val('price_bulk')):,.2f}" if _val("price_bulk") else None),
+                        ("Uds. x bulto", _val("units_per_package")),
+                        ("Stock", _val("stock")),
+                    ]
+                    for label, value in fields:
+                        if value:
+                            st.markdown(f"<small>**{label}:** {value}</small>", unsafe_allow_html=True)
+                    url_str = _val("url")
+                    if url_str:
+                        st.markdown(f"[Ver producto →]({url_str})")
+        else:
+            st.caption("← Clic en una fila")
 
 
 def render_history_page() -> None:
@@ -464,7 +617,7 @@ def render_history_page() -> None:
         get_page_meta()["History"]["eyebrow"],
         get_page_meta()["History"]["title"],
         get_page_meta()["History"]["description"],
-        context=t("history_ctx", n=format_count(products_df['product_id'].nunique())) if not products_df.empty else None,
+        context=t("history_ctx", n=format_count(products_df["canonical_key"].nunique())) if not products_df.empty else None,
     )
 
     if products_df.empty:
@@ -473,7 +626,7 @@ def render_history_page() -> None:
 
     render_metric_row(
         [
-            (t("history_metric_tracked"), format_count(products_df["product_id"].nunique()), t("history_metric_tracked_note")),
+            (t("history_metric_tracked"), format_count(products_df["canonical_key"].nunique()), t("history_metric_tracked_note")),
             (t("history_metric_suppliers"), format_count(products_df["supplier"].nunique()), t("history_metric_suppliers_note")),
             (t("history_metric_brands"), format_count(products_df["brand"].nunique()), t("history_metric_brands_note")),
             (t("history_metric_types"), format_count(products_df["product_type"].nunique()), t("history_metric_types_note")),
@@ -486,48 +639,82 @@ def render_history_page() -> None:
         t("history_selection_desc"),
     )
 
-    search = st.text_input(
-        t("history_search_label"),
-        placeholder=t("history_search_ph"),
-        key="history_search",
-    )
-    if search:
-        mask = (
-            products_df["product_id"].astype(str).str.contains(search, case=False, na=False)
-            | products_df["name"].astype(str).str.contains(search, case=False, na=False)
-            | products_df["brand"].astype(str).str.contains(search, case=False, na=False)
-            | products_df["product_type"].astype(str).str.contains(search, case=False, na=False)
-        )
-        matches = products_df[mask]
-    else:
-        matches = products_df.head(200)
+    # Cascading filters
+    col_brand, col_type, col_size, col_sup, col_desc = st.columns([1, 1, 1, 1, 1.2])
 
-    render_filter_summary(
-        [f'Search: "{search}"'] if search else [],
-        t("history_showing", n=format_count(len(matches))),
-    )
+    with col_brand:
+        brand_opts = _dedup_sorted(products_df["brand"].dropna().unique().tolist())
+        sel_brands = st.multiselect("Marca", brand_opts, key="history_brand", placeholder="Todas")
 
-    if matches.empty:
+    folded_brands = {_fold(b) for b in sel_brands}
+    h1 = products_df if not sel_brands else products_df[products_df["brand"].apply(lambda x: _fold(str(x))).isin(folded_brands)]
+
+    with col_type:
+        type_opts = _dedup_sorted(h1["product_type"].dropna().unique().tolist())
+        sel_types = st.multiselect("Producto", type_opts, key="history_type", placeholder="Todos")
+
+    folded_types = {_fold(tp) for tp in sel_types}
+    h2 = h1 if not sel_types else h1[h1["product_type"].apply(lambda x: _fold(str(x))).isin(folded_types)]
+
+    with col_size:
+        size_opts = _dedup_sorted(h2["size"].dropna().unique().tolist())
+        sel_sizes = st.multiselect("Tamaño", size_opts, key="history_size", placeholder="Todos")
+
+    h3 = h2 if not sel_sizes else h2[h2["size"].isin(sel_sizes)]
+
+    with col_sup:
+        sup_opts = _dedup_sorted(h3["supplier"].dropna().unique().tolist())
+        sel_suppliers = st.multiselect("Proveedor", sup_opts, key="history_supplier", placeholder="Todos")
+
+    h4 = h3 if not sel_suppliers else h3[h3["supplier"].isin(sel_suppliers)]
+
+    with col_desc:
+        desc_search = st.text_input("Descripción", placeholder="ej. Blancaflor Leudante", key="history_desc")
+
+    if desc_search:
+        h4 = h4[h4["canonical_name"].astype(str).str.contains(desc_search, case=False, na=False)]
+
+    # Unique canonical products from the filtered set
+    # Mark canonical keys where NO supplier currently has a price (all unavailable)
+    h4_numeric = h4.copy()
+    h4_numeric["price_unit"] = pd.to_numeric(h4_numeric["price_unit"], errors="coerce")
+    ck_has_price = h4_numeric.groupby("canonical_key")["price_unit"].apply(lambda x: x.notna().any())
+
+    canonical_opts_df = (
+        h4.dropna(subset=["canonical_key"])
+        .groupby("canonical_key")["canonical_name"]
+        .first()
+        .reset_index()
+        .sort_values("canonical_name")
+    )
+    # Build display labels: append "(sin precio)" for currently-unavailable products
+    canonical_opts_df["label"] = canonical_opts_df.apply(
+        lambda r: r["canonical_name"] if ck_has_price.get(r["canonical_key"], False)
+                  else f"{r['canonical_name']} (sin precio)",
+        axis=1,
+    )
+    canonical_labels = canonical_opts_df["label"].tolist()
+    ck_by_label = dict(zip(canonical_opts_df["label"], canonical_opts_df["canonical_key"]))
+
+    if not canonical_labels:
         render_empty_state(t("history_no_match"))
         return
 
-    options = {
-        f"{row['product_id']} | {row['name']} | {row['supplier']}": row["product_id"]
-        for _, row in matches.iterrows()
-    }
-    selected_labels = st.multiselect(
+    render_filter_summary([], t("history_showing", n=format_count(len(canonical_labels))))
+
+    selected_names = st.multiselect(
         t("history_products_label"),
-        list(options.keys()),
+        canonical_labels,
         key="history_products",
         placeholder=t("history_products_ph"),
     )
 
-    if not selected_labels:
+    if not selected_names:
         render_empty_state(t("history_select_prompt"))
         return
 
-    selected_ids = [options[label] for label in selected_labels]
-    placeholders = ", ".join(["%s"] * len(selected_ids))
+    selected_cks = [ck_by_label[n] for n in selected_names]
+    placeholders = ", ".join(["%s"] * len(selected_cks))
     history = query(
         f"""
         SELECT
@@ -535,6 +722,7 @@ def render_history_page() -> None:
             h.last_seen,
             h.price_unit,
             p.product_id,
+            p.canonical_name,
             p.supplier,
             p.name,
             p.brand,
@@ -543,10 +731,10 @@ def render_history_page() -> None:
             p.price_bulk
         FROM price_history h
         JOIN products p ON p.sku = h.sku AND p.supplier = h.supplier
-        WHERE p.product_id IN ({placeholders})
+        WHERE p.canonical_key IN ({placeholders})
         ORDER BY h.first_seen ASC;
         """,
-        *selected_ids,
+        *selected_cks,
     )
 
     if history.empty:
@@ -555,11 +743,12 @@ def render_history_page() -> None:
 
     history["price_unit"] = pd.to_numeric(history["price_unit"], errors="coerce")
     history["price_bulk"] = pd.to_numeric(history["price_bulk"], errors="coerce")
-    history["label"] = history["supplier"].astype(str) + " | " + history["product_id"].astype(str)
+    # Label: "supplier | canonical_name" so multiple products stay distinguishable
+    history["label"] = history["supplier"].astype(str) + " | " + history["canonical_name"].fillna(history["name"]).astype(str)
 
     render_metric_row(
         [
-            (t("history_metric_selected"), format_count(len(selected_labels)), t("history_metric_selected_note")),
+            (t("history_metric_selected"), format_count(len(selected_names)), t("history_metric_selected_note")),
             (t("history_metric_rows"), format_count(len(history)), t("history_metric_rows_note")),
             (t("history_metric_chart_suppliers"), format_count(history["supplier"].nunique()), t("history_metric_chart_suppliers_note")),
             (t("history_metric_latest"), format_timestamp(history["last_seen"].max()), t("history_metric_latest_note")),
@@ -572,24 +761,42 @@ def render_history_page() -> None:
         t("history_chart_desc"),
     )
 
-    figure = px.line(
-        history,
-        x="first_seen",
-        y="price_unit",
-        color="label",
-        markers=True,
-        line_shape="hv",
-        color_discrete_sequence=CHART_COLORS,
-        labels={
-            "first_seen": t("history_chart_date"),
-            "price_unit": t("history_chart_price"),
-            "label": t("history_chart_product"),
-        },
-    )
-    figure.update_traces(marker=dict(size=7, line=dict(width=1, color="#ffffff")), line=dict(width=2.4))
-    figure.update_yaxes(tickformat=".2f")
-    style_figure(figure)
-    st.plotly_chart(figure, use_container_width=True, config={"displayModeBar": False})
+    # Expand each price period into two rows (first_seen + last_seen) so every
+    # period renders as a visible horizontal segment. Single-period products
+    # (same first/last date) become a visible dot via markers mode.
+    starts = history[["label", "price_unit", "first_seen"]].rename(columns={"first_seen": "date"})
+    ends   = history[["label", "price_unit", "last_seen"]].rename(columns={"last_seen": "date"})
+    history_plot = pd.concat([starts, ends]).sort_values(["label", "date"]).reset_index(drop=True)
+    history_plot["date"] = pd.to_datetime(history_plot["date"])
+    history_plot["price_unit"] = pd.to_numeric(history_plot["price_unit"], errors="coerce")
+
+    plottable = history_plot.dropna(subset=["price_unit"])
+    if plottable.empty:
+        st.info("Los productos seleccionados no tienen precios registrados en el historial.")
+    else:
+        figure = go.Figure()
+        labels_ordered = sorted(plottable["label"].unique())
+        for i, label in enumerate(labels_ordered):
+            subset = plottable[plottable["label"] == label].sort_values("date")
+            color = CHART_COLORS[i % len(CHART_COLORS)]
+            # Use lines+markers when there are multiple dates, markers-only for a single date
+            multi_date = subset["date"].nunique() > 1
+            figure.add_trace(go.Scatter(
+                x=subset["date"],
+                y=subset["price_unit"],
+                mode="lines+markers" if multi_date else "markers",
+                name=label,
+                line=dict(shape="hv", width=2.4, color=color),
+                marker=dict(size=8, color=color, line=dict(width=1, color="#ffffff")),
+            ))
+        figure.update_layout(
+            height=420,
+            xaxis_title=t("history_chart_date"),
+            yaxis_title=t("history_chart_price"),
+        )
+        figure.update_yaxes(tickformat=".2f")
+        style_figure(figure)
+        st.plotly_chart(figure, use_container_width=True, config={"displayModeBar": False})
 
     render_section_intro(
         t("history_audit_eyebrow"),
@@ -598,35 +805,14 @@ def render_history_page() -> None:
     )
 
     render_export_button(
-        history[
-            [
-                "first_seen",
-                "last_seen",
-                "product_id",
-                "supplier",
-                "name",
-                "size",
-                "price_unit",
-                "price_bulk",
-            ]
-        ].to_csv(index=False).encode("utf-8"),
+        history[["first_seen", "last_seen", "canonical_name", "supplier", "name", "size", "price_unit", "price_bulk"]]
+        .to_csv(index=False).encode("utf-8"),
         file_name="price_history.csv",
         key="history_export",
     )
 
     display_table(
-        history[
-            [
-                "first_seen",
-                "last_seen",
-                "product_id",
-                "supplier",
-                "name",
-                "size",
-                "price_unit",
-                "price_bulk",
-            ]
-        ]
+        history[["first_seen", "last_seen", "canonical_name", "supplier", "name", "size", "price_unit", "price_bulk"]]
     )
 
 

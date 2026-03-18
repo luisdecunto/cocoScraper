@@ -10,3 +10,8 @@ dist/
 .DS_Store
 .streamlit/secrets.toml
 backup.sql
+
+# flyctl binary (downloaded locally)
+flyctl.exe
+flyctl_*.zip
+wintun.dll

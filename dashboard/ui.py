@@ -75,9 +75,10 @@ def apply_global_styles() -> None:
             display: none !important;
         }
 
-        [data-testid="block-container"] {
+        [data-testid="block-container"],
+        [data-testid="stMainBlockContainer"] {
             max-width: none;
-            padding: 0.18rem 0.35rem 0.3rem;
+            padding: 10px 3px 0.3rem !important;
         }
 
         [data-testid="stVerticalBlock"] {

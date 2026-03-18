@@ -266,6 +266,7 @@ def extract_features(name: str, category: str = "") -> dict:
 
     # 1. Size (strip from a working copy; keep original for brand extraction)
     size = extract_size(name)
+    size_display: str | None = None
     name_no_size = _SIZE_RE.sub("", name).strip() if size else name
 
     # 2. Brand
@@ -335,6 +336,8 @@ def extract_features(name: str, category: str = "") -> dict:
             elif re.fullmatch(r"Chips De Chocolate Bco\.", variant, re.IGNORECASE):
                 product_type = "Galletitas"
                 variant = "Chips Chocolate Blanco"
+        if variant:
+            variant = re.sub(r"\bAnillitos\b", "Anillos", variant, flags=re.IGNORECASE)
         if variant == "Agridulce":
             variant = "Agridulces"
         if variant == "Agridulces Azucarados":
@@ -343,6 +346,517 @@ def extract_features(name: str, category: str = "") -> dict:
             variant = "Azucarados"
         if variant == "Clasico":
             variant = "Clasicos"
+        if product_type == "Bizcochos" and variant == "Azucarados" and size == (200, "g"):
+            size = (210, "g")
+    if _ascii_fold(brand or "").upper() == "919":
+        product_type = "Tintura"
+        size = (1, "uni")
+        if variant:
+            variant = re.sub(
+                r"^\s*Kit\s+N[°º]?\s*(\d+(?:\.\d+)?)\s*$",
+                r"Kit \1",
+                variant,
+                flags=re.IGNORECASE,
+            )
+    if _ascii_fold(brand or "").upper() == "AMARGO OBRERO" and size and int(size[0]) == 1000 and size[1] == "ml":
+        size = (950, "ml")
+    if _ascii_fold(brand or "").upper() in {"BUENAS", "BUENAS Y SANTAS"}:
+        brand = "Buenas y Santas"
+        product_type = "Yerba"
+        variant = "C/Hierbas"
+    if _ascii_fold(brand or "").upper() == "CAZALIS":
+        product_type = "Aperitivo"
+    if _ascii_fold(brand or "").upper() == "CHEF":
+        product_type = "Pure"
+        if variant:
+            variant = re.sub(r"\bInstant[aá]neo\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        if not variant and re.search(r"\bPapas\b", name, re.IGNORECASE):
+            variant = "Papas"
+    if _ascii_fold(brand or "").upper() == "CHOCOLIA" and product_type == "Galletita":
+        product_type = "Galletitas"
+    if _ascii_fold(brand or "").upper() == "CRISTALINA":
+        product_type = "Grasa"
+        if variant:
+            variant = re.sub(r"\bMargarina\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bBovina\b", "Vacuna", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bRef\.\b", "Refinada", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        if size and int(size[0]) == 500 and size[1] == "ml":
+            size = (500, "g")
+    if _ascii_fold(brand or "").upper() == "DONGA" and variant:
+        variant = re.sub(r"\bSurtido\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "EDRA":
+        if product_type in {"Gallet.", "Galletita"}:
+            product_type = "Galletitas"
+        if variant:
+            variant = re.sub(r"\bDulces\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "EL PULPITO":
+        product_type = "Pegamento"
+        variant = None
+        if re.search(r"\b50\s*Gramos\b", name, re.IGNORECASE):
+            size = (50, "g")
+    if _ascii_fold(brand or "").upper() == "ELITE ULTRA":
+        brand = "Elite"
+    if _ascii_fold(brand or "").upper() == "GROLSCH" and variant:
+        variant = re.sub(r"\bLata\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() in {"J B", "J&B"}:
+        brand = "J&B"
+        if variant and re.fullmatch(r"Rare", variant, re.IGNORECASE):
+            variant = None
+    if _ascii_fold(brand or "").upper() == "KIMBIES":
+        product_type = "Toallitas Humedas"
+        variant = None
+    if re.search(r"BREEDER", _ascii_fold(name).upper()):
+        brand = "Breeders"
+        product_type = "Vodka"
+        if variant:
+            variant = re.sub(r"\bPetaca\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bVodka\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bOrig\.?\b|\bOriginal\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"[.]+", " ", variant)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "LA YAPA":
+        product_type = "Pastillas"
+        variant = "Surtido"
+        if size == (1, "uni"):
+            size = (17, "g")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "QUEMAITA":
+        product_type = "Caña"
+        if variant:
+            variant = re.sub(r"\bQuemada\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "LAS PEPAS" and product_type == "Fragancia":
+        product_type = "Perfume"
+    if _ascii_fold(brand or "").upper() == "MELITAS":
+        if size and int(size[0]) == 170 and size[1] == "g":
+            size = (159, "g")
+        if variant and re.fullmatch(r"159\s*/?", variant):
+            variant = None
+    if _ascii_fold(brand or "").upper() == "NOBLE" and _ascii_fold(product_type or "").upper() == "PAPEL HIGIENICO":
+        variant = "Hoja Simple"
+        size = (4, "uni")
+        size_display = "4x30 m"
+    if _ascii_fold(brand or "").upper() == "SKARCHITOS":
+        if _ascii_fold(product_type or "").upper() == "COPOS":
+            product_type = "Cereal"
+        if variant and re.search(r"\bAzuc\.?\b", variant, re.IGNORECASE):
+            variant = "Azucarados"
+    if _ascii_fold(brand or "").upper() == "HOT WHEELS":
+        if _ascii_fold(product_type or "").upper() == "AUTO":
+            product_type = "Autos"
+        if size and int(size[0]) == 5 and size[1] == "uni":
+            size = (5, "u")
+    if _ascii_fold(brand or "").upper() == "VALLE DE ORO":
+        if _ascii_fold(product_type or "").upper() == "ARVEJA":
+            product_type = "Arvejas"
+        if variant:
+            variant = re.sub(r"\bFresca\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() in {"PIC NIC", "PICNIC"}:
+        if product_type in {"Bizc.", "Bizc"}:
+            product_type = "Bizcochuelo"
+        if variant:
+            variant = re.sub(r"\bRell\.?\s*Ddl\b", "Dulce de Leche", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bDulce Leche\b", "Dulce de Leche", variant, flags=re.IGNORECASE)
+    if _ascii_fold(brand or "").upper() == "PLOMERO":
+        if _ascii_fold(product_type or "").upper() in {"DESTAPACANERIA", "DESTAPACANERIAS"}:
+            product_type = "Destapacañerias"
+    if "PUNT E MES" in _ascii_fold(name).upper():
+        brand = "Punt e Mes"
+        product_type = "Vermouth"
+        variant = None
+    if _ascii_fold(brand or "").upper() == "FANACOA" and variant:
+        variant = re.sub(r"\bSin\s+Tacc\s+Dp\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "PADILLA" and size == (700, "ml"):
+        size = (750, "ml")
+    if _ascii_fold(brand or "").upper() == "POXILINA":
+        product_type = "Adhesivo"
+        variant = None
+        if size == (1, "uni"):
+            size = (70, "g")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "RAFFAELLO":
+        product_type = "Bombon"
+        if variant and re.fullmatch(r"Coco Y Almendra", variant, re.IGNORECASE):
+            variant = None
+    if _ascii_fold(brand or "").upper() == "RASTA" and variant and re.fullmatch(r"Triple Trico|Trico Maicena", variant, re.IGNORECASE):
+        variant = "Trico"
+    if _ascii_fold(brand or "").upper() == "SALUS" and variant and re.fullmatch(r"Mate Endulzada C/Stevia", variant, re.IGNORECASE):
+        variant = "Natural"
+    if _ascii_fold(brand or "").upper() == "AMSTEL":
+        variant = None
+    if _ascii_fold(brand or "").upper() == "ANGELITA":
+        product_type = "Leche"
+        if variant and re.fullmatch(r"Tetrabrick\s+Entera\s+2%", variant, re.IGNORECASE):
+            variant = "Tetrabrick Entera 2%"
+        elif variant and re.fullmatch(r"Tetrabrick\s+Descr\.?", variant, re.IGNORECASE):
+            variant = "Tetrabrick Parcialmente Descremada"
+    if _ascii_fold(brand or "").upper() == "AXEL":
+        product_type = "Alimento a Base de Miel"
+        variant = None
+    if _ascii_fold(brand or "").upper() in {"BARON B", "BARON"}:
+        brand = "Baron B"
+        product_type = "Espumante"
+        if variant:
+            variant = re.sub(r"\bEspumante\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "BRAHMA":
+        variant = None
+    if _ascii_fold(brand or "").upper() == "BUDWEISER":
+        variant = None
+    if _ascii_fold(brand or "").upper() == "BURNETTS":
+        product_type = "Gin"
+        variant = None
+    if _ascii_fold(brand or "").upper() == "CINDOR":
+        product_type = "Leche"
+        variant = "Chocolatada"
+    if _ascii_fold(brand or "").upper() in {"D V CATENA", "D.V.CATENA"} and variant and re.fullmatch(r"Cabern-Malbec", variant, re.IGNORECASE):
+        variant = "Cabernet Malbec"
+    if _ascii_fold(brand or "").upper() == "DIVERSION":
+        product_type = "Galletitas"
+        variant = "Surtido"
+        size = (400, "g")
+        size_display = None
+    if _ascii_fold(brand or "").upper() == "ECCOLE":
+        product_type = "Adhesivo"
+        variant = None
+    if _ascii_fold(brand or "").upper() == "GAROTO":
+        product_type = "Bombones"
+        variant = "Surtidos"
+    if _ascii_fold(brand or "").upper() == "LIEBIG":
+        product_type = "Yerba"
+        variant = "Original"
+        size = (500, "g")
+        size_display = None
+    if _ascii_fold(brand or "").upper() == "MATEANDO":
+        product_type = "Yerba"
+        variant = "Suave"
+    if _ascii_fold(brand or "").upper() == "MACUCAS" and _ascii_fold(product_type or "").upper() == "RELLENAS":
+        product_type = "Galletitas"
+        variant = "Chocolate"
+    if _ascii_fold(brand or "").upper() == "MENTOS":
+        product_type = "Caramelos"
+        if variant:
+            variant = re.sub(r"\bConfitados\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        size = None
+        size_display = None
+    if _ascii_fold(brand or "").upper() == "MILLER":
+        variant = None
+    if _ascii_fold(brand or "").upper() == "OLD SPICE":
+        product_type = "Desodorante"
+        if size and size[1] == "ml" and variant and not re.search(r"\bRoll-?On\b", variant, re.IGNORECASE):
+            variant = f"Roll-on {variant}"
+    if (
+        _ascii_fold(brand or "").upper() == "NESCAO"
+        and _ascii_fold(product_type or "").upper() == "LECHE"
+        and variant
+        and re.fullmatch(r"En Polvo Chocolatado", variant, re.IGNORECASE)
+        and size == (150, "g")
+    ):
+        product_type = "Cacao"
+        variant = None
+    if _ascii_fold(brand or "").upper() == "ORIGEN":
+        product_type = "Vino"
+        if variant:
+            variant = re.sub(r"\bTrapich\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bVino\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bCabern\.?\s*Sauv\.?\b", "Cabernet Sauvignon", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"[.]+$", "", variant)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "PINOLUZ":
+        product_type = "Limpiador"
+        if variant and re.fullmatch(r"Botella Original", variant, re.IGNORECASE):
+            variant = "Pino"
+    if _ascii_fold(brand or "").upper() == "SEISEME":
+        product_type = "Jabon"
+        variant = "Pan"
+    if _ascii_fold(brand or "").upper() == "SVELTY":
+        product_type = "Leche en Polvo"
+        variant = "Descremada"
+    if _ascii_fold(brand or "").upper() == "DUFFY":
+        product_type = "Pañales"
+        if variant:
+            variant = re.sub(r"^\s*Pañales\s+", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bHiper\s+G\b", "Xg", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        if size and size[1] == "uni":
+            size = (size[0], "u")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "GOLONDRINA" and variant:
+        variant = re.sub(r"\bC/Soja\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() in {"K OTHRINA", "K-OTHRINA"}:
+        variant = None
+    if _ascii_fold(brand or "").upper() == "BORGHETTI":
+        variant = None
+    if _ascii_fold(brand or "").upper() == "CARO CUORE":
+        if _ascii_fold(product_type or "").upper() == "FRAGANCIA":
+            product_type = "Perfume"
+        if variant:
+            variant = re.sub(r"\bAer\.?\s*Fem\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "CRAZY POP":
+        product_type = "Chupetin"
+        if variant:
+            variant = re.sub(r"\bTira\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bChispeante\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        size = None
+        size_display = None
+    if _ascii_fold(brand or "").upper() == "DERMAGLOS":
+        product_type = "Protector Solar"
+        if variant:
+            variant = re.sub(r"\bProt\.?\s*Solar\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bEmulsi[oó]n\b", "Emulsion", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bFp\s*(\d+)\b", r"Fp\1", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "MINORA":
+        product_type = "Maquina de Afeitar"
+        if re.search(r"\bPRO\b", _ascii_fold(name).upper()):
+            variant = "Pro Ii"
+        if size and size[1] == "uni":
+            size = (size[0], "u")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "OLD SMUGGLER":
+        if _ascii_fold(product_type or "").upper() == "PETACA":
+            product_type = "Whisky"
+        if variant:
+            variant = re.sub(r"\bPetaca\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bWhisky\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bA[nñ]ejo\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "POXIPOL":
+        product_type = "Adhesivo"
+        if variant:
+            variant = re.sub(r"\b10\s+Minutos\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bGris\b", "Original", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        size = None
+        size_display = None
+    if _ascii_fold(brand or "").upper() == "PROFUGO" and variant:
+        if re.search(r"\bEspecias\b", variant, re.IGNORECASE):
+            variant = "Especias"
+        elif re.search(r"\bFr(?:\.?\s*Rojos|utos\s+Rojos)\b", variant, re.IGNORECASE):
+            variant = "Frutos Rojos"
+    if _ascii_fold(brand or "").upper() == "QUILMES" and variant:
+        variant = re.sub(r"\bLata\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\bS/Alcohol\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "RICOMAS" and _ascii_fold(variant or "").upper() == "MASTICABLES":
+        variant = "Masticables Surtidos"
+    if _ascii_fold(brand or "").upper() == "SAENZ BRIONES":
+        product_type = "Sidra"
+        variant = "1888"
+    if _ascii_fold(brand or "").upper() == "TOSTITOS":
+        if _ascii_fold(product_type or "").upper() in {"SNACK", "NACHO", "NACHOS"}:
+            product_type = "Nachos"
+        variant = None
+    if _ascii_fold(brand or "").upper() == "TRES PATITOS":
+        if _ascii_fold(product_type or "").upper() == "FOSFORO":
+            product_type = "Fosforos"
+        if variant:
+            variant = re.sub(r"\bEdicion\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        if size and size[1] == "uni":
+            size = (size[0], "u")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "VITTONE":
+        if variant and re.fullmatch(r"Speciale", variant, re.IGNORECASE):
+            variant = None
+        if size == (750000, "ml"):
+            size = (750, "ml")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "VOLIGOMA":
+        if _ascii_fold(product_type or "").upper() == "ADHESIV":
+            product_type = "Adhesivo"
+        if variant:
+            variant = re.sub(r"\bSintetico\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "BALLANTINES":
+        if _ascii_fold(product_type or "").upper() in {"S", ""}:
+            product_type = "Whisky"
+        if _ascii_fold(variant or "").upper() == "WHISKY":
+            variant = None
+    if _ascii_fold(brand or "").upper() == "CABSHA" and _ascii_fold(product_type or "").upper() == "HUEVO":
+        product_type = "Huevo de Pascua"
+        variant = None
+    if _ascii_fold(brand or "").upper() == "COCOA BEACH":
+        if variant and re.match(r"Patrol\b", variant, re.IGNORECASE):
+            variant = f"Paw {variant}"
+        product_type = "Protector Solar"
+        if variant:
+            variant = re.sub(r"\bProt\.?\s*Solar\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bPaw\s+Patrol\b", "Paw Patrol", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bFp\s*(\d+)\b", r"Fp\1", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "COFFEE MATE":
+        if not variant:
+            variant = "Original"
+        else:
+            variant = re.sub(r"\bEn\s+P(?:vo|olvo)\.?\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bLite\b|\bLight\b|\bLiviano\b", "Liviano", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bRegular\b", "Original", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "COSMOS":
+        original_product_type = _ascii_fold(product_type or "").upper()
+        if _ascii_fold(product_type or "").upper() in {"MEGA", "CHUPETINES"}:
+            product_type = "Chupetin"
+        if variant:
+            variant = re.sub(r"\bChupetin(?:es)?\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bSurtido\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bFrutal\b", "Frutales", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        if original_product_type == "MEGA" and not variant:
+            variant = "Mega"
+        if size and size[1] == "uni":
+            size = (size[0], "u")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "ECO DE LOS ANDES":
+        product_type = "Agua Mineral"
+        if variant:
+            variant = re.sub(r"\bS/Gas\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "FULL MANI" and _ascii_fold(product_type or "").upper() == "HUEVO":
+        product_type = "Huevo de Pascua"
+        if variant:
+            variant = re.sub(r"^\s*De\s+Pascua\s+", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "LA GOTITA":
+        variant = "Instantaneo"
+    if _ascii_fold(brand or "").upper() == "LA LECHERA":
+        product_type = "Leche en Polvo"
+        if variant:
+            variant = re.sub(r"\bEn\s+Pvo\.?\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bEnt\.?\b", "Entera", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bNutrifuerza\s+con\s+Hierro\b", "Nutrifuerza", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bPouch\b|\bBsa\.?x?\s*N/?Balan\.?\b", "Bolsa", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+            if variant:
+                variant = variant.strip(" .") or None
+    if _ascii_fold(brand or "").upper() == "MERENGADAS" and variant:
+        variant = re.sub(r"\bRellenas\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\bFrutilla\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "NONISEC":
+        product_type = "Pañales"
+        if variant:
+            variant = re.sub(r"\bExtra\s+Grande\b", "Xg", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bGrande\b", "G", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bAdulto\b", "Adultos", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        if size and size[1] == "uni":
+            size = (size[0], "u")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "NUTELLA":
+        product_type = "Crema"
+        variant = "Avellanas"
+    if _ascii_fold(brand or "").upper() in {"OVEJA", "OVEJA BLACK"}:
+        brand = "Oveja Black"
+        if variant:
+            variant = re.sub(r"^\s*(?:Black|Blak)\s+", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\bCabern\.?\s*Sauv\.?\b", "Cabernet Sauvignon", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip(" .") or None
+    if _ascii_fold(brand or "").upper() == "PASO DE LOS TOROS" and variant:
+        variant = re.sub(r"\bAgua\s+Tonica\b", "Tonica", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "SPEED":
+        if variant:
+            variant = re.sub(r"\bLata\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "STELLA ARTOIS" and variant:
+        variant = re.sub(r"\b0\.0%\s*S/Alcohol\b", "S/Alcohol", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\bLata\b", "", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "PALITOS DE LA SELVA":
+        product_type = "Caramelos"
+        if not variant or re.fullmatch(r"Masticables?", variant, re.IGNORECASE):
+            variant = "Clasicos"
+    if _ascii_fold(brand or "").upper() == "CLUB SOCIAL":
+        if _ascii_fold(product_type or "").upper() in {"GALLET.", "GALLETITA", "GALLETITAS"}:
+            product_type = "Galletitas"
+        if variant and re.fullmatch(r"Agrupado", variant, re.IGNORECASE):
+            variant = "Original"
+        if size == (24, "g"):
+            size = (141, "g")
+            size_display = None
+    if _ascii_fold(brand or "").upper() == "BAYGON":
+        product_type = "Insecticida"
+        if variant and re.fullmatch(r"M\.?M\.?M\.?", variant, re.IGNORECASE):
+            variant = "Mata Moscas y Mosquitos"
+    if _ascii_fold(brand or "").upper() == "BLOCK":
+        if _ascii_fold(product_type or "").upper() in {"ALFAJOR", "GALLETITA", "GALLETITAS"}:
+            brand = "Cofler Block"
+        if _ascii_fold(product_type or "").upper() == "GALLETITA":
+            product_type = "Galletitas"
+        if variant and re.fullmatch(r"Triple", variant, re.IGNORECASE):
+            variant = None
+    if _ascii_fold(brand or "").upper() == "COFLER":
+        if _ascii_fold(product_type or "").upper() == "HUEVO" and variant and re.search(r"\bBlock\b", variant, re.IGNORECASE):
+            brand = "Cofler Block"
+            product_type = "Huevo de Pascua"
+            variant = re.sub(r"^\s*De\s+Pascua\s+Block\b", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip(" .") or None
+    if _ascii_fold(brand or "").upper() == "ALARIS":
+        brand = "Trapiche Alaris"
+        if variant:
+            variant = re.sub(r"^\s*Alaris\s+", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip(" .") or None
+            variant = re.sub(r"\bCabern\.?\s*Sauv\.?\b", "Cabernet Sauvignon", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip(" .") or None
+    if _ascii_fold(brand or "").upper() == "ALBERIO" and _ascii_fold(product_type or "").upper() == "LENTEJA":
+        product_type = "Lentejas"
+    if _ascii_fold(brand or "").upper() == "PUROCOL":
+        if variant and re.search(r"\bEtil", variant, re.IGNORECASE):
+            variant = re.sub(r"\bUso\s+Alim\.?\b", "U/A", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        if _ascii_fold(product_type or "").upper().startswith("ALCOHOL ETIL"):
+            product_type = "Alcohol"
+            variant = "Etilico U/A"
+    if _ascii_fold(brand or "").upper() == "RESERVA DE LOS ANDES" and variant:
+        variant = re.sub(r"\bCabern\.?\s*Sauv\.?\b", "Cabernet Sauvignon", variant, flags=re.IGNORECASE)
+        variant = re.sub(r"\s+", " ", variant).strip(" .") or None
+    if _ascii_fold(brand or "").upper() == "SCHNEIDER":
+        variant = None
+    if _ascii_fold(brand or "").upper() == "SANTA FILOMENA":
+        if variant and re.fullmatch(r"Botell[oó]n Patero Tinto|Tinto Patero", variant, re.IGNORECASE):
+            variant = "Patero Tinto"
+    if _ascii_fold(brand or "").upper() in {"CUCATRAP", "CUCA-TRAP"}:
+        product_type = "Insecticida"
+        variant = None
+    if _ascii_fold(brand or "").upper() in {"JIM BEAM", "JIM BEAN"}:
+        if variant and re.fullmatch(r"White|White Label|Etiqueta Blanca", variant, re.IGNORECASE):
+            variant = "White Label"
+    if _ascii_fold(brand or "").upper() == "WARSTEINER":
+        variant = None
+    if _ascii_fold(brand or "").upper() == "WHITE HORSE":
+        variant = None
+    if _ascii_fold(brand or "").upper() == "XTREME":
+        if _ascii_fold(product_type or "").upper() == "RAINBOW":
+            product_type = "Caramelos"
+        if variant:
+            variant = re.sub(r"^\s*(?:Caram\.?\s+)?De\s+Goma\s+", "", variant, flags=re.IGNORECASE)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+    if _ascii_fold(brand or "").upper() == "PIBES":
+        product_type = "Colonia"
+        variant = None
+        size = (80, "ml")
+        size_display = None
+    if _ascii_fold(brand or "").upper() in {"DRF", "D R F"} or re.search(r"\bD\s*R\s*F\b", name, re.IGNORECASE):
+        brand = "DRF"
+        if _ascii_fold(product_type or "").upper() == "CARAMELOS DUROS":
+            product_type = "Pastillas"
+        if variant:
+            variant = re.sub(r"#", "", variant)
+            variant = re.sub(r"\s+", " ", variant).strip() or None
+        size = None
+        size_display = None
     if brand == "317" and product_type == "Tintura" and variant:
         variant = re.sub(
             r"^\s*Kit\s+N?(\d+(?:\.\d+)?)\b.*$",
@@ -357,6 +871,7 @@ def extract_features(name: str, category: str = "") -> dict:
         "variant":      variant,
         "size_value":   size[0] if size else None,
         "size_unit":    size[1] if size else None,
+        "size_display": size_display,
         "category":     normalize_category(category),
     }
 

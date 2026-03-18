@@ -232,6 +232,8 @@ def extract_unified(
         size: str | None = None
         if size_value is not None and size_unit is not None:
             size = f"{size_value:g} {size_unit}"
+        if features.get("size_display"):
+            size = features["size_display"]
 
         # ── Canonical normalization (key-building only) ───────────────────────
         # Converts to comparable base units: kg→g, l/lt→ml, cc/cm3→ml.

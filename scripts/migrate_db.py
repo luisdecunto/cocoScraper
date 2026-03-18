@@ -59,10 +59,10 @@ async def get_columns(conn: asyncpg.Connection, table: str) -> list[str]:
 
 
 async def migrate(source_url: str, target_url: str) -> None:
-    print("Connecting to source (Neon)…")
+    print("Connecting to source…")
     source = await asyncpg.connect(source_url)
 
-    print("Connecting to target (Render)…")
+    print("Connecting to target…")
     target = await asyncpg.connect(target_url)
 
     try:
