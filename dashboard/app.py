@@ -1033,19 +1033,20 @@ def render_feedback_page() -> None:
     )
 
     display = log.copy()
+    display["#"] = display["id"]
     display["productos"] = display["canonical_names"].apply(
         lambda x: ", ".join(x) if isinstance(x, list) else str(x)
     )
     display["fecha"] = display["created_at"].apply(format_timestamp)
 
     render_export_button(
-        display[["fecha", "productos", "comment"]].rename(columns={"comment": "comentario"})
+        display[["#", "fecha", "productos", "comment"]].rename(columns={"comment": "comentario"})
         .to_csv(index=False).encode("utf-8"),
         file_name="feedback_log.csv",
         key="feedback_export",
     )
 
-    display_table(display[["fecha", "productos", "comment"]].rename(columns={"comment": "comentario"}))
+    display_table(display[["#", "fecha", "productos", "comment"]].rename(columns={"comment": "comentario"}))
 
 
 def main() -> None:
