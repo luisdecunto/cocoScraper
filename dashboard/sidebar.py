@@ -21,11 +21,12 @@ def _sync_lang_from_url() -> None:
 
 
 PRIMARY_SECTIONS = ["Dashboard", "Comparison", "History"]
-SECONDARY_SECTIONS = ["Logs"]
+SECONDARY_SECTIONS = ["Feedback", "Logs"]
 NAV_ICONS = {
     "Dashboard": "&#8962;",
     "Comparison": "&#8781;",
     "History": "&#9716;",
+    "Feedback": "&#9873;",
     "Logs": "&#9881;",
 }
 # Map English page key → i18n key for display label
@@ -33,6 +34,7 @@ _NAV_LABEL_KEY: dict[str, str] = {
     "Dashboard": "nav_dashboard",
     "Comparison": "nav_comparison",
     "History": "nav_history",
+    "Feedback": "nav_feedback",
     "Logs": "nav_logs",
 }
 

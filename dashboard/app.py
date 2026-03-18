@@ -96,6 +96,12 @@ def get_page_meta() -> dict[str, dict[str, str]]:
             "description": t("page_logs_desc"),
             "sidebar": t("page_logs_sidebar"),
         },
+        "Feedback": {
+            "eyebrow": t("page_feedback_eyebrow"),
+            "title": t("page_feedback_title"),
+            "description": t("page_feedback_desc"),
+            "sidebar": t("page_feedback_sidebar"),
+        },
     }
 
 
@@ -233,6 +239,50 @@ def workspace_snapshot() -> dict[str, str]:
         "suppliers": format_count(row.get("supplier_count")),
         "updated": format_timestamp(row.get("last_scraped_at")),
     }
+
+
+def _ensure_feedback_table() -> None:
+    """Create comparison_feedback if it doesn't exist (idempotent)."""
+    conn = psycopg2.connect(**get_psycopg2_connection_kwargs())
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS comparison_feedback (
+                    id              BIGSERIAL    PRIMARY KEY,
+                    created_at      TIMESTAMPTZ  DEFAULT NOW(),
+                    canonical_names TEXT[]       NOT NULL,
+                    comment         TEXT         NOT NULL
+                );
+            """)
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def _insert_feedback(canonical_names: list[str], comment: str) -> None:
+    _ensure_feedback_table()
+    conn = psycopg2.connect(**get_psycopg2_connection_kwargs())
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO comparison_feedback (canonical_names, comment) VALUES (%s, %s)",
+                (canonical_names, comment),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+@st.cache_data(ttl=_CACHE_TTL, show_spinner=False)
+def _load_feedback_log() -> pd.DataFrame:
+    return query(
+        """
+        SELECT id, created_at, canonical_names, comment
+        FROM comparison_feedback
+        ORDER BY created_at DESC
+        LIMIT 200;
+        """
+    )
 
 
 def display_table(
@@ -609,6 +659,31 @@ def render_comparison_page() -> None:
         else:
             st.caption("← Clic en una fila")
 
+    st.divider()
+    with st.expander(f"⚑ {t('feedback_flag_title')}"):
+        st.caption(t("feedback_flag_desc"))
+        canonical_options = sorted(pivot["canonical_name"].dropna().unique().tolist())
+        with st.form("comp_feedback_form"):
+            flagged = st.multiselect(
+                "Productos con problema",
+                canonical_options,
+                placeholder="Seleccioná uno o más productos...",
+            )
+            comment = st.text_area(
+                "Comentario",
+                placeholder="Ej: estos productos no son equivalentes, el tamaño es diferente",
+            )
+            submitted = st.form_submit_button("Enviar reporte")
+        if submitted:
+            if not flagged:
+                st.warning("Seleccioná al menos un producto.")
+            elif not comment.strip():
+                st.warning("Escribí un comentario.")
+            else:
+                _insert_feedback(flagged, comment.strip())
+                st.cache_data.clear()
+                st.success("Reporte guardado. ¡Gracias!")
+
 
 def render_history_page() -> None:
     products_df = _load_history_products()
@@ -891,6 +966,50 @@ def render_logs_page() -> None:
     display_table(runs, use_style=runs.style.map(color_status, subset=["status"]))
 
 
+def render_feedback_page() -> None:
+    _ensure_feedback_table()
+    log = _load_feedback_log()
+
+    render_page_header(
+        t("page_feedback_eyebrow"),
+        t("page_feedback_title"),
+        t("page_feedback_desc"),
+        context=t("feedback_ctx", n=format_count(len(log))) if not log.empty else None,
+    )
+
+    if log.empty:
+        render_empty_state(t("feedback_no_data"))
+        return
+
+    render_metric_row(
+        [
+            (t("feedback_metric_total"), format_count(len(log)), t("feedback_metric_total_note")),
+            (t("feedback_metric_recent"), format_timestamp(log["created_at"].max()), t("feedback_metric_recent_note")),
+        ]
+    )
+
+    render_section_intro(
+        t("feedback_log_eyebrow"),
+        t("feedback_log_title"),
+        t("feedback_log_desc"),
+    )
+
+    display = log.copy()
+    display["productos"] = display["canonical_names"].apply(
+        lambda x: ", ".join(x) if isinstance(x, list) else str(x)
+    )
+    display["fecha"] = display["created_at"].apply(format_timestamp)
+
+    render_export_button(
+        display[["fecha", "productos", "comment"]].rename(columns={"comment": "comentario"})
+        .to_csv(index=False).encode("utf-8"),
+        file_name="feedback_log.csv",
+        key="feedback_export",
+    )
+
+    display_table(display[["fecha", "productos", "comment"]].rename(columns={"comment": "comentario"}))
+
+
 def main() -> None:
     if not has_database_config():
         render_sidebar(get_page_meta(), None, t("db_not_configured_sidebar"))
@@ -933,6 +1052,8 @@ def main() -> None:
             render_history_page()
         elif page == "Logs":
             render_logs_page()
+        elif page == "Feedback":
+            render_feedback_page()
         else:
             st.error(f"Unknown page: {page}")
     except Exception as exc:
