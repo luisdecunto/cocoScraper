@@ -20,12 +20,13 @@ def _sync_lang_from_url() -> None:
             st.session_state.lang = lang_from_url
 
 
-PRIMARY_SECTIONS = ["Dashboard", "Comparison", "History"]
+PRIMARY_SECTIONS = ["Dashboard", "Comparison", "History", "Revisar"]
 SECONDARY_SECTIONS = ["Feedback", "Logs"]
 NAV_ICONS = {
     "Dashboard": "&#8962;",
     "Comparison": "&#8781;",
     "History": "&#9716;",
+    "Revisar": "&#10003;",
     "Feedback": "&#9873;",
     "Logs": "&#9881;",
 }
@@ -34,6 +35,7 @@ _NAV_LABEL_KEY: dict[str, str] = {
     "Dashboard": "nav_dashboard",
     "Comparison": "nav_comparison",
     "History": "nav_history",
+    "Revisar": "nav_revisar",
     "Feedback": "nav_feedback",
     "Logs": "nav_logs",
 }

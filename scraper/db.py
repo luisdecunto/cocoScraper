@@ -69,6 +69,8 @@ async def init_schema(pool: asyncpg.Pool) -> None:
             ALTER TABLE products ADD COLUMN IF NOT EXISTS canonical_name   TEXT;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS features_version INT DEFAULT 0;
             ALTER TABLE products ADD COLUMN IF NOT EXISTS last_scraped_at  TIMESTAMPTZ;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS classification_status TEXT;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS classification_confidence TEXT;
 
             -- Current price/stock — updated on every scrape (no history here)
             ALTER TABLE products ADD COLUMN IF NOT EXISTS price_unit  NUMERIC(12,2);
@@ -179,7 +181,12 @@ async def init_schema(pool: asyncpg.Pool) -> None:
 
 
 async def upsert_product(pool: asyncpg.Pool, supplier: str, product_dict: dict) -> None:
-    """Insert or update a product row. On conflict, update all mutable fields."""
+    """Insert a new product or update price/stock of existing product.
+
+    On insert: all fields set (name, url, category, prices, stock)
+    On conflict: only update price_unit, price_bulk, stock, last_scraped_at.
+                 Name, category, and all classification fields remain frozen.
+    """
     async with pool.acquire() as conn:
         await conn.execute(
             """
@@ -187,16 +194,9 @@ async def upsert_product(pool: asyncpg.Pool, supplier: str, product_dict: dict) 
                 (sku, supplier, name, url, category, units_per_package, packs_per_pallet, updated_at, last_scraped_at)
             VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
             ON CONFLICT (sku, supplier) DO UPDATE
-                SET name              = EXCLUDED.name,
-                    url               = EXCLUDED.url,
-                    category          = EXCLUDED.category,
-                    units_per_package = COALESCE(EXCLUDED.units_per_package, products.units_per_package),
-                    packs_per_pallet  = COALESCE(EXCLUDED.packs_per_pallet,  products.packs_per_pallet),
-                    features_version  = CASE
-                        WHEN products.name IS DISTINCT FROM EXCLUDED.name THEN NULL
-                        ELSE products.features_version
-                    END,
-                    updated_at        = NOW(),
+                SET price_unit        = EXCLUDED.price_unit,
+                    price_bulk        = EXCLUDED.price_bulk,
+                    stock             = EXCLUDED.stock,
                     last_scraped_at   = NOW()
             """,
             product_dict["sku"],
@@ -352,28 +352,34 @@ async def batch_upsert_product_features(
 ) -> None:
     """
     Bulk-write normalized features using a single executemany call.
-    Each record is a tuple of 14 values matching upsert_product_features params:
+    Only updates products with classification_status IS NULL (unclassified).
+
+    Each record is a tuple of 16 values:
     (sku, supplier, product_id, brand, product_type, variant, size,
      size_value, size_unit, category_dept, category_sub,
-     canonical_key, canonical_name, features_version)
+     canonical_key, canonical_name, features_version,
+     classification_status, classification_confidence)
     """
     async with pool.acquire() as conn:
         await conn.executemany(
             """
             UPDATE products
-            SET product_id       = $3,
-                brand            = $4,
-                product_type     = $5,
-                variant          = $6,
-                size             = $7,
-                size_value       = $8,
-                size_unit        = $9,
-                category_dept    = $10,
-                category_sub     = $11,
-                canonical_key    = $12,
-                canonical_name   = $13,
-                features_version = $14
+            SET product_id               = $3,
+                brand                    = $4,
+                product_type             = $5,
+                variant                  = $6,
+                size                     = $7,
+                size_value               = $8,
+                size_unit                = $9,
+                category_dept            = $10,
+                category_sub             = $11,
+                canonical_key            = $12,
+                canonical_name           = $13,
+                features_version         = $14,
+                classification_status    = $15,
+                classification_confidence = $16
             WHERE sku = $1 AND supplier = $2
+              AND classification_status IS NULL
             """,
             records,
         )
@@ -385,8 +391,8 @@ async def fetch_products_for_postprocess(
     min_version: int = 0,
 ) -> list:
     """
-    Return products needing postprocessing.
-    Filters by features_version < min_version or IS NULL.
+    Return unclassified products needing postprocessing.
+    Filters by classification_status IS NULL (never classified before).
     """
     async with pool.acquire() as conn:
         rows = await conn.fetch(
@@ -394,9 +400,54 @@ async def fetch_products_for_postprocess(
             SELECT sku, name, category
             FROM products
             WHERE supplier = $1
-              AND (features_version IS NULL OR features_version < $2)
+              AND classification_status IS NULL
             ORDER BY sku
             """,
-            supplier, min_version,
+            supplier,
         )
         return rows
+
+
+async def approve_classification(
+    pool: asyncpg.Pool,
+    sku: str,
+    supplier: str,
+) -> None:
+    """Mark a classification as approved (frozen forever)."""
+    async with pool.acquire() as conn:
+        await conn.execute(
+            "UPDATE products SET classification_status = 'approved' "
+            "WHERE sku = $1 AND supplier = $2",
+            sku, supplier,
+        )
+
+
+async def reject_classification(
+    pool: asyncpg.Pool,
+    sku: str,
+    supplier: str,
+) -> None:
+    """Reject a classification and reset for re-classification.
+
+    Resets canonical_name and classification_status to NULL so the product
+    can be classified again by the pipeline.
+    """
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """UPDATE products
+               SET classification_status = NULL,
+                   canonical_name = NULL,
+                   canonical_key = NULL,
+                   brand = NULL,
+                   product_type = NULL,
+                   variant = NULL,
+                   size = NULL,
+                   size_value = NULL,
+                   size_unit = NULL,
+                   category_dept = NULL,
+                   category_sub = NULL,
+                   classification_confidence = NULL
+               WHERE sku = $1 AND supplier = $2
+            """,
+            sku, supplier,
+        )

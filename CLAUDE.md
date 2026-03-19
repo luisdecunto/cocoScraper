@@ -215,6 +215,7 @@ pip install -r requirements.txt
 python -m scraper.main db init
 python -m scraper.main discover --supplier maxiconsumo
 python -m scraper.main scrape --supplier maxiconsumo
+python -m scraper.main update --supplier maxiconsumo    # scrape + classify in one go
 python -m scraper.main scrape
 python -m scraper.main export latest
 python -m scraper.main export comparison
@@ -257,8 +258,9 @@ streamlit run dashboard/app.py
 - [x] Strategic plans: Update strategy, client delivery, unification strategy (3 docs in docs/)
 - [x] i18n: English / Español / Conurbano language switcher (dashboard/i18n.py, sidebar selectbox)
 - [x] Mobile sidebar: slide-in nav, persistent hamburger button injected into document.body (CSS transform workaround)
-- [x] Streamlit Community Cloud deployment (dashboard/requirements.txt, dashboard/db/connection.py, Neon PostgreSQL)
-- [x] Data migration: 28k products + 23k snapshots + 20k price_history rows migrated to Neon
+- [x] Streamlit Community Cloud deployment (dashboard/requirements.txt, dashboard/db/connection.py, Railway PostgreSQL)
+- [x] Data migration: 28k products + 23k snapshots + 20k price_history rows migrated to Railway
+- [x] Unified update command: `python -m scraper.main update [--supplier X]` (scrape + classify in one go)
 
 ### In Progress
 

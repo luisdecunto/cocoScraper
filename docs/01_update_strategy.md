@@ -1,104 +1,141 @@
 # Update & Replacement Strategy
 
-How cocoScraper treats repeated products, deduplication, and new products.
+How cocoScraper scrapes, classifies, approves, and protects product data.
 
 ---
 
-## Problem Statement
+## Principle: Immutable Classification
 
-When running scrapers repeatedly:
-- Products may appear in the DB already (SKU + supplier exists)
-- New supplier feeds may discover the same physical product under different SKUs
-- Prices change but postprocessed attributes (brand, type, size, category) might be refined
-- We need rules to decide: overwrite, merge, or keep both?
+Once a product is classified and approved, its classification fields (`brand`, `product_type`,
+`size`, `canonical_name`, etc.) are **frozen forever**. Price updates happen independently
+and never touch classification.
 
 ---
 
-## Current Behavior (as of 2026-03-16)
+## Current Behavior (as of 2026-03-19)
 
-### Products Table (Upsert)
-- **Key**: (sku, supplier)
-- **Conflict handling**: `ON CONFLICT DO UPDATE SET`
-  - `name`, `url`, `category`, `units_per_package`, `packs_per_pallet`, `updated_at`
-  - Use `COALESCE()` for Nini-only fields so other suppliers don't overwrite NULL
-- **Result**: One row per (sku, supplier) pair
+### Product Upsert (Scrape Only)
 
-### Price Snapshots (Dedup by value)
-- **Rule**: Skip insert if `price_unit` AND `price_bulk` match the last recorded row
-- **Key**: `(sku, supplier, scraped_at)` — UNIQUE
-- **Result**: Only new price intervals written; same-price days are skipped
-- **Why**: Keeps snapshots table small; price_history still tracks intervals correctly
+On every scrape, `upsert_product` runs:
 
-### Postprocess Data (Brand, Type, Size, Category)
-- **Run separately** after scrape: `python -m scraper.postprocess.<supplier>`
-- **Idempotent**: Safe to re-run on same data
-- **Updates**: Overwrites `brand`, `product_type`, `variant`, `size`, `category_dept`, `category_sub`
-- **Coverage**: Logged per supplier (e.g., 99.8% brand match for maxiconsumo)
+| Scenario | Action |
+|---|---|
+| **New product** (not in DB) | INSERT with raw data: name, url, category, price, stock. Classification fields = NULL. |
+| **Existing product** (sku, supplier exists) | UPDATE only: price_unit, price_bulk, stock, last_scraped_at. Name, category, classification fields untouched. |
 
----
+**Why**: Protects frozen classifications from being overwritten by supplier data changes.
 
-## When to Re-Scrape
+### Price Tracking (Decoupled from Classification)
 
-### Full Re-Scrape (Delete then scrape)
-**Conditions:**
-- Supplier site structure changed (selectors broken)
-- Login method broke
-- Need to start fresh (data corruption)
+- Every scrape writes current price/stock to the `products` row
+- `upsert_price_history` manages price periods (extend or open new)
+- Price changes are tracked independently; classification never depends on price
 
-**Process:**
-1. `DELETE FROM products WHERE supplier = 'supplier_name'` (cascades to snapshots)
-2. `DELETE FROM price_history WHERE supplier = 'supplier_name'`
-3. Run scraper: `python -m scraper.main scrape --supplier supplier_name`
-4. Run postprocess: `python -m scraper.postprocess.supplier_name`
+### Classification (Manual Approval Required)
 
-### Incremental Re-Scrape (Keep existing data)
-**Conditions:**
-- Routine daily/weekly scrape (normal case)
-- Some categories failed mid-run (SSL errors, network blips)
-- Need to top-up partial collection
+See [docs/04_classification_strategy.md](04_classification_strategy.md) for full details.
 
-**Process:**
-1. Run scraper: `python -m scraper.main scrape --supplier supplier_name`
-   - Existing (sku, supplier) rows are UPDATEd (name, category, etc.)
-   - New products are INSERTed
-   - Old products not in feed remain in DB
-2. New snapshots are written if prices differ
-3. Run postprocess to refine attributes
+**Quick summary**:
+1. New products arrive with `classification_status = NULL`
+2. Classification pipeline extracts features → sets `classification_status = 'pending'`
+3. Admin approves in dashboard → `classification_status = 'approved'` (frozen)
+4. Pipeline never modifies products with `classification_status != NULL`
+
+**States**:
+```
+NULL → [pipeline] → 'pending' → [admin approves] → 'approved' (frozen)
+                                    ↓ [admin rejects]
+                                  NULL (re-queue)
+```
 
 ---
 
-## Deduplication: Same Product, Different Suppliers
+## Workflow: Daily Operations
+
+### Routine Scrape (Daily)
+
+```bash
+python -m scraper.main scrape --supplier maxiconsumo
+```
+
+**What happens**:
+- New products → inserted (name, price, classification_status=NULL)
+- Existing products → price/stock updated, classification untouched
+- Price history extended or new periods opened
+
+### Classification (Explicit, As-Needed)
+
+```bash
+# Process new (unclassified) products
+python -m scraper.postprocess.pipeline --supplier maxiconsumo
+```
+
+**What happens**:
+- Fetches products where `classification_status IS NULL`
+- Runs classifier (4-level priority)
+- Sets `brand`, `product_type`, `size`, `canonical_name`
+- Sets `classification_status = 'pending'` (awaits approval)
+- Sets `classification_confidence = 'high' | 'low'`
+
+### Approval (Manual, Via Dashboard)
+
+```
+Dashboard → Revisar page → see pending classifications → Aprobar / Editar / Rechazar
+```
+
+**Results**:
+- Approve → `classification_status = 'approved'` (frozen)
+- Edit → update fields + approve
+- Reject → reset `classification_status = NULL` for retry
+
+---
+
+## When to Full-Reclassify
+
+**Rare scenario**: You improved the brand extraction logic and want to re-process.
+
+```bash
+python -m scraper.postprocess.pipeline --supplier maxiconsumo --reclassify
+```
+
+**What happens**:
+1. Resets `classification_status = NULL` for all products of that supplier
+2. Resets `brand`, `product_type`, `size`, `canonical_name` to NULL
+3. Runs full classification pipeline
+4. All products go back to `classification_status = 'pending'`
+5. Requires manual re-approval (dashboard again)
+
+---
+
+## Cross-Supplier Matching (Canonical Keys)
 
 ### The Problem
-Five suppliers may sell the same physical product (e.g., "Coca-Cola 2L bottle") under different SKUs:
+Five suppliers may sell the same physical product under different SKUs:
 - maxiconsumo: SKU 1001
 - nini: SKU 5678
 - luvik: SKU abc123
 - vital: EAN 7790150000202
 - santamaria: CATALOG_ID_999
 
-### Current Solution: Canonical Matching
-**File**: `scraper/postprocess/unify.py`
+### Solution: Canonical Keys (From Approved Classifications)
 
-**Process:**
-1. Extract normalized fields: `brand | product_type | size | category`
-2. Hash them: `canonical_key = md5(brand + '|' + type + '|' + size)`
-3. Store in `products.canonical_key`
-4. Join on canonical_key to find matches
+Once a product is approved (`classification_status = 'approved'`), its `canonical_key` is used for matching:
 
-**Current State**:
-- 774 canonical matches found across 16k products
-- Not yet 100% coverage (missing brands, type ambiguity, etc.)
+```
+canonical_key = BRAND | PRODUCT_TYPE | VARIANT | WEIGHT/VOLUME/COUNT
+```
 
-### Future: Unified Taxonomy
-**Goal**: Canonical keys stable across all suppliers with same semantics
+**Key rule**: Only products with `classification_status = 'approved'` contribute to cross-supplier matching.
+Pending/rejected products are excluded (might be inaccurate).
 
-**Steps**:
-1. Build master brand list (multi-supplier consensus)
-2. Build master product type ontology
-3. Standardize size parsing across all suppliers
-4. Map supplier categories to common taxonomy
-5. Publish unified data model for clients
+**File**: `scraper/postprocess/unify.py` — joins products on canonical_key
+
+**Current state**: 774+ matches found across 16k products (growing as more are approved).
+
+### Future Work
+
+Once 90%+ of products are approved, canonical matching coverage will improve dramatically
+(currently bottlenecked by pending/low-confidence classifications).
 
 ---
 
@@ -124,50 +161,64 @@ Five suppliers may sell the same physical product (e.g., "Coca-Cola 2L bottle") 
 
 ---
 
-## Postprocessing: Refinement Loop
+## Improving Classifications
 
-### When to Rerun Postprocessing
-**Do rerun if:**
-- Fixed a bug in brand extraction (e.g., "ACME" wasn't in the brand list)
-- New supplier added similar product names (update data files)
-- Coverage metrics improved (more brand/type matches)
+### Update Brand/Type Data Files
 
-**Safe to rerun?** Yes — idempotent. Rebuilds attributes from raw `name`.
+The classification pipeline uses supplier-specific data files. To improve accuracy:
 
-### What Data Files Control Postprocessing?
-- `maxiconsumo_brands.txt`, `maxiconsumo_product_types.txt`
-- `nini_brands.txt`, `nini_product_type_aliases.txt`
-- `luvik_brands.txt`, `luvik_product_types.txt`
-- `vital_brands.txt`, `vital_product_types.txt`
+1. **Edit data files** (add missing brands, expand aliases):
+   - `scraper/postprocess/data/nini_brands.txt`
+   - `scraper/postprocess/data/maxiconsumo_brands.txt`
+   - `scraper/postprocess/data/vital_brands.txt`
+   - `scraper/postprocess/data/luvik_brands.txt`
+   - `scraper/postprocess/data/brand_aliases.txt`
 
-**Process**:
-1. Edit data files (add missing brands, expand aliases)
-2. Rerun postprocessor: `python -m scraper.postprocess.supplier_name`
-3. Verify coverage: Check updated `products` table
-4. Commit data files to git
+2. **Reclassify** to use new data:
+   ```bash
+   python -m scraper.postprocess.pipeline --supplier maxiconsumo --reclassify
+   ```
+
+3. **Review in dashboard** → approve new classifications
+
+4. **Commit** data files to git
+
+### When Classifications Lock
+
+Once `classification_status = 'approved'`, even reclassification with `--reclassify` won't
+update that product. You would need to manually edit it in the Revisar page or run a
+targeted reset in SQL:
+
+```sql
+UPDATE products SET classification_status = NULL WHERE brand = 'OLD_VALUE' AND classification_status = 'approved';
+```
+
+**Safer approach**: Always review new classifications before approving them.
 
 ---
 
-## Schema Assumptions
+## Schema Changes (2026-03-19)
 
-### products
-- (sku, supplier) = unique, immutable key
-- Other fields = mutable (name, category, postprocessed attributes)
-- Nini-only fields (units_per_package, packs_per_pallet) = NULL for other suppliers
+### products table
+Added columns for classification workflow:
+- `classification_status TEXT` — NULL / 'pending' / 'approved' / 'rejected'
+- `classification_confidence TEXT` — 'high' / 'low'
 
-### price_snapshots
-- (sku, supplier, scraped_at) = unique
-- Dedup rule: skip if price_unit + price_bulk unchanged
+**Immutability rules** (new):
+- Once `classification_status = 'approved'`, classification fields (`brand`, `product_type`, etc.) are frozen
+- `upsert_product` (scraper) never touches classification fields
+- `upsert_price_history` updates only current price/stock, never classification
 
-### price_history
-- (sku, supplier, first_seen, last_seen) = unique interval
-- Populated by gap-and-islands migration
+### price_history table
+- Unchanged: still tracks stable price periods
+- Independent from classification (price updates don't require approval)
 
 ---
 
 ## Next Steps
 
-1. **Monitor coverage**: Track brand/type extraction success rates per supplier
-2. **Expand unification**: Grow canonical_key matches toward 90%+ coverage
-3. **Client API**: Expose products via REST API (authenticated)
-4. **Export workflows**: Automated CSV/XLSX exports per client use case
+1. **Dashboard → Revisar page**: Build UI for approving pending classifications
+2. **Monitor approval queue**: Track pending vs. approved per supplier
+3. **Expand canonical matching**: Once 90%+ approved, canonical_key coverage will improve
+4. **Client API**: Expose only approved products to external clients
+5. **Automation**: Add `--auto-approve-high-confidence` flag for trusted suppliers

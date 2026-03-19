@@ -68,22 +68,6 @@ SUPPLIERS: list[dict] = [
         "http_verify_ssl": False,
     },
     {
-        "id": "luvik",
-        "short_code": "lv",
-        "class": "LuvikSupplier",
-        "module": "scraper.suppliers.luvik",
-        "base_url": "https://tiendaluvik.com.ar",
-        "requires_login": False,  # Public Shopify store — verified 2026-03-10
-        "credentials_env": {
-            "username": "LUVIK_USER",
-            "password": "LUVIK_PASS",
-        },
-        "selectors": {},        # Not used — JSON API
-        "category_urls": [],
-        "concurrency": 2,       # HTML scraping — lower limit than JSON API to avoid 429s
-        "http_verify_ssl": False,  # tiendaluvik.com.ar SSL cert doesn't cover subdomain
-    },
-    {
         "id": "vital",
         "short_code": "vt",
         "class": "VitalSupplier",

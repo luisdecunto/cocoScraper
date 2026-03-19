@@ -5,6 +5,7 @@ Usage:
     python scraper/main.py db init
     python scraper/main.py discover --supplier maxiconsumo
     python scraper/main.py scrape [--supplier <id>]
+    python scraper/main.py update [--supplier <id>]          # Scrape + classify in one go
     python scraper/main.py export latest [--output <path>]
     python scraper/main.py export comparison [--output-csv <path>] [--output-xlsx <path>]
     python scraper/main.py export history --sku <sku> --supplier <id> [--output <path>]
@@ -43,6 +44,7 @@ async def async_main(args: argparse.Namespace) -> None:
     from scraper.config import get_supplier_config, load_supplier_class
     from scraper.scraper import run_supplier, run_all
     from scraper.export import export_latest, export_comparison, export_history
+    from scraper.postprocess.pipeline import run_pipeline, run_all_suppliers
 
     pool = await get_pool()
 
@@ -68,6 +70,22 @@ async def async_main(args: argparse.Namespace) -> None:
                 await run_supplier(args.supplier, pool, max_products=max_products)
             else:
                 await run_all(pool)
+
+        elif args.command == "update":
+            """Scrape + classify in one go (new products only)."""
+            max_products = getattr(args, "max_products", None)
+            if args.supplier:
+                logger.info(f"[update] Starting scrape for {args.supplier}")
+                await run_supplier(args.supplier, pool, max_products=max_products)
+                logger.info(f"[update] Scrape complete. Running classification pipeline...")
+                await run_pipeline(pool, supplier=args.supplier, reclassify=False)
+                logger.info(f"[update] Classification complete. Products pending approval in dashboard.")
+            else:
+                logger.info("[update] Starting scrape for all suppliers")
+                await run_all(pool)
+                logger.info("[update] Scrape complete. Running classification pipeline...")
+                await run_all_suppliers(pool, force=False)
+                logger.info("[update] Classification complete. Products pending approval in dashboard.")
 
         elif args.command == "export":
             if args.export_command == "latest":
@@ -120,6 +138,11 @@ def main() -> None:
     scrape_parser = subparsers.add_parser("scrape")
     scrape_parser.add_argument("--supplier", required=False)
     scrape_parser.add_argument("--max-products", dest="max_products", type=int, required=False)
+
+    # update subcommand (scrape + classify in one go)
+    update_parser = subparsers.add_parser("update")
+    update_parser.add_argument("--supplier", required=False, help="Scrape and classify a single supplier (or all if omitted)")
+    update_parser.add_argument("--max-products", dest="max_products", type=int, required=False, help="Limit number of products scraped")
 
     # export subcommand
     export_parser = subparsers.add_parser("export")

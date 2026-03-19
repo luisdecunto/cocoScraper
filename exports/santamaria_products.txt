@@ -62,7 +62,7 @@
 | Acond.SEDAL Rizos Def. 340 m                        | Sedal                | Acond.                     | Rizos Def.                         | 340 ml            | 5_505     |
 | Acond.SUAVE Bomba Ceramidas 930 m                   | Suave                | Acond.                     | Bomba Ceramidas                    | 930 ml            | 5_505     |
 | Acond.SUAVE Bomba Deliciosa 930 m                   | Suave                | Acond.                     | Bomba Deliciosa                    | 930 ml            | 5_505     |
-| Acond.SUAVE Bomba Frutal 930 m                      | Suave                | Acond.                     | Bomba Frutal                       | 930 ml            | 5_505     |
+| Acond.SUAVE Bomba Frutal 930 m                      | Suave                | Acond.                     | Bomba Frutales                     | 930 ml            | 5_505     |
 | Acond.SUAVE Bomba Jazmin 930 m                      | Suave                | Acond.                     | Bomba Jazmin                       | 930 ml            | 5_505     |
 | Adobo P/Pizza CELUSAL  25 G                         | Celusal              | Adobo P/pizza              |                                    | 25 g              | 1_113     |
 | Adobo P/Pizza CENTURION  20 G                       | Centurion            | Adobo P/pizza              |                                    | 20 g              | 1_113     |
@@ -103,22 +103,20 @@
 | Ajo Trit.ALICANTE  50 G                             | Alicante             | Ajo Trit.                  |                                    | 50 g              | 1_113     |
 | Albahaca ALICANTE  20 G                             | Alicante             | Albahaca                   |                                    | 20 g              | 1_113     |
 | Alcohol Etil.96* VILLA IRIS x  500 c                | Villa Iris           | Alcohol Etil. 96*          | X                                  | 500 ml            | 15_1504   |
-| Alcohol Etil.96*PUROCOL Uso Alim. 500 c             | Purocol              | Alcohol Etil. 96*          | Uso Alim.                          | 500 ml            | 15_1504   |
+| Alcohol Etil.96*PUROCOL Uso Alim. 500 c             | Purocol              | Alcohol                    | Etilico U/A                        | 500 ml            | 15_1504   |
 | Alfajor CHOCOARROZ DD.Leche 22 G                    | Chocoarroz           | Alfajor                    | Dd. Leche                          | 22 g              | 8_801     |
 | Alfajor CHOCOARROZ Marroc 22 G                      | Chocoarroz           | Alfajor                    | Marroc                             | 22 g              | 8_801     |
 | Alfajor DE SIATO Blanco  70 G                       | De Siato             | Alfajor                    | Blanco                             | 70 g              | 8_801     |
-| Alfajor DE SIATO Negro  70 G                        | De Siato             | Alfajor                    | Negro                              | 70 g              | 8_801     |
-| Alfajor FULBITO R/Chocolate  30 G                   | Fulbito              | Alfajor                    | R/chocolate                        | 30 g              | 8_801     |
-| Alfajor FULBITO R/Mani  30 G                        | Fulbito              | Alfajor                    | R/mani                             | 30 g              | 8_801     |
-| Alfajor GENIO Triple Blanco R/DDL 60 G              | Genio                | Alfajor                    | Triple Blanco R/ddl                | 60 g              | 8_801     |
+| Alfajor FULBITO R/Chocolate  30 G                   | Fulbito              | Alfajor                    | chocolate                          | 30 g              | 8_801     |
+| Alfajor FULBITO R/Mani  30 G                        | Fulbito              | Alfajor                    | mani                               | 30 g              | 8_801     |
+| Alfajor GENIO Triple Blanco R/DDL 60 G              | Genio                | Alfajor                    | Blanco                             | 60 g              | 8_801     |
 | Alfajor GUAYMALLEN Blanco 38 G                      | Guaymallen           | Alfajor                    | Blanco                             | 38 g              | 8_801     |
 | Alfajor GUAYMALLEN Negro 38 G                       | Guaymallen           | Alfajor                    | Negro                              | 38 g              | 8_801     |
 | Alfajor GUAYMALLEN Triple Bco. 70 G                 | Guaymallen           | Alfajor                    | Triple Bco.                        | 70 g              | 8_801     |
 | Alfajor GUAYMALLEN Triple Negro 70 G                | Guaymallen           | Alfajor                    | Triple Negro                       | 70 g              | 8_801     |
-| Alfajor JORGITO Blanco 50 G                         | Jorgito              | Alfajor                    | Blanco                             | 50 g              | 8_801     |
 | Alfajor JORGITO Negro 55 G                          | Jorgito              | Alfajor                    | Negro                              | 55 g              | 8_801     |
 | Alfajor SMACK Mousse Rell. Choc&Mani 50 G           | Smack                | Alfajor                    | Mousse Rell. Choc&mani             | 50 g              | 8_801     |
-| Alfajor VIMAR Escolar Surt.  28 G                   | Vimar                | Alfajor                    | Escolar Surt.                      | 28 g              | 8_801     |
+| Alfajor VIMAR Escolar Surt.  28 G                   | Vimar                | Alfajor                    | Escolar Surtidos                   | 28 g              | 8_801     |
 | Algodon DONCELLA  140 G                             | Doncella             | Algodon                    |                                    | 140 g             | 5_520     |
 | Algodon DONCELLA  300 G                             | Doncella             | Algodon                    |                                    | 300 g             | 5_520     |
 | Algodon DONCELLA  70 G                              | Doncella             | Algodon                    |                                    | 70 g              | 5_520     |
@@ -164,9 +162,8 @@
 | Aperitivo Amer.GANCIA Hibiscus +Vodka 8* 473 m      | Gancia               | Aperitivo Amer.            | Hibiscus +vodka 8                  | 473 ml            | 2_212     |
 | Aperitivo Americano GANCIA  450 m                   | Gancia               | Aperitivo Americano        |                                    | 450 ml            | 2_212     |
 | Aperitivo Americano GANCIA  950 c                   | Gancia               | Aperitivo Americano        |                                    | 950 ml            | 2_212     |
-| Aperitivo Americano MANON  950 c                    | Manon                | Aperitivo Americano        |                                    | 950 ml            | 2_212     |
+| Aperitivo Americano MANON  950 c                    | Manon                | Americano                  |                                    | 950 ml            | 2_212     |
 | Aperitivo CARPANO Rosso  950 c                      | Carpano              | Aperitivo                  | Rosso                              | 950 ml            | 2_212     |
-| Aperitivo DR.LEMON Gin&Ton.5% 473 m                 | Dr. Lemon            | Aperitivo                  | Gin&ton. 5%                        | 473 ml            | 2_212     |
 | Aperitivo DR.LEMON Lim&Vod.4% 1 l                   | Dr. Lemon            | Aperitivo                  | Lim&vod. 4%                        | 1 l               | 2_212     |
 | Aperitivo DR.LEMON Limon&V.4% 473 m                 | Dr. Lemon            | Aperitivo                  | Limon&v.4%                         | 473 ml            | 2_212     |
 | Aperitivo DR.LEMON Mojito 5% 1 l                    | Dr. Lemon            | Aperitivo                  | Mojito 5%                          | 1 l               | 2_212     |
@@ -177,7 +174,7 @@
 | Aperitivo DR.LEMON Vodka&L.5% 473 m                 | Dr. Lemon            | Aperitivo                  | Vodka&l.5%                         | 473 ml            | 2_212     |
 | Aperitivo PRONTO Bitt 4,3%  473 m                   | Pronto               | Aperitivo                  | Bitt 4,3%                          | 473 ml            | 2_212     |
 | Aperitivo PRONTO Shake 4,2%  473 m                  | Pronto               | Aperitivo                  | Shake 4,2%                         | 473 ml            | 2_212     |
-| Aperitivo PUNT E MES  750 c                         | Punt                 | Aperitivo                  | E Mes                              | 750 ml            | 2_212     |
+| Aperitivo PUNT E MES  750 c                         | Punt e Mes           | Vermouth                   |                                    | 750 ml            | 2_212     |
 | Aritos Frutales GRANIX  130 G                       | Granix               | Aritos Frutales            |                                    | 130 g             | 1_108     |
 | Aritos GRANIX C/Miel  130 G                         | Granix               | Aritos                     | C/miel                             | 130 g             | 1_108     |
 | Arroz APOSTOLES L/Fino  500 G                       | Apostoles            | Arroz                      | L/fino                             | 500 g             | 1_102     |
@@ -190,6 +187,7 @@
 | Arroz LUCCHETTI L/Fino  500 G                       | Lucchetti            | Arroz                      | L/fino                             | 500 g             | 1_102     |
 | Arroz LUCCHETTI Parboil  1 K                        | Lucchetti            | Arroz                      | Parboil                            | 1 kg              | 1_102     |
 | Arroz LUCCHETTI Parboil  500 G                      | Lucchetti            | Arroz                      | Parboil                            | 500 g             | 1_102     |
+| Arroz MARIA L/Fino x  1 K                           | Maria                | Arroz                      | L/fino X                           | 1 kg              | 1_102     |
 | Arroz MARIA L/Fino x  500 G                         | Maria                | Arroz                      | L/fino X                           | 500 g             | 1_102     |
 | Arroz MAROLIO L/Fino  500 G                         | Marolio              | Arroz                      | L/fino                             | 500 g             | 1_102     |
 | Arroz MOLINOS ALA Doble Carolina  500 G             | Molinos Ala          | Arroz                      | Doble Carolina                     | 500 g             | 1_102     |
@@ -197,16 +195,16 @@
 | Arroz MOLINOS ALA Largo Fino  500 G                 | Molinos Ala          | Arroz                      | Largo Fino                         | 500 g             | 1_102     |
 | Arroz MOLINOS ALA Parboil GS. Dorado 1 K            | Molinos Ala          | Arroz                      | Parboil Gs. Dorado                 | 1 kg              | 1_102     |
 | Arroz MOLINOS ALA Parboil GS. Dorado 500 G          | Molinos Ala          | Arroz                      | Parboil Gs. Dorado                 | 500 g             | 1_102     |
-| Arroz MONEDA L/Fino  1 K                            | Moneda               | Arroz                      | L/fino                             | 1 kg              | 1_102     |
-| Arroz MONEDA L/Fino  500 G                          | Moneda               | Arroz                      | L/fino                             | 500 g             | 1_102     |
-| Arroz PRIMOR (00000)L.F  1 K                        | Primor               | Arroz                      | (00000)l.f                         | 1 kg              | 1_102     |
+| Arroz MONEDA L/Fino  1 K                            | Moneda               | Arroz                      | Grano Largo Fino                   | 1 kg              | 1_102     |
+| Arroz MONEDA L/Fino  500 G                          | Moneda               | Arroz                      | Grano Largo Fino                   | 500 g             | 1_102     |
+| Arroz PRIMOR (00000)L.F  1 K                        | Primor               | Arroz                      | Largo Fino 00000                   | 1 kg              | 1_102     |
 | Arroz TOBOGAN L/Fino (0000)  1 K                    | Tobogan              | Arroz                      | L/fino (0000)                      | 1 kg              | 1_102     |
 | Arvejas Part.LISETTA  400 G                         | Lisetta              | Arvejas Part.              |                                    | 400 g             | 1_120     |
 | Arvejas Remoj.INCA  350 G                           | Inca                 | Arvejas Remoj.             |                                    | 350 g             | 1_120     |
 | Arvejas Remoj.MAROLIO T/R 340 G                     | Marolio              | Arvejas Remoj.             | T/r                                | 340 g             | 1_120     |
 | Arvejas Remoj.MOLTO T/R 340 G                       | Molto                | Arvejas Remoj.             | T/r                                | 340 g             | 1_120     |
-| Arvejas Remoj.VALLE DE ORO  350 G                   | Valle de Oro         | Arvejas Remoj.             |                                    | 350 g             | 1_120     |
-| Atun Desm.CASCABEL Natural 170 G                    | Cascabel             | Atun Desm.                 | Natural                            | 170 g             | 1_109     |
+| Arvejas Remoj.VALLE DE ORO  350 G                   | Valle de Oro         | Arvejas                    |                                    | 350 g             | 1_120     |
+| Atun Desm.CASCABEL Natural 170 G                    | Cascabel             | Atun                       | Desmenuzado Natural                | 170 g             | 1_109     |
 | Atun Lomitos MAROLIO Ac/Agua 170 G                  | Marolio              | Atun Lomitos               | Ac/agua                            | 170 g             | 1_109     |
 | Atun Lomitos MAROLIO Natural 170 G                  | Marolio              | Atun Lomitos               | Natural                            | 170 g             | 1_109     |
 | Atun Lomitos MOLTO Aceite 170 G                     | Molto                | Atun Lomitos               | Aceite                             | 170 g             | 1_109     |
@@ -248,18 +246,19 @@
 | Bicarbonato D/Sodio CENTURION x  50 G               | Centurion            | Bicarbonato D/sodio        | X                                  | 50 g              | 1_113     |
 | Bicarbonato de Sodio D ALOMO  25 G                  | D Alomo              | Bicarbonato de Sodio       |                                    | 25 g              | 1_113     |
 | Bizc.EXQUISITA Vainilla 540 G                       | Exquisita            | Bizc.                      | Vainilla                           | 540 g             | 1_104     |
-| Bizc.PICNIC Rell.DDL  38 G                          | Picnic               | Bizc.                      | Rell. Ddl                          | 38 g              | 8_812     |
+| Bizc.PICNIC Rell.DDL  38 G                          | Picnic               | Bizcochuelo                | Dulce de Leche                     | 38 g              | 8_812     |
 | Bizc.RAVANA Chocolate  540 G                        | Ravana               | Bizc.                      | Chocolate                          | 540 g             | 1_104     |
 | Bizc.RAVANA Coco  540 G                             | Ravana               | Bizc.                      | Coco                               | 540 g             | 1_104     |
 | Bizc.RAVANA Limon  540 G                            | Ravana               | Bizc.                      | Limon                              | 540 g             | 1_104     |
 | Bizc.RAVANA Naranja  540 G                          | Ravana               | Bizc.                      | Naranja                            | 540 g             | 1_104     |
 | Bizc.RAVANA Vainilla  540 G                         | Ravana               | Bizc.                      | Vainilla                           | 540 g             | 1_104     |
-| Bizcochos 9 DE ORO Agridulce 200 G                  | 9 de Oro             | Bizcochos                  | Agridulce                          | 200 g             | 1_117     |
-| Bizcochos 9 DE ORO Azucaradas 200 G                 | 9 de Oro             | Bizcochos                  | Azucaradas                         | 200 g             | 1_117     |
-| Bizcochos 9 DE ORO Clasico 200 G                    | 9 de Oro             | Bizcochos                  | Clasico                            | 200 g             | 1_117     |
+| Bizcochos 9 DE ORO Agridulce 200 G                  | 9 de Oro             | Bizcochos                  | Agridulces                         | 200 g             | 1_117     |
+| Bizcochos 9 DE ORO Azucaradas 200 G                 | 9 de Oro             | Bizcochos                  | Azucarados                         | 200 g             | 1_117     |
+| Bizcochos 9 DE ORO Clasico 200 G                    | 9 de Oro             | Bizcochos                  | Clasicos                           | 200 g             | 1_117     |
 | Bizcochos DON SATUR Clasico 200 G                   | Don Satur            | Bizcochos                  | Clasico                            | 200 g             | 1_117     |
 | Bizcochos DON SATUR Dulces 200 G                    | Don Satur            | Bizcochos                  | Dulces                             | 200 g             | 1_117     |
 | Bizcochos DON SATUR Negrito 200 G                   | Don Satur            | Bizcochos                  | Negrito                            | 200 g             | 1_117     |
+| Bizcochos MAFALDA Mini Hojaldre 150 G               | Mafalda              | Bizcochos                  | Mini Hojaldre                      | 150 g             | 1_117     |
 | Bocadito FELFORT Bananina  15 G                     | Felfort              | Bocadito                   | Bananina                           | 15 g              | 8_802     |
 | Bocadito FELFORT Dos Corazones x  26 G              | Felfort              | Bocadito                   | Dos Corazones X                    | 26 g              | 8_805     |
 | Bocadito FELFORT Kooky Bon  10 G                    | Felfort              | Bocadito                   | Kooky Bon                          | 10 g              | 8_802     |
@@ -337,6 +336,7 @@
 | Cafe LA VIRGINIA Torr.Equil. TazaM 20saq.           | La Virginia          | Cafe                       | Torr. Equil. Tazam                 | 20 saquitos       | 1_106     |
 | Cafe NESC.Black Roast Inst.D/P.  110 G              | Nescafe              | Cafe                       | Black Roast Inst. D/p.             | 110 g             | 1_106     |
 | Cafe NESC.DOLCA Inst.  100 G                        | Nescafe Dolca        | Cafe                       | Inst.                              | 100 g             | 1_106     |
+| Cafe NESC.DOLCA Inst.  170 G                        | Nescafe Dolca        | Cafe                       | Inst.                              | 170 g             | 1_106     |
 | Cafe NESC.DOLCA Inst.  50 G                         | Nescafe Dolca        | Cafe                       | Inst.                              | 50 g              | 1_106     |
 | Cafe NESC.DOLCA Inst.Suave  100 G                   | Nescafe Dolca        | Cafe                       | Inst. Suave                        | 100 g             | 1_106     |
 | Cafe NESC.DOLCA Inst.Suave  170 G                   | Nescafe Dolca        | Cafe                       | Inst. Suave                        | 170 g             | 1_106     |
@@ -344,7 +344,7 @@
 | Cafe NESC.DOLCA Inst.Sve.D/P.  170 G                | Nescafe Dolca        | Cafe                       | Inst. Sve. D/p.                    | 170 g             | 1_106     |
 | Caldo ALICANTE Polvo Albh/Ajo 7.5 G                 | Alicante             | Caldo                      | Polvo Albh/ajo                     | 7.5 g             | 1_107     |
 | Caldo ALICANTE Polvo Carne 7.5 G                    | Alicante             | Caldo                      | Polvo Carne                        | 7.5 g             | 1_107     |
-| Caldo ALICANTE Polvo Cham/Hongo 7.5 G               | Alicante             | Caldo                      | Polvo Cham/hongo                   | 7.5 g             | 1_107     |
+| Caldo ALICANTE Polvo Champ/H. 7.5 G                 | Alicante             | Caldo                      | Polvo Champ/h.                     | 7.5 g             | 1_107     |
 | Caldo ALICANTE Polvo F/Hierbas 7.5 G                | Alicante             | Caldo                      | Polvo F/hierbas                    | 7.5 g             | 1_107     |
 | Caldo ALICANTE Polvo Gallina 7.5 G                  | Alicante             | Caldo                      | Polvo Gallina                      | 7.5 g             | 1_107     |
 | Caldo ALICANTE Polvo Panceta 7.5 G                  | Alicante             | Caldo                      | Polvo Panceta                      | 7.5 g             | 1_107     |
@@ -352,7 +352,6 @@
 | Caldo ALICANTE Polvo Verdura 7.5 G                  | Alicante             | Caldo                      | Polvo Verdura                      | 7.5 g             | 1_107     |
 | Caldo KNORR SUIZA Carne 2 U                         | Knorr Suiza          | Caldo                      | Carne                              | 2 U               | 1_107     |
 | Caldo KNORR SUIZA Gallina 2 U                       | Knorr Suiza          | Caldo                      | Gallina                            | 2 U               | 1_107     |
-| Caldo KNORR SUIZA Gallina 6 U                       | Knorr Suiza          | Caldo                      | Gallina                            | 6 U               | 1_107     |
 | Caldo KNORR SUIZA Verdura 2 U                       | Knorr Suiza          | Caldo                      | Verdura                            | 2 U               | 1_107     |
 | Caldo KNORR SUIZA Verdura 6 U                       | Knorr Suiza          | Caldo                      | Verdura                            | 6 U               | 1_107     |
 | Caldo MAGGI Gallina  6 U                            | Maggi                | Caldo                      | Gallina                            | 6 U               | 1_107     |
@@ -377,13 +376,13 @@
 | Caram.Liq.MANDUVI Mielcitas   Mediana 20 U          | Manduvi              | Caram. Liq.                | Mielcitas Mediana                  | 20 U              | 8_803     |
 | Caram.Liq.MANDUVI Mielcitas Chica 30 U              | Manduvi              | Caram. Liq.                | Mielcitas Chica                    | 30 U              | 8_803     |
 | Caram.MANDUVI Azuquitas C/Billetes 50 U             | Manduvi              | Caram.                     | Azuquitas C/billetes               | 50 U              | 8_803     |
-| Caram.Mast.BILLIKEN Frutal 600 G                    | Billiken             | Caram. Mast.               | Frutal                             | 600 g             | 8_803     |
-| Caram.Mast.BILLIKEN Yogur 600 G                     | Billiken             | Caram. Mast.               | Yogur                              | 600 g             | 8_803     |
-| Caram.Mast.BULL DOG Surtidos 700 G                  | Bull Dog             | Caram. Mast.               | Surtidos                           | 700 g             | 8_803     |
-| Caram.Mast.DROPSY Frutal 700 G                      | Dropsy               | Caram. Mast.               | Frutal                             | 700 g             | 8_803     |
-| Caram.Mast.DROPSY Selva 700 G                       | Dropsy               | Caram. Mast.               | Selva                              | 700 g             | 8_803     |
-| Caram.Mast.FLYNN PAFF Tut-Frutti 560 G              | Flynn Paff           | Caram. Mast.               | Tut-frutti                         | 560 g             | 8_803     |
-| Caram.Mast.PALITOS de la SELVA  660 G               | Palitos              | Caram. Mast.               | De la Selva                        | 660 g             | 8_803     |
+| Caram.Mast.BILLIKEN Frutal 600 G                    | Billiken             | Caramelos                  | Masticables Frutales               | 600 g             | 8_803     |
+| Caram.Mast.BILLIKEN Yogur 600 G                     | Billiken             | Caramelos                  | Masticables Yogur                  | 600 g             | 8_803     |
+| Caram.Mast.BULL DOG Surtidos 700 G                  | Bull Dog             | Caramelos                  | Masticables Surtidos               | 700 g             | 8_803     |
+| Caram.Mast.DROPSY Frutal 700 G                      | Dropsy               | Caramelos                  | Masticables Frutales               | 700 g             | 8_803     |
+| Caram.Mast.DROPSY Selva 700 G                       | Dropsy               | Caramelos                  | Masticables Selva                  | 700 g             | 8_803     |
+| Caram.Mast.FLYNN PAFF Tut-Frutti 560 G              | Flynn Paff           | Caramelos                  | Masticables Tut-frutti             | 560 g             | 8_803     |
+| Caram.Mast.PALITOS de la SELVA  660 G               | Palitos de la Selva  | Caramelos                  | Clasicos                           | 660 g             | 8_803     |
 | Caram.Rell.BULL DOG Regaliz (B) Frambuesa 18 G      | Bull Dog             | Caram. Rell.               | Regaliz (b) Frambuesa              | 18 g              | 8_803     |
 | Caram.Rell.BULL DOG Regaliz (B) Frambuesa 75 G      | Bull Dog             | Caram. Rell.               | Regaliz (b) Frambuesa              | 75 g              | 8_803     |
 | Caram.Rell.BULL DOG Regaliz (B) Frutilla 18 G       | Bull Dog             | Caram. Rell.               | Regaliz (b) Frutilla               | 18 g              | 8_803     |
@@ -391,7 +390,7 @@
 | Caram.Rell.BULL DOG Regaliz (B) Sandia 18 G         | Bull Dog             | Caram. Rell.               | Regaliz (b) Sandia                 | 18 g              | 8_803     |
 | Caram.Rell.BULL DOG Regaliz (B) Sandia 75 G         | Bull Dog             | Caram. Rell.               | Regaliz (b) Sandia                 | 75 g              | 8_803     |
 | Caram.Rell.BULL DOG Regaliz (B) Tutti 18 G          | Bull Dog             | Caram. Rell.               | Regaliz (b) Tutti                  | 18 g              | 8_803     |
-| Caram.Rell.BULL DOG Regaliz (B) Tutti Fr. 75 G      | Bull Dog             | Caram. Rell.               | Regaliz (b) Tutti Fr.              | 75 g              | 8_803     |
+| Caram.Rell.BULL DOG Regaliz (B) Tutti Fr. 75 G      | Bull Dog             | Caram. Rell.               | Regaliz (b) Tutti Frutti           | 75 g              | 8_803     |
 | Caram.Rell.TNT Acido LMM 60 U                       | Tnt                  | Caram. Rell.               | Acido Lmm                          | 60 U              | 8_803     |
 | Caram.Rell.TNT Pintalengua  60 U                    | Tnt                  | Caram. Rell.               | Pintalengua                        | 60 U              | 8_803     |
 | Caram.Rell.TNT TubiTwist Frut.Acid 70 G             | Tnt                  | Caram. Rell.               | Tubitwist Frut. Acid               | 70 g              | 8_803     |
@@ -428,10 +427,9 @@
 | Cera ECHO En El Balde D/P. Clasico 450 c            | Echo                 | Cera                       | En el Balde D/p. Clasico           | 450 ml            | 6_604     |
 | Cereal SKARCHITOS Azucarados  240 G                 | Skarchitos           | Cereal                     | Azucarados                         | 240 g             | 1_108     |
 | Cerveza 361 Lata 473 c                              | 361                  | Cerveza                    | Lata                               | 473 ml            | 2_202     |
-| Cerveza 361 Laton 710 c                             | 361                  | Cerveza                    | Laton                              | 710 ml            | 2_202     |
 | Cerveza 361 Pet  1 l                                | 361                  | Cerveza                    | Pet                                | 1 l               | 2_202     |
-| Cerveza AMSTEL Lager Lata 473 c                     | Amstel               | Cerveza                    | Lager Lata                         | 473 ml            | 2_202     |
-| Cerveza AMSTEL Lager Laton 710 c                    | Amstel               | Cerveza                    | Lager Laton                        | 710 ml            | 2_202     |
+| Cerveza AMSTEL Lager Lata 473 c                     | Amstel               | Cerveza                    |                                    | 473 ml            | 2_202     |
+| Cerveza AMSTEL Lager Laton 710 c                    | Amstel               | Cerveza                    |                                    | 710 ml            | 2_202     |
 | Cerveza HEINEKEN Cero Lata 473 c                    | Heineken             | Cerveza                    | Cero Lata                          | 473 ml            | 2_202     |
 | Cerveza HEINEKEN Lata 473 c                         | Heineken             | Cerveza                    | Lata                               | 473 ml            | 2_202     |
 | Cerveza HEINEKEN Laton 710 c                        | Heineken             | Cerveza                    | Laton                              | 710 ml            | 2_202     |
@@ -439,11 +437,11 @@
 | Cerveza IMPERIAL Golden Lata 473 c                  | Imperial             | Cerveza                    | Golden Lata                        | 473 ml            | 2_202     |
 | Cerveza IMPERIAL Golden Laton 710 c                 | Imperial             | Cerveza                    | Golden Laton                       | 710 ml            | 2_202     |
 | Cerveza ISENBECK Lata 473 c                         | Isenbeck             | Cerveza                    | Lata                               | 473 ml            | 2_202     |
-| Cerveza MILLER Lata 473 c                           | Miller               | Cerveza                    | Lata                               | 473 ml            | 2_202     |
-| Cerveza MILLER Laton 710 c                          | Miller               | Cerveza                    | Laton                              | 710 ml            | 2_202     |
-| Cerveza SCHNEIDER Lager Lata 473 c                  | Schneider            | Cerveza                    | Lager Lata                         | 473 ml            | 2_202     |
-| Cerveza SCHNEIDER Lager Laton 710 c                 | Schneider            | Cerveza                    | Lager Laton                        | 710 ml            | 2_202     |
-| Cerveza WARSTEINER Lata  473 c                      | Warsteiner           | Cerveza                    | Lata                               | 473 ml            | 2_202     |
+| Cerveza MILLER Lata 473 c                           | Miller               | Cerveza                    |                                    | 473 ml            | 2_202     |
+| Cerveza MILLER Laton 710 c                          | Miller               | Cerveza                    |                                    | 710 ml            | 2_202     |
+| Cerveza SCHNEIDER Lager Lata 473 c                  | Schneider            | Cerveza                    |                                    | 473 ml            | 2_202     |
+| Cerveza SCHNEIDER Lager Laton 710 c                 | Schneider            | Cerveza                    |                                    | 710 ml            | 2_202     |
+| Cerveza WARSTEINER Lata  473 c                      | Warsteiner           | Cerveza                    |                                    | 473 ml            | 2_202     |
 | Champignone INCA Trozos 350 G                       | Inca                 | Champignone                | Trozos                             | 350 g             | 1_137     |
 | Chiclets BELDENT Frutilla 20x6 U                    | Beldent              | Chiclets                   | Frutilla                           | 20x6 U            | 8_804     |
 | Chiclets BELDENT Inf. Blueberry 12x14 U             | Beldent              | Chiclets                   | Inf. Blueberry                     | 12x14 U           | 8_804     |
@@ -456,11 +454,11 @@
 | Chiclets BUBBALOO Menta 60 U                        | Bubbaloo             | Chiclets                   | Menta                              | 60 U              | 8_804     |
 | Chiclets BUBBALOO Tuti-Fruti 60 U                   | Bubbaloo             | Chiclets                   | Tuti-fruti                         | 60 U              | 8_804     |
 | Chiclets BUBBALOO Uva 60 U                          | Bubbaloo             | Chiclets                   | Uva                                | 60 U              | 8_804     |
-| Chiclets BUBBLE ROLL Fun Candy Surt. 58 G           | Bubble Roll          | Chiclets                   | Fun Candy Surt.                    | 58 g              | 8_804     |
-| Chiclets BUBBLE ROLL Fun T.Fruti Pink Power 58 G    | Bubble Roll          | Chiclets                   | Fun T. Fruti Pink Power            | 58 g              | 8_804     |
+| Chiclets BUBBLE ROLL Fun Candy Surt. 58 G           | Bubble Roll          | Chiclets                   | Candy Surtidos                     | 58 g              | 8_804     |
+| Chiclets BUBBLE ROLL Fun T.Fruti Pink Power 58 G    | Bubble Roll          | Chiclets                   | Tutti Frutti                       | 58 g              | 8_804     |
 | Chiclets BUZZY CROC Rell. Menta 40 U                | Buzzy Croc           | Chiclets                   | Rell. Menta                        | 40 U              | 8_804     |
 | Chiclets BUZZY CROC Rell. Uva 40 U                  | Buzzy Croc           | Chiclets                   | Rell. Uva                          | 40 U              | 8_804     |
-| Chiclets TNT Rell.Surt. Super Ac. 40 U              | Tnt                  | Chiclets                   | Rell. Surt. Super Ac.              | 40 U              | 8_804     |
+| Chiclets TNT Rell.Surt. Super Ac. 40 U              | Tnt                  | Chiclets                   | Rell. Surtidos Super Ac.           | 40 U              | 8_804     |
 | Chimi-Churri ALICANTE  25 G                         | Alicante             | Chimi-churri               |                                    | 25 g              | 1_113     |
 | Chimi-Churri CENTURION  25 G                        | Centurion            | Chimi-churri               |                                    | 25 g              | 1_113     |
 | Chimi-Churri D ALOMO  500 G                         | D Alomo              | Chimi-churri               |                                    | 500 g             | 1_113     |
@@ -470,23 +468,23 @@
 | Choclo MOLTO Grano Amarillo  300 G                  | Molto                | Choclo                     | Grano Amarillo                     | 300 g             | 1_120     |
 | Chocolate CADBURY Tres Sueños  25 G                 | Cadbury              | Chocolate                  | Tres Sueños                        | 25 g              | 8_805     |
 | Chocolate FELFORT Piratas Monedas 60ux5 G           | Felfort              | Chocolate                  | Piratas Monedas                    | 60x5 g            | 8_805     |
-| Chocolate SHOT Tabl.  35 G                          | Shot                 | Chocolate                  | Tabl.                              | 35 g              | 8_805     |
 | Chup.CATCH POP Fun Candy  17 G                      | Catch Pop            | Chup.                      | Fun Candy                          | 17 g              | 8_806     |
-| Chup.CRAZY POP Tira Frutilla 12 G                   | Crazy Pop            | Chup.                      | Tira Frutilla                      | 12 g              | 8_806     |
-| Chup.CRAZY POP Tira Sandia 12 G                     | Crazy Pop            | Chup.                      | Tira Sandia                        | 12 g              | 8_806     |
-| Chup.CRAZY POP Tira Uva 12 G                        | Crazy Pop            | Chup.                      | Tira Uva                           | 12 g              | 8_806     |
+| Chup.CRAZY POP Tira Frutilla 12 G                   | Crazy Pop            | Chupetin                   | Frutilla                           |                   | 8_806     |
+| Chup.CRAZY POP Tira Sandia 12 G                     | Crazy Pop            | Chupetin                   | Sandia                             |                   | 8_806     |
+| Chup.CRAZY POP Tira Uva 12 G                        | Crazy Pop            | Chupetin                   | Uva                                |                   | 8_806     |
 | Chup.EMOTI POP Fun  11 G                            | Emoti Pop            | Chup.                      | Fun                                | 11 g              | 8_806     |
-| Chup.FELFORT Paraguitas Choc. 13 G                  | Felfort              | Chup.                      | Paraguitas Choc.                   | 13 g              | 8_806     |
+| Chup.FELFORT Paraguitas Choc. 13 G                  | Felfort              | Chocolate                  | Paraguitas                         | 13 g              | 8_806     |
 | Chup.FUN POP Mix Stand 15 G                         | Fun Pop              | Chup.                      | Mix Stand                          | 15 g              | 8_806     |
 | Chup.MANDUVI Paleta Multic. Med. 10 U               | Manduvi              | Chup.                      | Paleta Multic. Med.                | 10 U              | 8_806     |
 | Chup.MANDUVI Paleta Multic. Tiras Ch. 20 U          | Manduvi              | Chup.                      | Paleta Multic. Tiras Ch.           | 20 U              | 8_806     |
-| Chup.PUSH POP Duo  14 G                             | Push Pop             | Chup.                      | Duo                                | 14 g              | 8_806     |
-| Chup.PUSH POP Duo Torre  14 G                       | Push Pop             | Chup.                      | Duo Torre                          | 14 g              | 8_806     |
-| Chup.RING POP Twisted  10 G                         | Ring Pop             | Chup.                      | Twisted                            | 10 g              | 8_806     |
+| Chup.PUSH POP Duo  14 G                             | Push Pop             | Chupetin                   | Duo                                | 14 g              | 8_806     |
+| Chup.PUSH POP Duo Torre  14 G                       | Push Pop             | Chupetin                   | Duo Torre                          | 14 g              | 8_806     |
+| Chup.RING POP  14 G                                 | Ring Pop             | Chupetin                   |                                    | 14 g              | 8_806     |
+| Chup.RING POP Twisted  10 G                         | Ring Pop             | Chupetin                   | Twisted                            | 10 g              | 8_806     |
 | Coco Rallado ALICANTE  50 G                         | Alicante             | Coco Rallado               |                                    | 50 g              | 1_142     |
 | Coco Rallado CENTURION  25 G                        | Centurion            | Coco Rallado               |                                    | 25 g              | 1_142     |
 | Coco Rallado D ALOMO  25 G                          | D Alomo              | Coco Rallado               |                                    | 25 g              | 1_142     |
-| Coctel 1882 Fernet&Cola  473 m                      | 1882                 | Coctel                     | Fernet&cola                        | 473 ml            | 2_215     |
+| Coctel 1882 Fernet&Cola  473 m                      | 1882                 | Fernet                     | Con Cola                           | 473 ml            | 2_215     |
 | Coctel D/Frutas MAROLIO  820 G                      | Marolio              | Coctel D/frutas            |                                    | 820 g             | 1_111     |
 | Coctel D/Frutas MOLTO  820 G                        | Molto                | Coctel D/frutas            |                                    | 820 g             | 1_111     |
 | Comino CENTURION  25 G                              | Centurion            | Comino                     |                                    | 25 g              | 1_113     |
@@ -526,7 +524,6 @@
 | Cr.Dental COLGATE Tr.Accion  70 G                   | Colgate              | Cr. Dental                 | Tr. Accion                         | 70 g              | 5_504     |
 | Cr.Dental COLGATE Tr.Accion Tub.Rec. 90 G           | Colgate              | Cr. Dental                 | Tr. Accion Tub. Rec.               | 90 g              | 5_504     |
 | Cr.Dental COLGATE Tr.Accion Xtra.White 90 G         | Colgate              | Cr. Dental                 | Tr. Accion Xtra. White             | 90 g              | 5_504     |
-| Cr.Dental COLGATE Tr.Beneficio  180 G               | Colgate              | Cr. Dental                 | Tr. Beneficio                      | 180 g             | 5_504     |
 | Cr.Dental COLGATE Ultra Blanco  90 G                | Colgate              | Cr. Dental                 | Ultra Blanco                       | 90 g              | 5_504     |
 | Cr.Dental KOLYNOS Super Blanco  180 G               | Kolynos              | Cr. Dental                 | Super Blanco                       | 180 g             | 5_504     |
 | Cr.Dental KOLYNOS Super Blanco  70 G                | Kolynos              | Cr. Dental                 | Super Blanco                       | 70 g              | 5_504     |
@@ -534,7 +531,7 @@
 | Cr.Dental ODOL Doble Accion Bcos/Prot. 180 G        | Odol                 | Cr. Dental                 | Doble Accion Bcos/prot.            | 180 g             | 5_504     |
 | Cr.Dental ODOL Doble Accion Bcos/Prot. 70 G         | Odol                 | Cr. Dental                 | Doble Accion Bcos/prot.            | 70 g              | 5_504     |
 | Cr.Dental ODOL Doble Accion Bcos/Prot. 90 G         | Odol                 | Cr. Dental                 | Doble Accion Bcos/prot.            | 90 g              | 5_504     |
-| Cr.Dental ODOLITO Frutilla  50 G                    | Odolito              | Cr. Dental                 | Frutilla                           | 50 g              | 5_504     |
+| Cr.Dental ODOLITO Frutilla  50 G                    | Odolito              | Crema Dental               | Frutilla                           | 50 g              | 5_504     |
 | Cr.Dental ORAL-B 4en1  180 G                        | Oral-b               | Cr. Dental                 | 4en1                               | 180 g             | 5_504     |
 | Cr.Dental ORAL-B 4en1  70 G                         | Oral-b               | Cr. Dental                 | 4en1                               | 70 g              | 5_504     |
 | Cr.Dental ORAL-B Antic.1*2*3  70 G                  | Oral-b               | Cr. Dental                 | Antic. 1*2*3                       | 70 g              | 5_504     |
@@ -544,10 +541,9 @@
 | Crema Oxidante DOREE Hba.30v 100 c                  | Doree                | Crema Oxidante             | Hba. 30v                           | 100 ml            | 5_518     |
 | Crema ROYAL Chantilly  50 G                         | Royal                | Crema                      | Chantilly                          | 50 g              | 1_142     |
 | Cubanitos FELFORT Tivis Rell.B/Ch. 25 G             | Felfort              | Cubanitos                  | Tivis Rell. B/ch.                  | 25 g              | 8_802     |
-| Cubanitos OBLITA Chocolate 48 U                     | Oblita               | Cubanitos                  | Chocolate                          | 48 U              | 8_811     |
 | Cubanitos OBLITA Marroc 48 U                        | Oblita               | Cubanitos                  | Marroc                             | 48 U              | 8_811     |
 | Cubanitos SMACK Rell.Mousse  25 G                   | Smack                | Cubanitos                  | Rell. Mousse                       | 25 g              | 8_811     |
-| CUERNAVACA Licor Seco Tequila 1 l                   | Cuernavaca           |                            | Licor Seco Tequila                 | 1 l               | 2_208     |
+| CUERNAVACA Licor Seco Tequila 1 l                   | Cuernavaca           | Tequila                    |                                    | 1 l               | 2_208     |
 | Curativo CRIS-BLAN Apos.Protec.  8 U                | Cris-blan            | Curativo                   | Apos. Protec.                      | 8 U               | 5_521     |
 | Curcuma CENTURION  25 G                             | Centurion            | Curcuma                    |                                    | 25 g              | 1_113     |
 | D/Amb.AYUDIN Desinfect. Bebe 332 c                  | Ayudin               | D/amb.                     | Desinfect. Bebe                    | 332 ml            | 6_606     |
@@ -556,7 +552,7 @@
 | D/Amb.CIF Fre.Citric 360 m                          | Cif                  | D/amb.                     | Fre. Citric                        | 360 ml            | 6_606     |
 | D/Amb.CIF Original 360 m                            | Cif                  | D/amb.                     | Original                           | 360 ml            | 6_606     |
 | D/Amb.GLADE Automatico Rep. Njo&Orq. 270 m          | Glade                | D/amb.                     | Automatico Rep. Njo&orq.           | 270 ml            | 6_606     |
-| D/Amb.GLADE C/Lavanda 360 m                         | Glade                | D/amb.                     | C/lavanda                          | 360 ml            | 6_606     |
+| D/Amb.GLADE C/Lav. 360 m                            | Glade                | D/amb.                     | C/lav.                             | 360 ml            | 6_606     |
 | D/Amb.GLADE Camp.Lav. 255 m                         | Glade                | D/amb.                     | Camp. Lav.                         | 255 ml            | 6_606     |
 | D/Amb.GLADE F/Tr&Cc 360 m                           | Glade                | D/amb.                     | F/tr&cc                            | 360 ml            | 6_606     |
 | D/Amb.GLADE Limon Refr 255 m                        | Glade                | D/amb.                     | Limon Refr                         | 255 ml            | 6_606     |
@@ -597,8 +593,8 @@
 | Desod.AXE (M) Musk 150 m                            | Axe                  | Desod.                     | (m) Musk                           | 150 ml            | 5_508     |
 | Desod.AXE Marine (M)  230 m                         | Axe                  | Desod.                     | Marine (m)                         | 230 ml            | 5_508     |
 | Desod.AXE Musk (M)  230 m                           | Axe                  | Desod.                     | Musk (m)                           | 230 ml            | 5_508     |
-| Desod.BOOS (M) Atraction 150 m                      | Boos                 | Desod.                     | (m) Atraction                      | 150 ml            | 5_508     |
-| Desod.BOOS (M) Intense 150 m                        | Boos                 | Desod.                     | (m) Intense                        | 150 ml            | 5_508     |
+| Desod.BOOS (M) Atraction 150 m                      | Boos                 | Desodorante                | (m) Atraction                      | 150 ml            | 5_508     |
+| Desod.BOOS (M) Intense 150 m                        | Boos                 | Desodorante                | (m) Intense                        | 150 ml            | 5_508     |
 | Desod.CHESTER ICE (M)  150 c                        | Chester Ice          | Desod.                     | (m)                                | 150 ml            | 5_508     |
 | Desod.CIEL (F) Crystal(G) 123 c                     | Ciel                 | Desod.                     | (f) Crystal(g)                     | 123 ml            | 5_508     |
 | Desod.CIEL (F) Nuit (V) 123 c                       | Ciel                 | Desod.                     | (f) Nuit (v)                       | 123 ml            | 5_508     |
@@ -607,7 +603,7 @@
 | Desod.COLBERT (M) Noir 150 c                        | Colbert              | Desod.                     | (m) Noir                           | 150 ml            | 5_508     |
 | Desod.COLBERT (M) Original 150 c                    | Colbert              | Desod.                     | (m) Original                       | 150 ml            | 5_508     |
 | Desod.COLBERT (M) US 150 c                          | Colbert              | Desod.                     | (m) Us                             | 150 ml            | 5_508     |
-| Desod.CRANDALL Legen (M)  150 c                     | Crandall             | Desod.                     | Legen (m)                          | 150 ml            | 5_508     |
+| Desod.CRANDALL Legen (M)  150 c                     | Crandall             | Desodorante                | Legen Masculino                    | 150 ml            | 5_508     |
 | Desod.DOVE Ant.(F) GF Pom&Lim 150 m                 | Dove                 | Desod.                     | Ant.(f) Gf Pom&lim                 | 150 ml            | 5_508     |
 | Desod.DOVE Ant.(F) Granada 150 m                    | Dove                 | Desod.                     | Ant.(f) Granada                    | 150 ml            | 5_508     |
 | Desod.DOVE Ant.(F) Inv.Dry 150 m                    | Dove                 | Desod.                     | Ant.(f) Inv. Dry                   | 150 ml            | 5_508     |
@@ -623,10 +619,11 @@
 | Desod.KEVIN (M) Spirit (B) 150 c                    | Kevin                | Desod.                     | (m) Spirit (b)                     | 150 ml            | 5_508     |
 | Desod.KEVIN (Men) Ice(G) 150 c                      | Kevin                | Desod.                     | (men) Ice(g)                       | 150 ml            | 5_508     |
 | Desod.MUA Stay (F) Wild 127 m                       | Mua                  | Desod.                     | Stay (f) Wild                      | 127 ml            | 5_508     |
-| Desod.OLD SPICE Roll-On Leña 52 G                   | Old Spice            | Desod.                     | Roll-on Leña                       | 52 g              | 5_508     |
+| Desod.OLD SPICE Roll-On Leña 52 G                   | Old Spice            | Desodorante                | Roll-on Leña                       | 52 ml             | 5_508     |
 | Desod.P/I.PATO P.Canasta Rep. C/Lavanda 50 m        | Pato                 | Desod. P/i.                | P. Canasta Rep. C/lavanda          | 50 ml             | 6_623     |
 | Desod.PAULA CAHEN DANVERS(F) Alegria 123 c          | Paula Cahen Danvers  | Desod.                     | (f) Alegria                        | 123 ml            | 5_508     |
 | Desod.PAULA CAHEN DANVERS(F) Amor 123 c             | Paula Cahen Danvers  | Desod.                     | (f) Amor                           | 123 ml            | 5_508     |
+| Desod.PAULA CAHEN DANVERS(F) Orig. 123 c            | Paula Cahen Danvers  | Desod.                     | (f) Orig.                          | 123 ml            | 5_508     |
 | Desod.PROCENEX Fl/Jardin 900 m                      | Procenex             | Desod.                     | Fl/jardin                          | 900 ml            | 6_619     |
 | Desod.PROCENEX Jazmin 900 m                         | Procenex             | Desod.                     | Jazmin                             | 900 ml            | 6_619     |
 | Desod.PROCENEX Lavanda 900 m                        | Procenex             | Desod.                     | Lavanda                            | 900 ml            | 6_619     |
@@ -643,7 +640,6 @@
 | Desod.REXONA Ant.(M) Xtracool 150 m                 | Rexona               | Desod.                     | Ant.(m) Xtracool                   | 150 ml            | 5_508     |
 | Desod.REXONA Ant.Odorono Fliar.  150 m              | Rexona               | Desod.                     | Ant. Odorono Fliar.                | 150 ml            | 5_508     |
 | Desod.REXONA AOB Aero(F) Freshcitr 150 m            | Rexona               | Desod.                     | Aob Aero(f) Freshcitr              | 150 ml            | 5_508     |
-| Desod.REXONA AOB Aero(F) Wildrose 150 m             | Rexona               | Desod.                     | Aob Aero(f) Wildrose               | 150 ml            | 5_508     |
 | Desod.REXONA AOB Aero(M) Active 150 m               | Rexona               | Desod.                     | Aob Aero(m) Active                 | 150 ml            | 5_508     |
 | Desod.REXONA AOB Aero(M) Oceanrush 150 m            | Rexona               | Desod.                     | Aob Aero(m) Oceanrush              | 150 ml            | 5_508     |
 | Desod.REXONA Odorono Cr.Pote  60 G                  | Rexona               | Desod.                     | Odorono Cr. Pote                   | 60 g              | 5_508     |
@@ -655,8 +651,8 @@
 | Desod.SMART CLEAN Antibact. Mango Mar. 150 c        | Smart Clean          | Desod.                     | Antibact. Mango Mar.               | 150 ml            | 6_619     |
 | Desod.SMART CLEAN Antibact. Moras&Aran 150 c        | Smart Clean          | Desod.                     | Antibact. Moras&aran               | 150 ml            | 6_619     |
 | Desod.SMART CLEAN Antibact. Sandalo D. 150 c        | Smart Clean          | Desod.                     | Antibact. Sandalo D.               | 150 ml            | 6_619     |
-| Desod.STONE Black (M)  150 m                        | Stone                | Desod.                     | Black (m)                          | 150 ml            | 5_508     |
-| Desod.STONE Blue (M)  150 m                         | Stone                | Desod.                     | Blue (m)                           | 150 ml            | 5_508     |
+| Desod.STONE Black (M)  150 m                        | Stone                | Desodorante                | Black (m)                          | 150 ml            | 5_508     |
+| Desod.STONE Blue (M)  150 m                         | Stone                | Desodorante                | Blue (m)                           | 150 ml            | 5_508     |
 | Desod.TASCANI (M) Actitud 150 m                     | Tascani              | Desod.                     | (m) Actitud                        | 150 ml            | 5_508     |
 | Desod.TASCANI (M) Distinto 150 m                    | Tascani              | Desod.                     | (m) Distinto                       | 150 ml            | 5_508     |
 | Desod.TASCANI (M) Unico 150 m                       | Tascani              | Desod.                     | (m) Unico                          | 150 ml            | 5_508     |
@@ -730,14 +726,13 @@
 | Endulzante HILERET Zucra  200 c                     | Hileret              | Endulzante                 | Zucra                              | 200 ml            | 1_112     |
 | Endulzante HILERET Zucra  50 s                      | Hileret              | Endulzante                 | Zucra                              | 50 saquitos       | 1_112     |
 | Endulzante SI DIET  200 m                           | Si Diet              | Endulzante                 |                                    | 200 ml            | 1_112     |
-| Endulzante SI DIET  500 m                           | Si Diet              | Endulzante                 |                                    | 500 ml            | 1_112     |
 | Energizante MONSTER Green 473 c                     | Monster              | Energizante                | Green                              | 473 ml            | 2_213     |
 | Energizante MONSTER Green Zero 473 c                | Monster              | Energizante                | Green Zero                         | 473 ml            | 2_213     |
 | Energizante MONSTER Mango Loco 473 c                | Monster              | Energizante                | Mango Loco                         | 473 ml            | 2_213     |
 | Energizante MONSTER Ultra Zero 473 c                | Monster              | Energizante                | Ultra Zero                         | 473 ml            | 2_213     |
-| Energizante SPEED UNLIM.     S/Azuc 473 m           | Speed Unlim.         | Energizante                | S/azuc                             | 473 ml            | 2_213     |
-| Energizante SPEED UNLIM.  250 m                     | Speed Unlim.         | Energizante                |                                    | 250 ml            | 2_213     |
-| Energizante SPEED UNLIM.  473 m                     | Speed Unlim.         | Energizante                |                                    | 473 ml            | 2_213     |
+| Energizante SPEED UNLIM.     S/Azuc 473 m           | Speed                | Energizante                | Zero                               | 473 ml            | 2_213     |
+| Energizante SPEED UNLIM.  250 m                     | Speed                | Energizante                |                                    | 250 ml            | 2_213     |
+| Energizante SPEED UNLIM.  473 m                     | Speed                | Energizante                |                                    | 473 ml            | 2_213     |
 | Enj.Bucal COLGATE PLAX 500x Fresh Mint 350 m        | Colgate              | Enj. Bucal                 | Plax 500x Fresh Mint               | 350 ml            | 5_504     |
 | Enj.Bucal COLGATE PLAX Control 500 m                | Colgate              | Enj. Bucal                 | Plax Control                       | 500 ml            | 5_504     |
 | Enj.Bucal COLGATE PLAX Ice Inf.  180 m              | Colgate              | Enj. Bucal                 | Plax Ice Inf.                      | 180 ml            | 5_504     |
@@ -790,6 +785,7 @@
 | Fecula de Mandioca FEMAG  1 K                       | Femag                | Fecula de Mandioca         |                                    | 1 kg              | 1_141     |
 | Fecula de Mandioca ÑANDECOGA  900 G                 | Ñandecoga            | Fecula de Mandioca         |                                    | 900 g             | 1_141     |
 | Fernet 1882  750 c                                  | 1882                 | Fernet                     |                                    | 750 ml            | 2_204     |
+| Fernet 777  750 m                                   | 777                  | Fernet                     |                                    | 750 ml            | 2_204     |
 | Fernet BRANCA  1 l                                  | Branca               | Fernet                     |                                    | 1 l               | 2_204     |
 | Fernet BRANCA  450 c                                | Branca               | Fernet                     |                                    | 450 ml            | 2_204     |
 | Fernet BRANCA  750 c                                | Branca               | Fernet                     |                                    | 750 ml            | 2_204     |
@@ -798,7 +794,7 @@
 | Fernet BUHERO NEGRO  700 m                          | Buhero Negro         | Fernet                     |                                    | 700 ml            | 2_204     |
 | Fernet CAPRI  700 m                                 | Capri                | Fernet                     |                                    | 700 ml            | 2_204     |
 | Fernet IMPERIO  750 c                               | Imperio              | Fernet                     |                                    | 750 ml            | 2_204     |
-| Fernet VITTONE Speciale  750 c                      | Vittone              | Fernet                     | Speciale                           | 750 ml            | 2_204     |
+| Fernet VITTONE Speciale  750 c                      | Vittone              | Fernet                     |                                    | 750 ml            | 2_204     |
 | Fibra Esp.BROMY Acanalada  1 U                      | Bromy                | Fibra Esp.                 | Acanalada                          | 1 U               | 6_611     |
 | Fibra Esp.BROMY Cuadriculada  1 U                   | Bromy                | Fibra Esp.                 | Cuadriculada                       | 1 U               | 6_611     |
 | Fibra Esp.SED METAL Cero Rayas  1 U                 | Sed Metal            | Fibra Esp.                 | Cero Rayas                         | 1 U               | 6_611     |
@@ -823,13 +819,14 @@
 | Fideos LUCCHETTI S&G Dedalitos 500 G                | Lucchetti            | Fideos                     | S&g Dedalitos                      | 500 g             | 1_115     |
 | Fideos LUCCHETTI S&G Letritas 500 G                 | Lucchetti            | Fideos                     | S&g Letritas                       | 500 g             | 1_115     |
 | Fideos LUCCHETTI S&G Mosta.N*52 500 G               | Lucchetti            | Fideos                     | S&g Mosta. N*52                    | 500 g             | 1_115     |
-| Fideos LUCCHETTI S&G Tirab.N*28 500 G               | Lucchetti            | Fideos                     | S&g Tirab. N*28                    | 500 g             | 1_115     |
+| Fideos LUCCHETTI S&G Tirab.N*34 500 G               | Lucchetti            | Fideos                     | S&g Tirab. N*34                    | 500 g             | 1_115     |
 | Fideos LUCCHETTI Spaghetti  500 G                   | Lucchetti            | Fideos                     | Spaghetti                          | 500 g             | 1_115     |
 | Fideos LUCCHETTI Tallarin N*5 500 G                 | Lucchetti            | Fideos                     | Tallarin N*5                       | 500 g             | 1_115     |
 | Fideos MAROLIO Coditos  500 G                       | Marolio              | Fideos                     | Coditos                            | 500 g             | 1_115     |
 | Fideos MAROLIO Dedalitos  500 G                     | Marolio              | Fideos                     | Dedalitos                          | 500 g             | 1_115     |
 | Fideos MAROLIO Guiso Caracol 500 G                  | Marolio              | Fideos                     | Guiso Caracol                      | 500 g             | 1_115     |
 | Fideos MAROLIO Guiso Celentano 500 G                | Marolio              | Fideos                     | Guiso Celentano                    | 500 g             | 1_115     |
+| Fideos MAROLIO Guiso Most.Ray. 500 G                | Marolio              | Fideos                     | Guiso Most. Ray.                   | 500 g             | 1_115     |
 | Fideos MAROLIO Guiso Tirabuzon 500 G                | Marolio              | Fideos                     | Guiso Tirabuzon                    | 500 g             | 1_115     |
 | Fideos MAROLIO Moños  500 G                         | Marolio              | Fideos                     | Moños                              | 500 g             | 1_115     |
 | Fideos MAROLIO Spaghetti  500 G                     | Marolio              | Fideos                     | Spaghetti                          | 500 g             | 1_115     |
@@ -892,10 +889,10 @@
 | Flan RAVANA Vainilla 60 G                           | Ravana               | Flan                       | Vainilla                           | 60 g              | 1_116     |
 | Flan ROYAL Light Vainilla 16 G                      | Royal                | Flan                       | Light Vainilla                     | 16 g              | 1_116     |
 | Flan ROYAL Vainilla  60 G                           | Royal                | Flan                       | Vainilla                           | 60 g              | 1_116     |
-| Fosforos TRES PATITOS  222 U                        | Tres Patitos         | Fosforos                   |                                    | 222 U             | 6_612     |
-| Gallet.9 DE ORO Anillos Vainilla 120 G              | 9 de Oro             | Gallet.                    | Anillos Vainilla                   | 120 g             | 1_117     |
-| Gallet.9 DE ORO Obleas Choc-Naran 100 G             | 9 de Oro             | Gallet.                    | Obleas Choc-naran                  | 100 g             | 1_117     |
-| Gallet.9 DE ORO Obleas Vain-Fruti 100 G             | 9 de Oro             | Gallet.                    | Obleas Vain-fruti                  | 100 g             | 1_117     |
+| Fosforos TRES PATITOS  222 U                        | Tres Patitos         | Fosforos                   |                                    | 222 u             | 6_612     |
+| Gallet.9 DE ORO Anillos Vainilla 120 G              | 9 de Oro             | Galletitas                 | Anillos Vainilla                   | 120 g             | 1_117     |
+| Gallet.9 DE ORO Obleas Choc-Naran 100 G             | 9 de Oro             | Galletitas                 | Obleas Choc-naran                  | 100 g             | 1_117     |
+| Gallet.9 DE ORO Obleas Vain-Fruti 100 G             | 9 de Oro             | Galletitas                 | Obleas Vain-fruti                  | 100 g             | 1_117     |
 | Gallet.Arroz ARROZEN C/Sal 100 G                    | Arrozen              | Gallet. Arroz              | C/sal                              | 100 g             | 1_117     |
 | Gallet.Arroz ARROZEN C/Sal 55 G                     | Arrozen              | Gallet. Arroz              | C/sal                              | 55 g              | 1_117     |
 | Gallet.Arroz ARROZEN Cuadr. C/Sal 95 G              | Arrozen              | Gallet. Arroz              | Cuadr. C/sal                       | 95 g              | 1_117     |
@@ -913,20 +910,19 @@
 | Gallet.CLASS Pepas  170 G                           | Class                | Gallet.                    | Pepas                              | 170 g             | 1_117     |
 | Gallet.CLASS Pepas  350 G                           | Class                | Gallet.                    | Pepas                              | 350 g             | 1_117     |
 | Gallet.CLASS Pepas  500 G                           | Class                | Gallet.                    | Pepas                              | 500 g             | 1_117     |
-| Gallet.CLUB SOCIAL Original  6ux24 G                | Club Social          | Gallet.                    | Original                           | 6x24 g            | 1_117     |
+| Gallet.CLUB SOCIAL Jamon  6ux24 G                   | Club Social          | Gallet.                    | Jamon                              | 6x24 g            | 1_117     |
 | Gallet.CORONITAS Cereal Av&Pasas 140 G              | Coronitas            | Gallet.                    | Cereal Av&pasas                    | 140 g             | 1_117     |
 | Gallet.DELICIAS de la NONA Mantenonas 300 G         | Delicias de la Nona  | Gallet.                    | Mantenonas                         | 300 g             | 1_117     |
 | Gallet.DELICIAS de la NONA Pepas 180 G              | Delicias de la Nona  | Gallet.                    | Pepas                              | 180 g             | 1_117     |
 | Gallet.DELICIAS de la NONA Pepas 350 G              | Delicias de la Nona  | Gallet.                    | Pepas                              | 350 g             | 1_117     |
 | Gallet.DELICIAS de la NONA Surtido 400 G            | Delicias de la Nona  | Gallet.                    | Surtido                            | 400 g             | 1_117     |
 | Gallet.DELICIAS DL.NONA R/. Chocolate 160 G         | Delicias de la Nona  | Gallet.                    | R/. Chocolate                      | 160 g             | 1_117     |
-| Gallet.DELICIAS DL.NONA R/. Frutilla 160 G          | Delicias de la Nona  | Gallet.                    | R/. Frutilla                       | 160 g             | 1_117     |
 | Gallet.DELICIAS DL.NONA R/. Vainilla 160 G          | Delicias de la Nona  | Gallet.                    | R/. Vainilla                       | 160 g             | 1_117     |
 | Gallet.DON SATUR Pepas  300 G                       | Don Satur            | Gallet.                    | Pepas                              | 300 g             | 1_117     |
 | Gallet.DON SATUR Talitas C/Semillas 140 G           | Don Satur            | Gallet.                    | Talitas C/semillas                 | 140 g             | 1_117     |
 | Gallet.DON SATUR Talitas Trad. 140 G                | Don Satur            | Gallet.                    | Talitas Trad.                      | 140 g             | 1_117     |
 | Gallet.DULCE MAMA C/Canela  160 G                   | Dulce Mama           | Gallet.                    | C/canela                           | 160 g             | 1_117     |
-| Gallet.EDRA Surtidas  300 G                         | Edra                 | Gallet.                    | Surtidas                           | 300 g             | 1_117     |
+| Gallet.EDRA Surtidas  300 G                         | Edra                 | Galletitas                 | Surtidas                           | 300 g             | 1_117     |
 | Gallet.FACHITAS Chococake  250 G                    | Fachitas             | Gallet.                    | Chococake                          | 250 g             | 1_117     |
 | Gallet.FACHITAS Mini-Tapitas Alf.  200 G            | Fachitas             | Gallet.                    | Mini-tapitas Alf.                  | 200 g             | 1_117     |
 | Gallet.FACHITAS Mini Coro. Black R/V. 130 G         | Fachitas             | Gallet.                    | Mini Coro. Black R/v.              | 130 g             | 1_117     |
@@ -968,6 +964,7 @@
 | Gallet.LA PROVIDENCIA Crackers  5x101 G             | La Providencia       | Gallet.                    | Crackers                           | 5x101 g           | 1_117     |
 | Gallet.LE.Q Crackers Saladas  70 G                  | Le.q                 | Gallet.                    | Crackers Saladas                   | 70 g              | 1_117     |
 | Gallet.MAFALDA Larguita Hojaldre 150 G              | Mafalda              | Gallet.                    | Larguita Hojaldre                  | 150 g             | 1_117     |
+| Gallet.MAFALDA Triangulo Hojaldre 150 G             | Mafalda              | Gallet.                    | Triangulo Hojaldre                 | 150 g             | 1_117     |
 | Gallet.MAROLIO Mini Crackers  300 G                 | Marolio              | Gallet.                    | Mini Crackers                      | 300 g             | 1_117     |
 | Gallet.MAROLIO Mini Crackers Salvado 300 G          | Marolio              | Gallet.                    | Mini Crackers Salvado              | 300 g             | 1_117     |
 | Gallet.MAROLIO Sandwich  3ux101 G                   | Marolio              | Gallet.                    | Sandwich                           | 3x101 g           | 1_117     |
@@ -985,11 +982,8 @@
 | Gallet.OREO Mini  50 G                              | Oreo                 | Gallet.                    | Mini                               | 50 g              | 1_117     |
 | Gallet.OREO Reg.  118 G                             | Oreo                 | Gallet.                    | Reg.                               | 118 g             | 1_117     |
 | Gallet.OREO Reg.  182,5 G                           | Oreo                 | Gallet.                    | Reg.                               | 182.5 g           | 1_117     |
-| Gallet.OREO Tripack Reg.  354 G                     | Oreo                 | Gallet.                    | Tripack Reg.                       | 354 g             | 1_117     |
 | Gallet.P&S Grisines Ital. Clasicos 170 G            | P&s                  | Gallet.                    | Grisines Ital. Clasicos            | 170 g             | 1_117     |
-| Gallet.P&S Grisines Ital. Light 160 G               | P&s                  | Gallet.                    | Grisines Ital. Light               | 160 g             | 1_117     |
 | Gallet.P&S Grisines Ital. Tradic. 170 G             | P&s                  | Gallet.                    | Grisines Ital. Tradic.             | 170 g             | 1_117     |
-| Gallet.P&S Tost.C/Gluten Mesa 200 G                 | P&s                  | Gallet.                    | Tost. C/gluten Mesa                | 200 g             | 1_117     |
 | Gallet.P&S Tost.C/Gluten Salvado 200 G              | P&s                  | Gallet.                    | Tost. C/gluten Salvado             | 200 g             | 1_117     |
 | Gallet.PAR-NOR Coco 170 G                           | Par-nor              | Gallet.                    | Coco                               | 170 g             | 1_117     |
 | Gallet.PAR-NOR Mini Mantecadas 170 G                | Par-nor              | Gallet.                    | Mini Mantecadas                    | 170 g             | 1_117     |
@@ -997,13 +991,11 @@
 | Gallet.PAR-NOR Suavecitas 140 G                     | Par-nor              | Gallet.                    | Suavecitas                         | 140 g             | 1_117     |
 | Gallet.PASEO Mini Crackers Clas. 300 G              | Paseo                | Gallet.                    | Mini Crackers Clas.                | 300 g             | 1_117     |
 | Gallet.PASEO Mini Crackers S/Sal 300 G              | Paseo                | Gallet.                    | Mini Crackers S/sal                | 300 g             | 1_117     |
-| Gallet.PASEO Surt.x 5 Semillas 300 G                | Paseo                | Gallet.                    | Surt.x 5 Semillas                  | 300 g             | 1_117     |
-| Gallet.PASEO Surt.x Mix Cereal 300 G                | Paseo                | Gallet.                    | Surt.x Mix Cereal                  | 300 g             | 1_117     |
-| Gallet.PASEO Surt.x Salvado 300 G                   | Paseo                | Gallet.                    | Surt.x Salvado                     | 300 g             | 1_117     |
+| Gallet.PASEO Surt.x 5 Semillas 300 G                | Paseo                | Gallet.                    | Surtidosx 5 Semillas               | 300 g             | 1_117     |
+| Gallet.PASEO Surt.x Mix Cereal 300 G                | Paseo                | Gallet.                    | Surtidosx Mix Cereal               | 300 g             | 1_117     |
+| Gallet.PASEO Surt.x Salvado 300 G                   | Paseo                | Gallet.                    | Surtidosx Salvado                  | 300 g             | 1_117     |
 | Gallet.PASEO Tostadas Clasicas  200 G               | Paseo                | Gallet.                    | Tostadas Clasicas                  | 200 g             | 1_117     |
 | Gallet.PEPITOS  119 G                               | Pepitos              | Gallet.                    |                                    | 119 g             | 1_117     |
-| Gallet.PEPITOS Mini  50 G                           | Pepitos              | Gallet.                    | Mini                               | 50 g              | 1_117     |
-| Gallet.PEPITOS Tripack  357 G                       | Pepitos              | Gallet.                    | Tripack                            | 357 g             | 1_117     |
 | Gallet.PINGUI Melina  200 G                         | Pingui               | Gallet.                    | Melina                             | 200 g             | 1_117     |
 | Gallet.PITUSAS Mini Black 130 G                     | Pitusas              | Gallet.                    | Mini Black                         | 130 g             | 1_117     |
 | Gallet.PITUSAS Mini Chocolate 160 G                 | Pitusas              | Gallet.                    | Mini Chocolate                     | 160 g             | 1_117     |
@@ -1021,8 +1013,8 @@
 | Gallet.RIERA Tost.L/Clasica De Mesa 200 G           | Riera                | Gallet.                    | Tost. L/clasica de Mesa            | 200 g             | 1_117     |
 | Gallet.RIERA Tost.L/Clasica Dulces R. 200 G         | Riera                | Gallet.                    | Tost. L/clasica Dulces R.          | 200 g             | 1_117     |
 | Gallet.RIERA Tost.Light L/Equil. 200 G              | Riera                | Gallet.                    | Tost. Light L/equil.               | 200 g             | 1_117     |
-| Gallet.RONDA Larguita  150 G                        | Ronda                | Gallet.                    | Larguita                           | 150 g             | 1_117     |
-| Gallet.RONDA Triangulos  150 G                      | Ronda                | Gallet.                    | Triangulos                         | 150 g             | 1_117     |
+| Gallet.RONDA Larguita  150 G                        | Ronda                | Galletita                  | Larguita                           | 150 g             | 1_117     |
+| Gallet.RONDA Triangulos  150 G                      | Ronda                | Galletita                  | Triangulos                         | 150 g             | 1_117     |
 | Gallet.SINFONIA Obleas Clasica 4ux50 G              | Sinfonia             | Gallet.                    | Obleas Clasica                     | 4x50 g            | 1_117     |
 | Gallet.SOLITAS Abecedario Letras Dce 400 G          | Solitas              | Gallet.                    | Abecedario Letras Dce              | 400 g             | 1_117     |
 | Gallet.SOLITAS Animacion C/Confite 400 G            | Solitas              | Gallet.                    | Animacion C/confite                | 400 g             | 1_117     |
@@ -1046,6 +1038,7 @@
 | Gallet.TERRAB.Variedad  390 G                       | Terrabusi            | Gallet.                    | Variedad                           | 390 g             | 1_117     |
 | Gallet.TRIO Alemanas 180 G                          | Trio                 | Gallet.                    | Alemanas                           | 180 g             | 1_117     |
 | Gallet.TRIO Frolitas 160 G                          | Trio                 | Gallet.                    | Frolitas                           | 160 g             | 1_117     |
+| Gallet.TRIO Glasy 175 G                             | Trio                 | Gallet.                    | Glasy                              | 175 g             | 1_117     |
 | Gallet.TRIO Pepas  1 K                              | Trio                 | Gallet.                    | Pepas                              | 1 kg              | 1_117     |
 | Gallet.TRIO Pepas  200 G                            | Trio                 | Gallet.                    | Pepas                              | 200 g             | 1_117     |
 | Gallet.TRIO Pepas  500 G                            | Trio                 | Gallet.                    | Pepas                              | 500 g             | 1_117     |
@@ -1127,14 +1120,16 @@
 | Gelatines DOCILE Sandia Ac. 250 G                   | Docile               | Gelatines                  | Sandia Ac.                         | 250 g             | 8_807     |
 | Gin BEEFEATER 40* x  700 c                          | Beefeater            | Gin                        | 40* X                              | 700 ml            | 2_208     |
 | Gin BOLS  750 c                                     | Bols                 | Gin                        |                                    | 750 ml            | 2_208     |
-| Gin BRIGHTON 37,3*  700 m                           | Brighton             | Gin                        | 37,3                               | 700 ml            | 2_208     |
+| Gin BRIGHTON 37,3*  700 m                           | Brighton             | Gin                        |                                    | 700 ml            | 2_208     |
 | Gin GORDON'S  700 m                                 | Gordon's             | Gin                        |                                    | 700 ml            | 2_208     |
-| Gin SPIRITO Blu  700 c                              | Spirito              | Gin                        | Blu                                | 700 ml            | 2_208     |
+| Gin SPIRITO Blu  700 c                              | Spirito Blu          | Gin                        |                                    | 700 ml            | 2_208     |
+| Girasol PIPAS Peladas C/Sal D/P. 180 G              | Pipas                | Girasol                    | Peladas C/sal D/p.                 | 180 g             | 8_808     |
 | Girasol PIPAS T&Sal.C/C.Gigante D/P. 160 G          | Pipas                | Girasol                    | T&sal. C/c. Gigante D/p.           | 160 g             | 8_808     |
 | Girasol PIPAS T&Sal.C/C.Gigante Tira 10ux50 G       | Pipas                | Girasol                    | T&sal. C/c. Gigante Tira           | 10x50 g           | 8_808     |
+| Girasol PIPAS T&Sal.C/Casc. Gigantes 12ux50 G       | Pipas                | Girasol                    | T&sal. C/casc. Gigantes            | 12x50 g           | 8_808     |
 | Girasol PIPAS T&Sal.C/Casc. Rojas 30ux18 G          | Pipas                | Girasol                    | T&sal. C/casc. Rojas               | 30x18 g           | 8_808     |
 | Girasol PIPAS T&Sal.C/Casc. Tira 10ux18 G           | Pipas                | Girasol                    | T&sal. C/casc. Tira                | 10x18 g           | 8_808     |
-| Grasa CRISTALINA Vacuna Ref. 500 G                  | Cristalina           | Grasa                      | Vacuna Ref.                        | 500 g             | 1_143     |
+| Grasa CRISTALINA Vacuna Ref. 500 G                  | Cristalina           | Grasa                      | Vacuna Refinada                    | 500 g             | 1_143     |
 | Grasa HALCON D/Cerdo  500 G                         | Halcon               | Grasa                      | D/cerdo                            | 500 g             | 1_143     |
 | Grasa HALCON Vacuna  500 G                          | Halcon               | Grasa                      | Vacuna                             | 500 g             | 1_143     |
 | Guantes MAKE Clasico Pequeño                        | Make                 | Guantes                    | Clasico Pequeño                    |                   | 6_613     |
@@ -1202,6 +1197,7 @@
 | Helado ARTI P/Bombon  60 c                          | Arti                 | Helado                     | P/bombon                           | 60 ml             | 4_402     |
 | Helado ARTI P/Cr.Tzunami Americana 60 c             | Arti                 | Helado                     | P/cr. Tzunami Americana            | 60 ml             | 4_403     |
 | Helado ARTI P/Cr.Tzunami Chocolate 60 c             | Arti                 | Helado                     | P/cr. Tzunami Chocolate            | 60 ml             | 4_403     |
+| Helado ARTI P/Cr.Tzunami Frutilla 60 c              | Arti                 | Helado                     | P/cr. Tzunami Frutilla             | 60 ml             | 4_403     |
 | Helado ARTI P/Cr.Tzunami Mix(Ch*Am) 60 c            | Arti                 | Helado                     | P/cr. Tzunami Mix(ch*am)           | 60 ml             | 4_403     |
 | Helado ARTI P/Crema Fusion Fr*Cr. 60 c              | Arti                 | Helado                     | P/crema Fusion Fr*cr.              | 60 ml             | 4_402     |
 | Helado ARTI P/Sombrero Loco Choc*Amer. 53 G         | Arti                 | Helado                     | P/sombrero Loco Choc*amer.         | 53 g              | 4_403     |
@@ -1209,6 +1205,7 @@
 | Helado ARTI Postre Mixto  125 c                     | Arti                 | Helado                     | Postre Mixto                       | 125 ml            | 4_406     |
 | Helado ARTI Pote DDL*V*Ch. 360 c                    | Arti                 | Helado                     | Pote Ddl*v*ch.                     | 360 ml            | 4_405     |
 | Helado ARTI Pote Fr*Am*Ch. 360 c                    | Arti                 | Helado                     | Pote Fr*am*ch.                     | 360 ml            | 4_405     |
+| Helado ARTIBOM P/Cr.Crocante  60 c                  | Artibom              | Helado                     | P/cr. Crocante                     | 60 ml             | 4_402     |
 | Helado ARTIBOM P/Crema Relleno  60 c                | Artibom              | Helado                     | P/crema Relleno                    | 60 ml             | 4_402     |
 | Helado ARTIBOM P/Split Rell. Banana 60 c            | Artibom              | Helado                     | P/split Rell. Banana               | 60 ml             | 4_402     |
 | Helado ARTIMIX P/Agua Ana*Frut. 60 c                | Artimix              | Helado                     | P/agua Ana*frut.                   | 60 ml             | 4_401     |
@@ -1216,8 +1213,9 @@
 | Helado ARTIMIX P/Agua Uva*Vain. 60 c                | Artimix              | Helado                     | P/agua Uva*vain.                   | 60 ml             | 4_401     |
 | Hisopos COTONETES Flexivei  75 U                    | Cotonetes            | Hisopos                    | Flexivei                           | 75 U              | 5_520     |
 | Hisopos DONCELLA Pote 100 U                         | Doncella             | Hisopos                    | Pote                               | 100 U             | 5_520     |
+| Hisopos Q-SOFT Est.  75 U                           | Q-soft               | Hisopos                    | Est.                               | 75 U              | 5_520     |
 | Hisopos Q-SOFT Pote  100 U                          | Q-soft               | Hisopos                    | Pote                               | 100 U             | 5_520     |
-| Insect.CUCATRAP Ext.Cuca/Araña/Horm.  380 c         | Cucatrap             | Insect.                    | Ext. Cuca/araña/horm.              | 380 ml            | 6_614     |
+| Insect.CUCATRAP Ext.Cuca/Araña/Horm.  380 c         | Cucatrap             | Insecticida                |                                    | 380 ml            | 6_614     |
 | Insect.FUYI 45Noches Liq.Rep.  32.9 c               | Fuyi                 | Insect.                    | 45noches Liq. Rep.                 | 32.9 ml           | 6_614     |
 | Insect.FUYI M.M&M.  390 c                           | Fuyi                 | Insect.                    | M.m&m.                             | 390 ml            | 6_614     |
 | Insect.FUYI VAPE Tabl.Exp.  24 U                    | Fuyi Vape            | Insect.                    | Tabl. Exp.                         | 24 U              | 6_614     |
@@ -1246,10 +1244,10 @@
 | Jabon ALA BE.Eco.Mañana D/Sol  3 K                  | Ala                  | Jabon                      | Be. Eco. Mañana D/sol              | 3 kg              | 6_609     |
 | Jabon ALA BE.Lav.Total Frag.Durad 400 G             | Ala                  | Jabon                      | Be. Lav. Total Frag. Durad         | 400 g             | 6_609     |
 | Jabon ALA BE.Lav.Total Frag.Durad 800 G             | Ala                  | Jabon                      | Be. Lav. Total Frag. Durad         | 800 g             | 6_609     |
+| Jabon ALA BE.Lav.Total Mañ.D/Sol 800 G              | Ala                  | Jabon                      | Be. Lav. Total Mañ.d/sol           | 800 g             | 6_609     |
 | Jabon ALA BE.Lav.Total Mañ.Sol 400 G                | Ala                  | Jabon                      | Be. Lav. Total Mañ.sol             | 400 g             | 6_609     |
 | Jabon ALA BE.Liq.DP Lav.Total Frag.Durad 3 l        | Ala                  | Jabon                      | Be. Liq. Dp Lav. Total Frag. Durad | 3 l               | 6_609     |
 | Jabon ALA BE.Liq.DP Lav.Total Frag.Durad 800 m      | Ala                  | Jabon                      | Be. Liq. Dp Lav. Total Frag. Durad | 800 ml            | 6_609     |
-| Jabon ALA BE.Mañana de Sol  800 G                   | Ala                  | Jabon                      | Be. Mañana de Sol                  | 800 g             | 6_609     |
 | Jabon ALA LM.Lav.Total Frag.Durad 400 G             | Ala                  | Jabon                      | Lm. Lav. Total Frag. Durad         | 400 g             | 6_609     |
 | Jabon ALA LM.Lav.Total Frag.Durad 800 G             | Ala                  | Jabon                      | Lm. Lav. Total Frag. Durad         | 800 g             | 6_609     |
 | Jabon Anticep.ESPADOL Original 80 G                 | Espadol              | Jabon Anticep.             | Original                           | 80 g              | 5_511     |
@@ -1258,12 +1256,12 @@
 | Jabon Barra ALA Ecolavado  200 G                    | Ala                  | Jabon Barra                | Ecolavado                          | 200 g             | 6_615     |
 | Jabon GRANBY BE.Liq.DP Rosas 800 m                  | Granby               | Jabon                      | Be. Liq. Dp Rosas                  | 800 ml            | 6_609     |
 | Jabon GRANBY BE.Liq.DP. Limon 800 m                 | Granby               | Jabon                      | Be. Liq. Dp. Limon                 | 800 ml            | 6_609     |
-| Jabon GRANBY Plus Blanq.  3 K                       | Granby               | Jabon                      | Plus Blanq.                        | 3 kg              | 6_609     |
+| Jabon GRANBY LM Plus Blanq.  3 K                    | Granby Lm            | Jabon                      | Plus Blanq.                        | 3 kg              | 6_609     |
 | Jabon HEROE BE Liq.  800 m                          | Heroe                | Jabon                      | Be Liq.                            | 800 ml            | 6_609     |
 | Jabon HEROE BE Liq.D/P.  800 m                      | Heroe                | Jabon                      | Be Liq. D/p.                       | 800 ml            | 6_609     |
 | Jabon HOGAR DINA Liq.  800 m                        | Hogar Dina           | Jabon                      | Liq.                               | 800 ml            | 6_609     |
 | Jabon NETIC BE Liq.D/P.  3 l                        | Netic                | Jabon                      | Be Liq. D/p.                       | 3 l               | 6_609     |
-| Jabon Pan SEISEME  300 G                            | Seiseme              | Jabon Pan                  |                                    | 300 g             | 6_615     |
+| Jabon Pan SEISEME  300 G                            | Seiseme              | Jabon                      | Pan                                | 300 g             | 6_615     |
 | Jabon Pan VILLA IRIS Bco.x  150 G                   | Villa Iris           | Jabon Pan                  | Bco.x                              | 150 g             | 6_615     |
 | Jabon QUERUBIN BE Liq.Bot.  1,5 l                   | Querubin             | Jabon                      | Be Liq. Bot.                       | 1.5 l             | 6_609     |
 | Jabon QUERUBIN BE Liq.Bot.  800 c                   | Querubin             | Jabon                      | Be Liq. Bot.                       | 800 ml            | 6_609     |
@@ -1289,7 +1287,6 @@
 | Jabon Tdor.PALMOLIVE Oliv&Aloe* 85 G                | Palmolive            | Jabon Tdor.                | Oliv&aloe                          | 85 g              | 5_511     |
 | Jabon Tdor.PROTEX Aloe 125 G                        | Protex               | Jabon Tdor.                | Aloe                               | 125 g             | 5_511     |
 | Jabon Tdor.PROTEX Aloe 3ux90 G                      | Protex               | Jabon Tdor.                | Aloe                               | 3x90 g            | 5_511     |
-| Jabon Tdor.PROTEX Avena+Preb 125 G                  | Protex               | Jabon Tdor.                | Avena+preb                         | 125 g             | 5_511     |
 | Jabon Tdor.PROTEX Liq.Aloe  221 m                   | Protex               | Jabon Tdor.                | Liq. Aloe                          | 221 ml            | 5_511     |
 | Jabon Tdor.PROTEX Liq.D/P Balance  * 200 m          | Protex               | Jabon Tdor.                | Liq. D/p Balance                   | 200 ml            | 5_511     |
 | Jabon Tdor.REXONA Antibact. Aloe Vera 90 G          | Rexona               | Jabon Tdor.                | Antibact. Aloe Vera                | 90 g              | 5_511     |
@@ -1301,7 +1298,7 @@
 | Jalea Memb.EMETH Fco.  454 G                        | Emeth                | Jalea Memb.                | Fco.                               | 454 g             | 1_122     |
 | Jugo BAGGIO P.S/Azuc.Tb.x Multifruta 200 m          | Baggio               | Jugo                       | P.s/azuc. Tb.x Multifruta          | 200 ml            | 2_206     |
 | Jugo BAGGIO PRONTO Tb. Manzana 125 m                | Baggio               | Jugo                       | Pronto Tb. Manzana                 | 125 ml            | 2_206     |
-| Jugo BAGGIO PRONTO Tb. Mix Frutal 200 m             | Baggio               | Jugo                       | Pronto Tb. Mix Frutal              | 200 ml            | 2_206     |
+| Jugo BAGGIO PRONTO Tb. Mix Frutal 200 m             | Baggio               | Jugo                       | Pronto Tb. Mix Frutales            | 200 ml            | 2_206     |
 | Jugo BAGGIO PRONTO Tb. Multifruta 1 l               | Baggio               | Jugo                       | Pronto Tb. Multifruta              | 1 l               | 2_206     |
 | Jugo BAGGIO PRONTO Tb. Multifruta 1,5 l             | Baggio               | Jugo                       | Pronto Tb. Multifruta              | 1.5 l             | 2_206     |
 | Jugo BAGGIO PRONTO Tb. Multifruta 125 m             | Baggio               | Jugo                       | Pronto Tb. Multifruta              | 125 ml            | 2_206     |
@@ -1325,15 +1322,15 @@
 | Jugo CLIGHT Naranja 8 G                             | Clight               | Jugo                       | Naranja                            | 8 g               | 2_206     |
 | Jugo CLIGHT Pera 7 G                                | Clight               | Jugo                       | Pera                               | 7 g               | 2_206     |
 | Jugo CLIGHT Pomelo Rdo 8 G                          | Clight               | Jugo                       | Pomelo Rdo                         | 8 g               | 2_206     |
-| Jugo Limon MENOYO  250 m                            | Menoyo               | Jugo Limon                 |                                    | 250 ml            | 1_121     |
-| Jugo Limon MINERVA  1 l                             | Minerva              | Jugo Limon                 |                                    | 1 l               | 1_121     |
-| Jugo Limon MINERVA  500 c                           | Minerva              | Jugo Limon                 |                                    | 500 ml            | 1_121     |
+| Jugo Limon MAROLIO  500 m                           | Marolio              | Jugo Limon                 |                                    | 500 ml            | 1_135     |
+| Jugo Limon MINERVA  1 l                             | Minerva              | Jugo Limon                 |                                    | 1 l               | 1_135     |
+| Jugo Limon MINERVA  500 m                           | Minerva              | Jugo Limon                 |                                    | 500 ml            | 1_135     |
 | Jugo RINDEDOS Anana 13 G                            | Rinde 2              | Jugo                       | Anana                              | 13 g              | 2_206     |
 | Jugo RINDEDOS Durazno 13 G                          | Rinde 2              | Jugo                       | Durazno                            | 13 g              | 2_206     |
 | Jugo RINDEDOS Frutilla 13 G                         | Rinde 2              | Jugo                       | Frutilla                           | 13 g              | 2_206     |
 | Jugo RINDEDOS Limon 13 G                            | Rinde 2              | Jugo                       | Limon                              | 13 g              | 2_206     |
 | Jugo RINDEDOS Manzana 13 G                          | Rinde 2              | Jugo                       | Manzana                            | 13 g              | 2_206     |
-| Jugo RINDEDOS Mix Frutal 13 G                       | Rinde 2              | Jugo                       | Mix Frutal                         | 13 g              | 2_206     |
+| Jugo RINDEDOS Mix Frutal 13 G                       | Rinde 2              | Jugo                       | Mix Frutales                       | 13 g              | 2_206     |
 | Jugo RINDEDOS Nar-Banana 13 G                       | Rinde 2              | Jugo                       | Nar-banana                         | 13 g              | 2_206     |
 | Jugo RINDEDOS Nar-Dzno. 13 G                        | Rinde 2              | Jugo                       | Nar-dzno.                          | 13 g              | 2_206     |
 | Jugo RINDEDOS Nar-Mango 13 G                        | Rinde 2              | Jugo                       | Nar-mango                          | 13 g              | 2_206     |
@@ -1371,6 +1368,7 @@
 | Lana Acero DUCAN Rollitos  10 U                     | Ducan                | Lana Acero                 | Rollitos                           | 10 U              | 6_617     |
 | Lana D/Acero SED METAL Ovillos  6u 38 G             | Sed Metal            | Lana D/acero               | Ovillos 6u                         | 38 g              | 6_617     |
 | Lana D/Acero VIRULANA Rollitos  6 U                 | Virulana             | Lana D/acero               | Rollitos                           | 6 U               | 6_617     |
+| Lana D/Acero VIRULANA Rollitos x  10 U              | Virulana             | Lana D/acero               | Rollitos X                         | 10 U              | 6_617     |
 | Lavand.AYUDIN Clasica 1 l                           | Ayudin               | Lavand.                    | Clasica                            | 1 l               | 6_618     |
 | Lavand.AYUDIN Frag.Tr/Poder Glaciar 2 l             | Ayudin               | Lavand.                    | Frag. Tr/poder Glaciar             | 2 l               | 6_618     |
 | Lavand.AYUDIN Frag.Tr/Poder Lavanda 2 l             | Ayudin               | Lavand.                    | Frag. Tr/poder Lavanda             | 2 l               | 6_618     |
@@ -1396,7 +1394,8 @@
 | Leche LA SERENISIMA Ent.LV.3% Brik 1 l              | La Serenisima        | Leche                      | Ent. Lv.3% Brik                    | 1 l               | 1_144     |
 | Leche LA SERENISIMA Ent.LV.3% Pet 1 l               | La Serenisima        | Leche                      | Ent. Lv.3% Pet                     | 1 l               | 1_144     |
 | Leche LA SERENISIMA Zero Lact. Pet 1 l              | La Serenisima        | Leche                      | Zero Lact. Pet                     | 1 l               | 1_144     |
-| Leche Polvo LA LECHERA Bsa.x N/Balan. 400 G         | La Lechera           | Leche Polvo                | Bsa.x N/balan.                     | 400 g             | 1_144     |
+| Leche Polvo LA LECHERA Bsa.x N/Balan. 400 G         | La Lechera           | Leche en Polvo             | Bolsa                              | 400 g             | 1_144     |
+| Leche Polvo NIDO FG.Prebio. Bsa. 370 G              | Nido                 | Leche Polvo                | Fg. Prebio. Bsa.                   | 370 g             | 1_144     |
 | Leche Polvo NIDO FortiGrow Lata 750 G               | Nido                 | Leche Polvo                | Fortigrow Lata                     | 750 g             | 1_144     |
 | Leche Polvo SANCOR Bebe1 Adv.    (Est) 800 G        | Sancor               | Leche Polvo                | Bebe1 Adv. (est)                   | 800 g             | 1_144     |
 | Leche Polvo SANCOR Bebe2 Adv.    (Est) 800 G        | Sancor               | Leche Polvo                | Bebe2 Adv. (est)                   | 800 g             | 1_144     |
@@ -1411,16 +1410,16 @@
 | Lentejas Remoj.INCA  350 G                          | Inca                 | Lentejas Remoj.            |                                    | 350 g             | 1_120     |
 | Lentejas Remoj.MOLTO T/R. 340 G                     | Molto                | Lentejas Remoj.            | T/r.                               | 340 g             | 1_120     |
 | Lentejon LISETTA * 400 G                            | Lisetta              | Lentejon                   |                                    | 400 g             | 1_120     |
-| Levadura LEVEX Masa Madre Sob.  13 G                | Levex                | Levadura                   | Masa Madre Sob.                    | 13 g              | 1_148     |
-| Levadura LEVEX Pizza&Pan y M.Dces.  2ux10 G         | Levex                | Levadura                   | Pizza&pan y M. Dces.               | 2x10 g            | 1_148     |
+| Levadura LEVEX Masa Madre Sob.  13 G                | Levex                | Levadura                   | Masa Madre                         | 13 g              | 1_148     |
+| Levadura LEVEX Pizza&Pan y M.Dces.  2ux10 G         | Levex                | Levadura                   |                                    | 2x10 g            | 1_148     |
 | Licor ALBANY CREAM A/Whisky  750 c                  | Albany Cream         | Licor                      | A/whisky                           | 750 ml            | 2_207     |
-| Licor Anis 8 HERMANOS Azul 1 l                      | 8 Hermanos           | Licor Anis                 | Azul                               | 1 l               | 2_207     |
-| Licor Anis 8 HERMANOS Azul 200 c                    | 8 Hermanos           | Licor Anis                 | Azul                               | 200 ml            | 2_207     |
+| Licor Anis 8 HERMANOS Azul 1 l                      | 8 Hermanos           | Licor                      | Anis Azul                          | 1 l               | 2_207     |
+| Licor Anis 8 HERMANOS Azul 200 c                    | 8 Hermanos           | Licor                      | Anis Azul                          | 200 ml            | 2_207     |
 | Licor BAR&PUB'S Cr. Chocolate 1 l                   | Bar&pub's            | Licor                      | Cr. Chocolate                      | 1 l               | 2_207     |
 | Licor BAR&PUB'S Cr. DDL 1 l                         | Bar&pub's            | Licor                      | Cr. Ddl                            | 1 l               | 2_207     |
 | Licor BAR&PUB'S Liv. Cafe Coñac 1 l                 | Bar&pub's            | Licor                      | Liv. Cafe Coñac                    | 1 l               | 2_207     |
 | Licor BAR&PUB'S Liv. Melon 1 l                      | Bar&pub's            | Licor                      | Liv. Melon                         | 1 l               | 2_207     |
-| Licor BORGHETTI Cafe Exp.  700 m                    | Borghetti            | Licor                      | Cafe Exp.                          | 700 ml            | 2_207     |
+| Licor BORGHETTI Cafe Exp.  700 m                    | Borghetti            | Licor                      |                                    | 700 ml            | 2_207     |
 | Licor CUSENIER Cafe Coñac 200 m                     | Cusenier             | Licor                      | Cafe Coñac                         | 200 ml            | 2_207     |
 | Licor CUSENIER Chocolate 700 m                      | Cusenier             | Licor                      | Chocolate                          | 700 ml            | 2_207     |
 | Licor CUSENIER DDL 700 m                            | Cusenier             | Licor                      | Ddl                                | 700 ml            | 2_207     |
@@ -1428,7 +1427,7 @@
 | Licor CUSENIER Liv. Cafe Coñac 700 m                | Cusenier             | Licor                      | Liv. Cafe Coñac                    | 700 ml            | 2_207     |
 | Licor CUSENIER Liv. Cr.Menta 700 m                  | Cusenier             | Licor                      | Liv. Cr. Menta                     | 700 ml            | 2_207     |
 | Licor CUSENIER Liv. Melon 700 m                     | Cusenier             | Licor                      | Liv. Melon                         | 700 ml            | 2_207     |
-| Licor Fino LEGUI  750 m                             | Legui                | Licor Fino                 |                                    | 750 ml            | 2_207     |
+| Licor Fino LEGUI  750 m                             | Legui                | Licor                      | Fino                               | 750 ml            | 2_207     |
 | Licor Fino MARIPOSA  200 c                          | Mariposa             | Licor Fino                 |                                    | 200 ml            | 2_207     |
 | Licor Fino MARIPOSA  750 m                          | Mariposa             | Licor Fino                 |                                    | 750 ml            | 2_207     |
 | Licor GLOUCESTER A/Whisky  200 c                    | Gloucester           | Licor                      | A/whisky                           | 200 ml            | 2_207     |
@@ -1463,7 +1462,7 @@
 | Limp.HEROE Brisa Mar. 900 m                         | Heroe                | Limp.                      | Brisa Mar.                         | 900 ml            | 6_619     |
 | Limp.HEROE Campo Lav. 900 m                         | Heroe                | Limp.                      | Campo Lav.                         | 900 ml            | 6_619     |
 | Limp.HEROE Campos D/Lavanda  4 l                    | Heroe                | Limp.                      | Campos D/lavanda                   | 4 l               | 6_619     |
-| Limp.HEROE Limon Prad 900 m                         | Heroe                | Limp.                      | Limon Prad                         | 900 ml            | 6_619     |
+| Limp.HEROE Limon P. 900 m                           | Heroe                | Limp.                      | Limon P.                           | 900 ml            | 6_619     |
 | Limp.HEROE Primavera 900 m                          | Heroe                | Limp.                      | Primavera                          | 900 ml            | 6_619     |
 | Limp.HOGAR Dina Floral 900 m                        | Hogar                | Limp.                      | Dina Floral                        | 900 ml            | 6_619     |
 | Limp.HOGAR Dina Lavanda 900 m                       | Hogar                | Limp.                      | Dina Lavanda                       | 900 ml            | 6_619     |
@@ -1476,23 +1475,21 @@
 | Limp.ODEX Baño D/P.  450 m                          | Odex                 | Limp.                      | Baño D/p.                          | 450 ml            | 6_619     |
 | Limp.ODEX Cremoso Original  500 m                   | Odex                 | Limp.                      | Cremoso Original                   | 500 ml            | 6_619     |
 | Limp.ODEX Vidrios D/P.  450 m                       | Odex                 | Limp.                      | Vidrios D/p.                       | 450 ml            | 6_619     |
-| Limp.PATO P.P/I Bloque P/Mochila 80 G               | Pato                 | Limp.                      | P.p/i Bloque P/mochila             | 80 g              | 6_619     |
 | Limp.SMART CLEAN Antigrasa  100 c                   | Smart Clean          | Limp.                      | Antigrasa                          | 100 ml            | 6_619     |
 | Limp.SMART CLEAN Baño  100 c                        | Smart Clean          | Limp.                      | Baño                               | 100 ml            | 6_619     |
 | Limp.SMART CLEAN Multiuso  100 c                    | Smart Clean          | Limp.                      | Multiuso                           | 100 ml            | 6_619     |
 | Limp.VANISH Q-Manchas D/P. Bco.Total 400 m          | Vanish               | Limp.                      | Q-manchas D/p. Bco. Total          | 400 ml            | 6_625     |
 | Limp.VANISH Q-Manchas D/P. Multiacc. 400 m          | Vanish               | Limp.                      | Q-manchas D/p. Multiacc.           | 400 ml            | 6_625     |
 | Lust.Mueble BLEM Clásico 360 m                      | Blem                 | Lust. Mueble               | Clásico                            | 360 ml            | 6_620     |
-| Lust.Mueble BLEM Madera Lavanda 360 m               | Blem                 | Lust. Mueble               | Madera Lavanda                     | 360 ml            | 6_620     |
+| Lust.Mueble BLEM Madera Lav. 360 m                  | Blem                 | Lust. Mueble               | Madera Lav.                        | 360 ml            | 6_620     |
 | Lust.Mueble CERAMICOL Aer. Lavanda 360 m            | Ceramicol            | Lust. Mueble               | Aer. Lavanda                       | 360 ml            | 6_620     |
 | Lust.Mueble CERAMICOL Aer. Naranja 360 m            | Ceramicol            | Lust. Mueble               | Aer. Naranja                       | 360 ml            | 6_620     |
 | Lust.Mueble CERAMICOL Aer. Orig. 360 m              | Ceramicol            | Lust. Mueble               | Aer. Orig.                         | 360 ml            | 6_620     |
 | Luz D/Emergencia CANDELA Led x Recarg.* 60 W        | Candela              | Luz D/emergencia           | Led X Recarg.                      | 60 W              | 10_1001   |
-| Madalenas DULCE MAMA Vainilla Rell.DDL 200 G        | Dulce Mama           | Madalenas                  | Vainilla Rell. Ddl                 | 200 g             | 1_117     |
+| Madalenas DULCE MAMA Vainilla Rell.DDL 200 G        | Dulce Mama           | Madalenas                  | Vainilla Rellena de Dulce de Leche | 200 g             | 1_117     |
 | Magdalenas DON SATUR Choc.R/DLL 220 G               | Don Satur            | Magdalenas                 | Choc. R/dll                        | 220 g             | 1_117     |
 | Magdalenas DON SATUR V.Rell.DDL 220 G               | Don Satur            | Magdalenas                 | V. Rell. Ddl                       | 220 g             | 1_117     |
 | Magdalenas DON SATUR Vainilla 200 G                 | Don Satur            | Magdalenas                 | Vainilla                           | 200 g             | 1_117     |
-| Magdalenas GAONA Clas. 200 G                        | Gaona                | Magdalenas                 | Clas.                              | 200 g             | 1_117     |
 | Magdalenas GAONA V.R/DDL 200 G                      | Gaona                | Magdalenas                 | V.r/ddl                            | 200 g             | 1_117     |
 | Magdalenas POZO Ch.R.DDL 200 G                      | Pozo                 | Magdalenas                 | Ch. R. Ddl                         | 200 g             | 1_117     |
 | Magdalenas POZO Clas. 200 G                         | Pozo                 | Magdalenas                 | Clas.                              | 200 g             | 1_117     |
@@ -1505,16 +1502,14 @@
 | Maiz Blanco LISETTA Pisado 400 G                    | Lisetta              | Maiz Blanco                | Pisado                             | 400 g             | 1_120     |
 | Maiz Pisingallo LISETTA * 400 G                     | Lisetta              | Maiz Pisingallo            |                                    | 400 g             | 1_120     |
 | Malvaviscos BUFFYS Stick-M. Fresa Est 12 G          | Buffys               | Malvaviscos                | Stick-m. Fresa Est                 | 12 g              | 8_803     |
-| Malvaviscos BUFFYS Stick-M. Frut.Est. 12 G          | Buffys               | Malvaviscos                | Stick-m. Frut. Est.                | 12 g              | 8_803     |
 | Mani C/Choc.MANDUVI  20 G                           | Manduvi              | Mani C/choc.               |                                    | 20 g              | 8_810     |
 | Mani Frito Salado LE.Q  200 G                       | Le.q                 | Mani Frito Salado          |                                    | 200 g             | 1_131     |
-| Maq.Afeitar ASTRA HRDC                              | Astra Hrdc           | Maq. Afeitar               |                                    |                   | 5_510     |
-| Maq.Afeitar MINORA II Pro                           | Minora               | Maq. Afeitar               | Ii Pro                             |                   | 5_510     |
+| Maq.Afeitar ASTRA HRDC                              | Astra                | Maquina Afeitar            |                                    |                   | 5_510     |
+| Maq.Afeitar MINORA II Pro                           | Minora               | Maquina de Afeitar         | Pro Ii                             |                   | 5_510     |
 | Maq.Afeitar PRESTOBARBA 3Filos                      | Prestobarba          | Maq. Afeitar               | 3filos                             |                   | 5_510     |
 | Maq.Afeitar PRESTOBARBA UltraGrip II                | Prestobarba          | Maq. Afeitar               | Ultragrip Ii                       |                   | 5_510     |
 | Maq.Afeitar VENUS Suave A/Vera                      | Venus                | Maq. Afeitar               | Suave A/vera                       |                   | 5_510     |
 | Mate Cocido CACHAMATE S/Ensob. 25 s                 | Cachamate            | Mate Cocido                | S/ensob.                           | 25 saquitos       | 1_139     |
-| Mate Cocido N.GAUCHA S/Sob. 25 U                    | Nobleza Gaucha       | Mate Cocido                | S/sob.                             | 25 U              | 1_139     |
 | Mate Cocido PLAYADITO S/S. 50 U                     | Playadito            | Mate Cocido                | S/s.                               | 50 U              | 1_139     |
 | Mate Cocido PLAYADITO S/Sob.  25 U                  | Playadito            | Mate Cocido                | S/sob.                             | 25 U              | 1_139     |
 | Mate Cocido TARAGUI Niños  20 s                     | Taragui              | Mate Cocido                | Niños                              | 20 saquitos       | 1_139     |
@@ -1530,6 +1525,7 @@
 | May.HELLMANN'S Sachet  125 c                        | Hellmann's           | May.                       | Sachet                             | 125 ml            | 1_121     |
 | May.MAROLIO D/Pack  250 G                           | Marolio              | May.                       | D/pack                             | 250 g             | 1_121     |
 | May.MAYOLIVA Doy-Pack  250 c                        | Mayoliva             | May.                       | Doy-pack                           | 250 ml            | 1_121     |
+| May.MOLTO D/P.  250 c                               | Molto                | May.                       | D/p.                               | 250 ml            | 1_121     |
 | May.MOLTO D/Pack  1 K                               | Molto                | May.                       | D/pack                             | 1 kg              | 1_121     |
 | May.NATURA D/Pack  1 K                              | Natura               | May.                       | D/pack                             | 1 kg              | 1_121     |
 | May.NATURA D/Pack  250 c                            | Natura               | May.                       | D/pack                             | 250 ml            | 1_121     |
@@ -1651,44 +1647,44 @@
 | Pasas D/Uva CENTURION  50 G                         | Centurion            | Pasas D/uva                |                                    | 50 g              | 1_114     |
 | Pasas D/Uva D ALOMO  50 G                           | D Alomo              | Pasas D/uva                |                                    | 50 g              | 1_114     |
 | Past.Acidas(LC)BULL DOG Sandia 30 G                 | Bull Dog             | Past. Acidas(lc)           | Sandia                             | 30 g              | 8_807     |
-| Past.Acidas(LC)BULL DOG Tuti Fruti 30 G             | Bull Dog             | Past. Acidas(lc)           | Tuti Fruti                         | 30 g              | 8_807     |
+| Past.Acidas(LC)BULL DOG Tuti Fruti 30 G             | Bull Dog             | Past. Acidas(lc)           | Tutti Frutti                       | 30 g              | 8_807     |
 | Past.Acidas(LC)BULL DOG Tutti-Lim. 30 G             | Bull Dog             | Past. Acidas(lc)           | Tutti-lim.                         | 30 g              | 8_807     |
 | Past.Acidas(LC)BULL DOG Uva 30 G                    | Bull Dog             | Past. Acidas(lc)           | Uva                                | 30 g              | 8_807     |
-| Past.BILLIKEN Rueditas Tutti Fr. 30 G               | Billiken             | Past.                      | Rueditas Tutti Fr.                 | 30 g              | 8_807     |
-| Past.BIYU Tuttti Frutti (LC)  20 G                  | Biyu                 | Past.                      | Tuttti Frutti (lc)                 | 20 g              | 8_807     |
-| Past.FREEGELLS Cereza 12 U                          | Freegells            | Past.                      | Cereza                             | 12 U              | 8_807     |
-| Past.FREEGELLS Eucalipto 12 U                       | Freegells            | Past.                      | Eucalipto                          | 12 U              | 8_807     |
-| Past.FREEGELLS Frut.Cream 12 U                      | Freegells            | Past.                      | Frut. Cream                        | 12 U              | 8_807     |
-| Past.FREEGELLS Menta 12 U                           | Freegells            | Past.                      | Menta                              | 12 U              | 8_807     |
-| Past.FREEGELLS Play Nectar Fr/Rojos 27,9 G          | Freegells            | Past.                      | Play Nectar Fr/rojos               | 27.9 g            | 8_807     |
-| Past.FREEGELLS Play Nectar Mandarina 27,9 G         | Freegells            | Past.                      | Play Nectar Mandarina              | 27.9 g            | 8_807     |
-| Past.FREEGELLS Play Nectar Miel&Mento 27,9 G        | Freegells            | Past.                      | Play Nectar Miel&mento             | 27.9 g            | 8_807     |
-| Past.FREEGELLS Play Nectar Uva 27,9 G               | Freegells            | Past.                      | Play Nectar Uva                    | 27.9 g            | 8_807     |
-| Past.FREEGELLS TNT Acidas Frutilla 27,9 G           | Freegells            | Past.                      | Tnt Acidas Frutilla                | 27.9 g            | 8_807     |
-| Past.FREEGELLS TNT Acidas Mzna.Vde. 27,9 G          | Freegells            | Past.                      | Tnt Acidas Mzna. Vde.              | 27.9 g            | 8_807     |
-| Past.FREEGELLS TNT Acidas Uva 27,9 G                | Freegells            | Past.                      | Tnt Acidas Uva                     | 27.9 g            | 8_807     |
+| Past.BILLIKEN Rueditas Tutti Fr. 30 G               | Billiken             | Gomitas                    | Rueditas Tutti Frutti              | 30 g              | 8_807     |
+| Past.BIYU Tuttti Frutti (LC)  20 G                  | Biyu                 | Gomitas                    | Tutti Frutti (lc)                  | 20 g              | 8_807     |
+| Past.FREEGELLS Cereza 12 U                          | Freegells            | Gomitas                    | Cereza                             | 12 U              | 8_807     |
+| Past.FREEGELLS Eucalipto 12 U                       | Freegells            | Gomitas                    | Eucalipto                          | 12 U              | 8_807     |
+| Past.FREEGELLS Frut.Cream 12 U                      | Freegells            | Gomitas                    | Frut. Cream                        | 12 U              | 8_807     |
+| Past.FREEGELLS Menta 12 U                           | Freegells            | Gomitas                    | Menta                              | 12 U              | 8_807     |
+| Past.FREEGELLS Play Nectar Fr/Rojos 27,9 G          | Freegells            | Gomitas                    | Play Nectar Fr/rojos               | 27.9 g            | 8_807     |
+| Past.FREEGELLS Play Nectar Mandarina 27,9 G         | Freegells            | Gomitas                    | Play Nectar Mandarina              | 27.9 g            | 8_807     |
+| Past.FREEGELLS Play Nectar Miel&Mento 27,9 G        | Freegells            | Gomitas                    | Play Nectar Miel&mento             | 27.9 g            | 8_807     |
+| Past.FREEGELLS Play Nectar Uva 27,9 G               | Freegells            | Gomitas                    | Play Nectar Uva                    | 27.9 g            | 8_807     |
+| Past.FREEGELLS TNT Acidas Frutilla 27,9 G           | Freegells            | Gomitas                    | Tnt Acidas Frutilla                | 27.9 g            | 8_807     |
+| Past.FREEGELLS TNT Acidas Mzna.Vde. 27,9 G          | Freegells            | Gomitas                    | Tnt Acidas Mzna. Vde.              | 27.9 g            | 8_807     |
+| Past.FREEGELLS TNT Acidas Uva 27,9 G                | Freegells            | Gomitas                    | Tnt Acidas Uva                     | 27.9 g            | 8_807     |
 | Past.Frutal DOCILE Mini8  50 U                      | Docile               | Past. Frutal               | Mini8                              | 50 U              | 8_807     |
-| Past.Goma BILLIKEN Frutales  30 G                   | Billiken             | Past. Goma                 | Frutales                           | 30 g              | 8_807     |
-| Past.Goma BILLIKEN Rollo Surtidas 35 G              | Billiken             | Past. Goma                 | Rollo Surtidas                     | 35 g              | 8_807     |
-| Past.Goma BILLIKEN Rueditas  30 G                   | Billiken             | Past. Goma                 | Rueditas                           | 30 g              | 8_807     |
-| Past.Goma DOCIGOMA Tubo Surt. 30 G                  | Docigoma             | Past. Goma                 | Tubo Surt.                         | 30 g              | 8_807     |
-| Past.Goma YUMMY (B) Animalitos 30 G                 | Yummy                | Past. Goma                 | (b) Animalitos                     | 30 g              | 8_807     |
-| Past.Goma YUMMY (B) Dino 30 G                       | Yummy                | Past. Goma                 | (b) Dino                           | 30 g              | 8_807     |
-| Past.Goma YUMMY (B) Frut.A/Cr. 500 G                | Yummy                | Past. Goma                 | (b) Frut. A/cr.                    | 500 g             | 8_807     |
-| Past.Goma YUMMY (B) Moritas 30 G                    | Yummy                | Past. Goma                 | (b) Moritas                        | 30 g              | 8_807     |
-| Past.Goma YUMMY (B) Moritas 500 G                   | Yummy                | Past. Goma                 | (b) Moritas                        | 500 g             | 8_807     |
-| Past.Goma YUMMY (B) Osito 30 G                      | Yummy                | Past. Goma                 | (b) Osito                          | 30 g              | 8_807     |
-| Past.Goma YUMMY (B) Osito Acid 30 G                 | Yummy                | Past. Goma                 | (b) Osito Acid                     | 30 g              | 8_807     |
-| Past.Goma YUMMY (B) Ositos 500 G                    | Yummy                | Past. Goma                 | (b) Ositos                         | 500 g             | 8_807     |
-| Past.Goma YUMMY (B) Pecesitos 30 G                  | Yummy                | Past. Goma                 | (b) Pecesitos                      | 30 g              | 8_807     |
-| Past.Goma YUMMY (B) Sandia 500 G                    | Yummy                | Past. Goma                 | (b) Sandia                         | 500 g             | 8_807     |
-| Pastilla MENTOS Menta  30 G                         | Mentos               | Pastilla                   | Menta                              | 30 g              | 8_807     |
+| Past.Goma BILLIKEN Frutales  30 G                   | Billiken             | Gomitas                    | Frutales                           | 30 g              | 8_807     |
+| Past.Goma BILLIKEN Rollo Surtidas 35 G              | Billiken             | Gomitas                    | Rollo Surtidas                     | 35 g              | 8_807     |
+| Past.Goma BILLIKEN Rueditas  30 G                   | Billiken             | Gomitas                    | Rueditas                           | 30 g              | 8_807     |
+| Past.Goma DOCIGOMA Tubo Surt. 30 G                  | Docigoma             | Gomitas                    | Tubo Surtidos                      | 30 g              | 8_807     |
+| Past.Goma YUMMY (B) Animalitos 30 G                 | Yummy                | Gomitas                    | (b) Animalitos                     | 30 g              | 8_807     |
+| Past.Goma YUMMY (B) Dino 30 G                       | Yummy                | Gomitas                    | (b) Dino                           | 30 g              | 8_807     |
+| Past.Goma YUMMY (B) Frut.A/Cr. 500 G                | Yummy                | Gomitas                    | (b) Frut. A/cr.                    | 500 g             | 8_807     |
+| Past.Goma YUMMY (B) Moritas 30 G                    | Yummy                | Gomitas                    | (b) Moritas                        | 30 g              | 8_807     |
+| Past.Goma YUMMY (B) Moritas 500 G                   | Yummy                | Gomitas                    | (b) Moritas                        | 500 g             | 8_807     |
+| Past.Goma YUMMY (B) Osito 30 G                      | Yummy                | Gomitas                    | (b) Osito                          | 30 g              | 8_807     |
+| Past.Goma YUMMY (B) Osito Acid 30 G                 | Yummy                | Gomitas                    | (b) Osito Acid                     | 30 g              | 8_807     |
+| Past.Goma YUMMY (B) Ositos 500 G                    | Yummy                | Gomitas                    | (b) Ositos                         | 500 g             | 8_807     |
+| Past.Goma YUMMY (B) Pecesitos 30 G                  | Yummy                | Gomitas                    | (b) Pecesitos                      | 30 g              | 8_807     |
+| Past.Goma YUMMY (B) Piecito Ac 30 G                 | Yummy                | Gomitas                    | (b) Piecito Ac                     | 30 g              | 8_807     |
+| Past.Goma YUMMY (B) Sandia 500 G                    | Yummy                | Gomitas                    | (b) Sandia                         | 500 g             | 8_807     |
+| Pastilla MENTOS Menta  30 G                         | Mentos               | Caramelos                  | Menta                              |                   | 8_807     |
 | Pastillas MANDUVI Tubito Chico Fruppis 30ux3 G      | Manduvi              | Pastillas                  | Tubito Chico Fruppis               | 30x3 g            | 8_807     |
 | Pate D/Foie SWIFT  90 G                             | Swift                | Pate D/foie                |                                    | 90 g              | 1_127     |
-| Pegamento ECCOLE  3 G                               | Eccole               | Pegamento                  |                                    | 3 g               | 7_715     |
-| Pegamento LA GOTITA Pomo  2 m                       | La Gotita            | Pegamento                  | Pomo                               | 2 ml              | 7_715     |
-| Pegamento UNI-POX Universal  25 m                   | Uni-pox              | Pegamento                  | Universal                          | 25 ml             | 7_715     |
-| Pegamento VOLIGOMA  30 m                            | Voligoma             | Pegamento                  |                                    | 30 ml             | 7_715     |
+| Pegamento ECCOLE  3 G                               | Eccole               | Adhesivo                   |                                    | 3 g               | 7_715     |
+| Pegamento LA GOTITA Pomo  2 m                       | La Gotita            | Pegamento                  | Instantaneo                        | 2 ml              | 7_715     |
+| Pegamento UNI-POX Universal  25 m                   | Uni-pox              | Pegamento                  |                                    | 25 ml             | 7_715     |
 | Picadillo D/Carne SWIFT  90 G                       | Swift                | Picadillo D/carne          |                                    | 90 g              | 1_127     |
 | Pickles D ALOMO Mixtos Bdja. 120 G                  | D Alomo              | Pickles                    | Mixtos Bdja.                       | 120 g             | 1_145     |
 | Piedras Hig.P/Gatos ABSORSOL  2 K                   | Absorsol             | Piedras Hig. P/gatos       |                                    | 2 kg              | 9_902     |
@@ -1710,6 +1706,7 @@
 | Polvo EXQUISITA Chocolatado  150 G                  | Exquisita            | Polvo                      | Chocolatado                        | 150 g             | 1_105     |
 | Polvo P/Hornear CENTURION  50 G                     | Centurion            | Polvo P/hornear            |                                    | 50 g              | 1_113     |
 | Polvo P/Hornear D ALOMO  25 G                       | D Alomo              | Polvo P/hornear            |                                    | 25 g              | 1_113     |
+| Polvo P/Hornear ROYAL  100 G                        | Royal                | Polvo P/hornear            |                                    | 100 g             | 1_113     |
 | Polvo P/Hornear ROYAL  50 G                         | Royal                | Polvo P/hornear            |                                    | 50 g              | 1_113     |
 | Pomada WASSINGTON Marron 30 G                       | Wassington           | Pomada                     | Marron                             | 30 g              | 6_624     |
 | Pomada WASSINGTON Negra 30 G                        | Wassington           | Pomada                     | Negra                              | 30 g              | 6_624     |
@@ -1757,6 +1754,7 @@
 | Queso Rall.LA SERENISIMA  35 G                      | La Serenisima        | Queso Rall.                |                                    | 35 g              | 1_146     |
 | Quita Esmalte DOREE C/Lanolina 65 c                 | Doree                | Quita Esmalte              | C/lanolina                         | 65 ml             | 5_515     |
 | Quita Esmalte DOREE Vit."E" 65 c                    | Doree                | Quita Esmalte              | Vit."e"                            | 65 ml             | 5_515     |
+| Rebozador ARROZEN D/Arroz Nat. 240 G                | Arrozen              | Rebozador                  | D/arroz Nat.                       | 240 g             | 1_126     |
 | Rebozador EXCLUSIVO  5 K                            | Exclusivo            | Rebozador                  |                                    | 5 kg              | 1_126     |
 | Rebozador MAMA COCINA Freir  500 G                  | Mama Cocina          | Rebozador                  | Freir                              | 500 g             | 1_126     |
 | Rebozador PREFERIDO  5 K                            | Preferido            | Rebozador                  |                                    | 5 kg              | 1_126     |
@@ -1784,7 +1782,6 @@
 | Sal Entrefina LA DELICIA DP. 350 G                  | La Delicia           | Sal Entrefina              | Dp.                                | 350 g             | 1_130     |
 | Sal Fina CELUSAL Est.  500 G                        | Celusal              | Sal Fina                   | Est.                               | 500 g             | 1_130     |
 | Sal Fina CELUSAL Paq.  500 G                        | Celusal              | Sal Fina                   | Paq.                               | 500 g             | 1_130     |
-| Sal Fina CELUSAL Sobre 0.5Grs. 1000 U               | Celusal              | Sal Fina                   | Sobre                              | 1000 U x 0.5 gr   | 1_130     |
 | Sal Fina COLOSAL Bsa.  500 G                        | Colosal              | Sal Fina                   | Bsa.                               | 500 g             | 1_130     |
 | Sal Fina LA DELICIA Bsa. 500 G                      | La Delicia           | Sal Fina                   | Bsa.                               | 500 g             | 1_130     |
 | Sal Gruesa CELUSAL Est.  1 K                        | Celusal              | Sal Gruesa                 | Est.                               | 1 kg              | 1_130     |
@@ -1808,13 +1805,13 @@
 | Salsa Chimichurri D ALOMO Tradic. 350 G             | D Alomo              | Salsa Chimichurri          | Tradic.                            | 350 g             | 1_121     |
 | Salsa Chimichurri TAHITI  270 G                     | Tahiti               | Salsa Chimichurri          |                                    | 270 g             | 1_121     |
 | Salsa Chimichurri TAHITI T/Casero 275 c             | Tahiti               | Salsa Chimichurri          | T/casero                           | 275 ml            | 1_121     |
-| Salsa D/Soja TAHITI  265 c                          | Tahiti               | Salsa D/soja               |                                    | 265 ml            | 1_121     |
+| Salsa D/Soja TAHITI  265 m                          | Tahiti               | Salsa D/soja               |                                    | 265 ml            | 1_135     |
 | Salsa Golf HELLMANN'S Sachet  125 c                 | Hellmann's           | Salsa Golf                 | Sachet                             | 125 ml            | 1_121     |
 | Salsa Ketchup HELLMANN'S  60 G                      | Hellmann's           | Salsa Ketchup              |                                    | 60 g              | 1_121     |
 | Salsa Ketchup HELLMANN'S D/P  250 c                 | Hellmann's           | Salsa Ketchup              | D/p                                | 250 ml            | 1_121     |
 | Salsa Ketchup NATURA D/Pack  250 c                  | Natura               | Salsa Ketchup              | D/pack                             | 250 ml            | 1_121     |
-| Salsa KNORR Surt.D/P. Filetto 340 G                 | Knorr                | Salsa                      | Surt. D/p. Filetto                 | 340 g             | 1_128     |
-| Salsa KNORR Surt.D/P. Pomarola 340 G                | Knorr                | Salsa                      | Surt. D/p. Pomarola                | 340 g             | 1_128     |
+| Salsa KNORR Surt.D/P. Filetto 340 G                 | Knorr                | Salsa                      | Surtidos D/p. Filetto              | 340 g             | 1_128     |
+| Salsa KNORR Surt.D/P. Pomarola 340 G                | Knorr                | Salsa                      | Surtidos D/p. Pomarola             | 340 g             | 1_128     |
 | Salsa MOLTO Pizza T/R.  340 G                       | Molto                | Salsa                      | Pizza T/r.                         | 340 g             | 1_128     |
 | Salsa MOLTO Pomarola T/R.  340 G                    | Molto                | Salsa                      | Pomarola T/r.                      | 340 g             | 1_128     |
 | Salsa Queso TAHITI Chedar 265 c                     | Tahiti               | Salsa Queso                | Chedar                             | 265 ml            | 1_121     |
@@ -1824,9 +1821,10 @@
 | Secador BROMY Alma D/Acero Negro 40 e               | Bromy                | Secador                    | Alma D/acero Negro                 | 40 mt             | 6_631     |
 | Secador BROMY Alma D/Acero Rojo 40 e                | Bromy                | Secador                    | Alma D/acero Rojo                  | 40 mt             | 6_631     |
 | Secador BROMY Rojo 30 e                             | Bromy                | Secador                    | Rojo                               | 30 mt             | 6_631     |
-| Secador DOPPIO Doble Goma C/Rosca 35 e              | Doppio               | Secador                    | Doble Goma C/rosca                 | 35 mt             | 6_631     |
-| Secador DOPPIO Doble Goma C/Rosca 41 e              | Doppio               | Secador                    | Doble Goma C/rosca                 | 41 mt             | 6_631     |
+| Secador DOPPIO Doble Goma C/Rosca 35 e              | Doppio               | Secador                    | N35                                | 1 uni x 35 mt     | 6_631     |
+| Secador DOPPIO Doble Goma C/Rosca 41 e              | Doppio               | Secador                    | N41                                | 1 uni x 41 mt     | 6_631     |
 | Secador DUCAN Doble Goma B/Plast. 40 e              | Ducan                | Secador                    | Doble Goma B/plast.                | 40 mt             | 6_631     |
+| Secador DUCANITO Negro 40 e                         | Ducanito             | Secador                    | Negro                              | 40 mt             | 6_631     |
 | Semola EXCLUSIVO Fina  400 G                        | Exclusivo            | Semola                     | Fina                               | 400 g             | 1_150     |
 | Semola LISETTA * 400 G                              | Lisetta              | Semola                     |                                    | 400 g             | 1_150     |
 | Semola VITINA Clasica (Est) 250 G                   | Vitina               | Semola                     | Clasica (est)                      | 250 g             | 1_150     |
@@ -1859,7 +1857,7 @@
 | Shampoo SEDAL Rizos Hid. 340 m                      | Sedal                | Shampoo                    | Rizos Hid.                         | 340 ml            | 5_505     |
 | Shampoo SUAVE Bomba Ceramidas 930 m                 | Suave                | Shampoo                    | Bomba Ceramidas                    | 930 ml            | 5_505     |
 | Shampoo SUAVE Bomba Deliciosa 930 m                 | Suave                | Shampoo                    | Bomba Deliciosa                    | 930 ml            | 5_505     |
-| Sidra SAENZ BRIONES 1888  750 m                     | Saenz Briones 1888   | Sidra                      |                                    | 750 ml            | 2_209     |
+| Sidra SAENZ BRIONES 1888  750 m                     | Saenz Briones        | Sidra                      | 1888                               | 750 ml            | 2_209     |
 | Snacks GALLO Chocobar Est. R/Mani 20 G              | Gallo                | Snacks                     | Chocobar Est. R/mani               | 20 g              | 1_108     |
 | Soda CIMES  2 l                                     | Cimes                | Soda                       |                                    | 2 l               | 2_201     |
 | Soda MANAOS  2 l                                    | Manaos               | Soda                       |                                    | 2 l               | 2_201     |
@@ -2026,27 +2024,27 @@
 | Triangulos Maiz DORITOS Queso  129 G                | Doritos              | Triangulos Maiz            | Queso                              | 129 g             | 1_131     |
 | Triangulos Maiz DORITOS Queso  200 G                | Doritos              | Triangulos Maiz            | Queso                              | 200 g             | 1_131     |
 | Triangulos Maiz DORITOS Queso  40 G                 | Doritos              | Triangulos Maiz            | Queso                              | 40 g              | 1_131     |
-| Turron BILLIKEN D/Mani 50ux25 G                     | Billiken             | Turron                     | D/mani                             | 50x25 g           | 8_809     |
-| Turron FULBITO R/Mousse 50ux25 G                    | Fulbito              | Turron                     | R/mousse                           | 50x25 g           | 8_809     |
+| Turron BILLIKEN D/Mani 50ux25 G                     | Billiken             | Turron                     | De Mani                            | 50x25 g           | 8_809     |
+| Turron FULBITO R/Mousse 50ux25 G                    | Fulbito              | Turron                     | mousse                             | 50x25 g           | 8_809     |
 | Turron MANDUVI D/Arroz 30ux8 G                      | Manduvi              | Turron                     | D/arroz                            | 30x8 g            | 8_809     |
-| Turron NEVARES D/Mani 50ux25 G                      | Nevares              | Turron                     | D/mani                             | 50x25 g           | 8_809     |
+| Turron NEVARES D/Mani 50ux25 G                      | Nevares              | Turron                     | De Mani                            | 50x25 g           | 8_809     |
 | Velas VILLA IRIS x Grandes 4 U                      | Villa Iris           | Velas                      | X Grandes                          | 4 U               | 6_629     |
 | Velas VIRGENCITA Parafina  130 G                    | Virgencita           | Velas                      | Parafina                           | 130 g             | 6_629     |
 | Velas VIRGENCITA Parafina Blancas 180 G             | Virgencita           | Velas                      | Parafina Blancas                   | 180 g             | 6_629     |
 | Velas VIRGENCITA Parafina Rojas 180 G               | Virgencita           | Velas                      | Parafina Rojas                     | 180 g             | 6_629     |
-| Vinagre ALCAZAR Alcohol  1 l                        | Alcazar              | Vinagre                    | Alcohol                            | 1 l               | 1_135     |
+| Vinagre ALCAZAR Alcohol 1 l                         | Alcazar              | Vinagre                    | Alcohol                            | 1 l               | 1_135     |
 | Vinagre COMENSAL Alcohol 1 l                        | Comensal             | Vinagre                    | Alcohol                            | 1 l               | 1_135     |
-| Vinagre COMENSAL Alcohol 500 c                      | Comensal             | Vinagre                    | Alcohol                            | 500 ml            | 1_135     |
-| Vinagre COMENSAL Manzana 500 c                      | Comensal             | Vinagre                    | Manzana                            | 500 ml            | 1_135     |
+| Vinagre COMENSAL Alcohol 500 m                      | Comensal             | Vinagre                    | Alcohol                            | 500 ml            | 1_135     |
+| Vinagre COMENSAL Manzana 500 m                      | Comensal             | Vinagre                    | Manzana                            | 500 ml            | 1_135     |
 | Vinagre MAROLIO Alcohol 1 l                         | Marolio              | Vinagre                    | Alcohol                            | 1 l               | 1_135     |
-| Vinagre MAROLIO Alcohol 500 c                       | Marolio              | Vinagre                    | Alcohol                            | 500 ml            | 1_135     |
-| Vinagre MENOYO Alcohol  1 l                         | Menoyo               | Vinagre                    | Alcohol                            | 1 l               | 1_135     |
-| Vinagre MENOYO Manzana  1 l                         | Menoyo               | Vinagre                    | Manzana                            | 1 l               | 1_135     |
+| Vinagre MAROLIO Alcohol 500 m                       | Marolio              | Vinagre                    | Alcohol                            | 500 ml            | 1_135     |
+| Vinagre MENOYO Alcohol 1 l                          | Menoyo               | Vinagre                    | Alcohol                            | 1 l               | 1_135     |
+| Vinagre MENOYO Alcohol 500 m                        | Menoyo               | Vinagre                    | Alcohol                            | 500 ml            | 1_135     |
+| Vinagre MENOYO Manzana 1 l                          | Menoyo               | Vinagre                    | Manzana                            | 1 l               | 1_135     |
+| Vinagre MENOYO Manzana 500 m                        | Menoyo               | Vinagre                    | Manzana                            | 500 ml            | 1_135     |
 | Vinagre MOLTO Alcohol 1 l                           | Molto                | Vinagre                    | Alcohol                            | 1 l               | 1_135     |
 | Vinagre SILVA Alcohol 5 l                           | Silva                | Vinagre                    | Alcohol                            | 5 l               | 1_135     |
-| Vinagre SILVA Alcohol 960 c                         | Silva                | Vinagre                    | Alcohol                            | 960 ml            | 1_135     |
-| Vinagrera MENOYO Alcohol  500 c                     | Menoyo               | Vinagrera                  | Alcohol                            | 500 ml            | 1_135     |
-| Vinagrera MENOYO Manzana  500 c                     | Menoyo               | Vinagrera                  | Manzana                            | 500 ml            | 1_135     |
+| Vinagre SILVA Alcohol 960 m                         | Silva                | Vinagre                    | Alcohol                            | 960 ml            | 1_135     |
 | Vino ALAMOS Malbec  750 c                           | Alamos               | Vino                       | Malbec                             | 750 ml            | 2_210     |
 | Vino ALMA MORA Cab.Sauv.  750 c                     | Alma Mora            | Vino                       | Cab. Sauv.                         | 750 ml            | 2_210     |
 | Vino ALMA MORA Malbec  750 c                        | Alma Mora            | Vino                       | Malbec                             | 750 ml            | 2_210     |
@@ -2098,7 +2096,6 @@
 | Vino LOPEZ Malbec  750 c                            | Lopez                | Vino                       | Malbec                             | 750 ml            | 2_210     |
 | Vino LOS ARBOLES Malbec Selecc. 750 c               | Los Arboles          | Vino                       | Malbec Selecc.                     | 750 ml            | 2_210     |
 | Vino MARLO Blanco Dulce  750 c                      | Marlo                | Vino                       | Blanco Dulce                       | 750 ml            | 2_210     |
-| Vino MICHEL TORINO Tto.Suc Abel E/Roja 700 c        | Michel Torino        | Vino                       | Tto. Suc Abel E/roja               | 700 ml            | 2_210     |
 | Vino NEW AGE Blanco Dce.  750 c                     | New Age              | Vino                       | Blanco Dce.                        | 750 ml            | 2_210     |
 | Vino NICASIA VIN.Malbec RB.  750 c                  | Nicasia              | Vino                       | Vin. Malbec Rb.                    | 750 ml            | 2_210     |
 | Vino NIETO S.Cabernet Sauv.  750 c                  | Nieto                | Vino                       | S. Cabernet Sauv.                  | 750 ml            | 2_210     |
@@ -2107,7 +2104,7 @@
 | Vino NORTON ELEGIDO Cabernet Sauv.  750 c           | Norton Elegido       | Vino                       | Cabernet Sauv.                     | 750 ml            | 2_210     |
 | Vino RESERO Blanco Dulce Tb. 1 l                    | Resero               | Vino                       | Blanco Dulce Tb.                   | 1 l               | 2_210     |
 | Vino RESERO Blanco Tb. 1 l                          | Resero               | Vino                       | Blanco Tb.                         | 1 l               | 2_210     |
-| Vino RESERO Rosado Dulce Tb. 1 l                    | Resero               | Vino                       | Rosado Dulce Tb.                   | 1 l               | 2_210     |
+| Vino RESERO Rosado Suave Tb. 1 l                    | Resero               | Vino                       | Rosado Suave Tb.                   | 1 l               | 2_210     |
 | Vino RESERO Tinto  700 c                            | Resero               | Vino                       | Tinto                              | 700 ml            | 2_210     |
 | Vino RESERO Tinto Tb. 1 l                           | Resero               | Vino                       | Tinto Tb.                          | 1 l               | 2_210     |
 | Vino RESERVA DE LOS ANDES Malbec  750 c             | Reserva de los Andes | Vino                       | Malbec                             | 750 ml            | 2_210     |
@@ -2119,8 +2116,8 @@
 | Vino SAINT FELICIEN Malbec  750 c                   | Saint Felicien       | Vino                       | Malbec                             | 750 ml            | 2_210     |
 | Vino SAN TELMO Cabernet Sauv.  750 c                | San Telmo            | Vino                       | Cabernet Sauv.                     | 750 ml            | 2_210     |
 | Vino SAN TELMO Malbec  750 c                        | San Telmo            | Vino                       | Malbec                             | 750 ml            | 2_210     |
-| Vino SANTA FILOMENA Patero   Tto.Dce. 700 c         | Santa Filomena       | Vino                       | Patero Tto. Dce.                   | 700 ml            | 2_210     |
-| Vino SANTA FILOMENA Patero Tto.Dce 1.125 l          | Santa Filomena       | Vino                       | Patero Tto. Dce                    | 1.125 l           | 2_210     |
+| Vino SANTA FILOMENA Patero   Tto.Dce. 700 c         | Santa Filomena       | Vino                       | Patero Tinto                       | 700 ml            | 2_210     |
+| Vino SANTA FILOMENA Patero Tto.Dce 1.125 l          | Santa Filomena       | Vino                       | Patero Tinto                       | 1.12 l            | 2_210     |
 | Vino SANTA JULIA Cabernet Sauv.  750 c              | Santa Julia          | Vino                       | Cabernet Sauv.                     | 750 ml            | 2_210     |
 | Vino SANTA JULIA Chardonnay  750 c                  | Santa Julia          | Vino                       | Chardonnay                         | 750 ml            | 2_210     |
 | Vino SANTA JULIA Chenin Dce.Nat. 750 c              | Santa Julia          | Vino                       | Chenin Dce. Nat.                   | 750 ml            | 2_210     |
@@ -2144,7 +2141,7 @@
 | Vino TORO VIEJO Tinto Clas. 1.125 l                 | Toro Viejo           | Vino                       | Tinto Clas.                        | 1.125 l           | 2_210     |
 | Vino TORO VIEJO Tinto Clas. 750 c                   | Toro Viejo           | Vino                       | Tinto Clas.                        | 750 ml            | 2_210     |
 | Vino TRAFUL Tinto Blend 750 c                       | Traful               | Vino                       | Tinto Blend                        | 750 ml            | 2_210     |
-| Vino TRAPICHE Alaris Bco.Dce. C.Tardia 750 c        | Trapiche             | Vino                       | Alaris Bco. Dce. C. Tardia         | 750 ml            | 2_210     |
+| Vino TRAPICHE Alaris Bco.Dce. C.Tardia 750 c        | Trapiche Alaris      | Vino                       | Bco. Dce. C. Tardia                | 750 ml            | 2_210     |
 | Vino TRAPICHE ALARIS Malbec  750 c                  | Trapiche Alaris      | Vino                       | Malbec                             | 750 ml            | 2_210     |
 | Vino TRAPICHE Reserva Malbec  750 c                 | Trapiche             | Vino                       | Reserva Malbec                     | 750 ml            | 2_210     |
 | Vino TRUMPETER Cabernet Franc L/Clas. 750 c         | Trumpeter            | Vino                       | Cabernet Franc L/clas.             | 750 ml            | 2_210     |
@@ -2156,11 +2153,10 @@
 | Vino UVITA Blanco Tb. 1 l                           | Uvita                | Vino                       | Blanco Tb.                         | 1 l               | 2_210     |
 | Vino UVITA Tinto  1,125 l                           | Uvita                | Vino                       | Tinto                              | 1.125 l           | 2_210     |
 | Vino UVITA Tinto Dulce Tb. 1 l                      | Uvita                | Vino                       | Tinto Dulce Tb.                    | 1 l               | 2_210     |
-| Vino UVITA Tinto Tb. 1 l                            | Uvita                | Vino                       | Tinto Tb.                          | 1 l               | 2_210     |
 | Vino VALDERROBLES Tto.Europeo Blend 750 m           | Valderrobles         | Vino                       | Tto. Europeo Blend                 | 750 ml            | 2_210     |
 | Vino VIÑAS DE ALVEAR Tinto  1.125 l                 | Viñas de Alvear      | Vino                       | Tinto                              | 1.125 l           | 2_210     |
 | Vino VIÑAS DE ALVEAR Tinto  750 c                   | Viñas de Alvear      | Vino                       | Tinto                              | 750 ml            | 2_210     |
-| Vino VIÑAS DE BALBO Tinto Clas. Magnun 1.125 l      | Viñas de Balbo       | Vino                       | Tinto Clas. Magnun                 | 1.125 l           | 2_210     |
+| Vino VIÑAS DE BALBO Tinto Clas. Magnun 1.125 l      | Viñas de Balbo       | Vino                       | Tinto                              | 1.125 l           | 2_210     |
 | Vodka BOLS Raspberry  750 m                         | Bols                 | Vodka                      | Raspberry                          | 750 ml            | 2_208     |
 | Vodka NEW STYLE  1 l                                | New Style            | Vodka                      |                                    | 1 l               | 2_208     |
 | Vodka NEW STYLE Evol. Bubble Gum 1 l                | New Style            | Vodka                      | Evol. Bubble Gum                   | 1 l               | 2_208     |
@@ -2183,16 +2179,16 @@
 | Whisky BLENDERS Pride  750 m                        | Blenders             | Whisky                     | Pride                              | 750 ml            | 2_208     |
 | Whisky DOBLE-V 35% Alc. E/Negra 1 l                 | Doble-v              | Whisky                     | 35% Alc. E/negra                   | 1 l               | 2_208     |
 | Whisky DOBLE-V 35% Alc. E/Negra 200 m               | Doble-v              | Whisky                     | 35% Alc. E/negra                   | 200 ml            | 2_208     |
-| Whisky HIRAM WALKER E/Negra 750 m                   | Hiram Walker         | Whisky                     | E/negra                            | 750 ml            | 2_208     |
+| Whisky HIRAM WALKER E/Negra 750 m                   | Hiram Walker         | Whisky                     |                                    | 750 ml            | 2_208     |
 | Whisky JAMESON  700 m                               | Jameson              | Whisky                     |                                    | 700 ml            | 2_208     |
-| Whisky JOHNNIE WALKER Red Lab. 750 m                | Johnnie Walker       | Whisky                     | Red Lab.                           | 750 ml            | 2_208     |
+| Whisky JOHNNIE WALKER Red Lab. 750 m                | Johnnie Walker       | Whisky                     | Etiqueta Roja                      | 750 ml            | 2_208     |
 | Whisky PREMIUN  750 m                               | Premiun              | Whisky                     |                                    | 750 ml            | 2_208     |
 | Whisky TBC CRIADORES  1 l                           | Tbc Criadores        | Whisky                     |                                    | 1 l               | 2_208     |
 | Whisky TBC CRIADORES  195 m                         | Tbc Criadores        | Whisky                     |                                    | 195 ml            | 2_208     |
 | Whisky WHITE HOURSE  750 m                          | White Hourse         | Whisky                     |                                    | 750 ml            | 2_208     |
 | Yerba AMANDA Tradicional  1 K                       | Amanda               | Yerba                      | Tradicional                        | 1 kg              | 1_136     |
 | Yerba AMANDA Tradicional  500 G                     | Amanda               | Yerba                      | Tradicional                        | 500 g             | 1_136     |
-| Yerba BUENAS&SANTAS Hierbas 500 G                   | Buenas&santas        | Yerba                      | Hierbas                            | 500 g             | 1_136     |
+| Yerba BUENAS&SANTAS Hierbas 500 G                   | Buenas y Santas      | Yerba                      | C/Hierbas                          | 500 g             | 1_136     |
 | Yerba CACHAMATE Amar. 500 G                         | Cachamate            | Yerba                      | Amar.                              | 500 g             | 1_136     |
 | Yerba CACHAMATE Rosa 500 G                          | Cachamate            | Yerba                      | Rosa                               | 500 g             | 1_136     |
 | Yerba CBSe Comp.Hierbas Serranas  1 K               | Cbse                 | Yerba                      | Comp. Hierbas Serranas             | 1 kg              | 1_136     |

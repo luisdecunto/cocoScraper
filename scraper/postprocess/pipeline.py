@@ -364,6 +364,11 @@ async def run_pipeline(
     for row in rows:
         sku = row["sku"]
         features = extract_unified(supplier, row["name"] or "", row["category"] or "", category_map)
+
+        # For now, all extractions get 'high' confidence.
+        # Future: individual postprocessors return confidence info.
+        confidence = features.get("extraction_confidence") or "high"
+
         records.append((
             sku,
             supplier,
@@ -379,6 +384,8 @@ async def run_pipeline(
             features.get("canonical_key"),
             features.get("canonical_name"),
             FEATURES_VERSION,
+            "pending",       # classification_status: awaits manual approval
+            confidence,      # classification_confidence: high/low
         ))
 
     extract_secs = time.monotonic() - t_start
@@ -489,6 +496,7 @@ async def main():
     parser = argparse.ArgumentParser(description="Post-scrape feature extraction pipeline")
     parser.add_argument("--supplier", type=str, default=None, help="Process specific supplier only")
     parser.add_argument("--force", action="store_true", help="Re-extract all products, not just unprocessed")
+    parser.add_argument("--reclassify", action="store_true", help="Reset classifications to NULL before re-extracting (requires --force)")
     parser.add_argument("--list-unmapped", action="store_true", help="Show unmapped product_types for review")
     parser.add_argument("--dry-run", action="store_true", help="Print extracted features without writing to DB")
     parser.add_argument("--sample", type=int, default=0, metavar="N", help="With --dry-run: limit to N products (default: all)")
@@ -521,6 +529,30 @@ async def main():
             print(f"\n{len(results)} products shown (dry-run — nothing written to DB)")
         elif args.supplier:
             from scraper.config import get_supplier_config, get_short_code
+
+            # Handle --reclassify: reset classifications before re-running
+            if args.reclassify:
+                async with pool.acquire() as conn:
+                    await conn.execute(
+                        """UPDATE products
+                           SET classification_status = NULL,
+                               canonical_name = NULL,
+                               canonical_key = NULL,
+                               brand = NULL,
+                               product_type = NULL,
+                               variant = NULL,
+                               size = NULL,
+                               size_value = NULL,
+                               size_unit = NULL,
+                               category_dept = NULL,
+                               category_sub = NULL,
+                               classification_confidence = NULL
+                           WHERE supplier = $1
+                        """,
+                        args.supplier,
+                    )
+                logger.info(f"{args.supplier}: reset classifications for reclassification")
+
             short_code = get_short_code(args.supplier)
             await run_pipeline(pool, args.supplier, short_code, force=args.force)
         else:

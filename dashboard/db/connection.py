@@ -19,6 +19,7 @@ def _read_streamlit_secret(key: str) -> str | None:
 
 
 def _read_setting(key: str, default: str | None = None) -> str | None:
+    """Read setting from Streamlit secrets, then environment, then default."""
     secret_value = _read_streamlit_secret(key)
     if secret_value is not None:
         return secret_value

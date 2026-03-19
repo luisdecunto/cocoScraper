@@ -119,6 +119,9 @@ BALLENTINE=BALLANTINES
 # Group #57: Gordon's apostrophe
 GORDON S=GORDONS
 
+# ALA Camellito is a line variant, not a separate brand
+ALA CAMELLITO=ALA
+
 # Group #59: Nutrifoods — space variant
 NUTRI FOODS=NUTRIFOODS
 

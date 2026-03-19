@@ -159,6 +159,7 @@ def _load_browse_data() -> pd.DataFrame:
             stock,
             last_scraped_at AS scraped_at
         FROM products
+        WHERE supplier != 'luvik'
         ORDER BY price_unit ASC NULLS LAST, supplier ASC, name ASC;
         """
     )
@@ -186,7 +187,8 @@ def _load_comparison_data() -> pd.DataFrame:
             sku,
             product_id
         FROM products
-        WHERE canonical_key IS NOT NULL
+        WHERE supplier != 'luvik'
+          AND canonical_key IS NOT NULL
           AND canonical_key != '?|?|?|?';
         """
     )
@@ -208,7 +210,8 @@ def _load_history_products() -> pd.DataFrame:
             p.size,
             p.price_unit
         FROM products p
-        WHERE p.canonical_key IS NOT NULL
+        WHERE p.supplier != 'luvik'
+          AND p.canonical_key IS NOT NULL
           AND p.canonical_key != '?|?|?|?'
           AND EXISTS (
               SELECT 1 FROM price_history ph
@@ -227,7 +230,8 @@ def workspace_snapshot() -> dict[str, str]:
             COUNT(*) AS total_products,
             COUNT(DISTINCT supplier) AS supplier_count,
             MAX(last_scraped_at) AS last_scraped_at
-        FROM products;
+        FROM products
+        WHERE supplier != 'luvik';
         """
     )
     if snapshot.empty:
@@ -952,6 +956,7 @@ def _load_run_log() -> pd.DataFrame:
             snapshots_written,
             error_message
         FROM run_log
+        WHERE supplier != 'luvik'
         ORDER BY started_at DESC
         LIMIT 20;
         """
@@ -1059,6 +1064,16 @@ def render_feedback_page() -> None:
     display_table(display[["#", "fecha", "productos", "comment"]].rename(columns={"comment": "comentario"}))
 
 
+def render_revisar_page() -> None:
+    """Render the Revisar (classification approval) page."""
+    try:
+        from .revisar import main as revisar_main
+    except ImportError:
+        from revisar import main as revisar_main
+
+    revisar_main()
+
+
 def main() -> None:
     if not has_database_config():
         with st.sidebar:
@@ -1101,6 +1116,7 @@ def main() -> None:
             t("nav_group_analysis"): [
                 st.Page(render_comparison_page, title=t("nav_comparison"), icon="🔍", url_path="comparison"),
                 st.Page(render_history_page, title=t("nav_history"), icon="📈", url_path="history"),
+                st.Page(render_revisar_page, title=t("nav_revisar"), icon="✓", url_path="revisar"),
             ],
             t("nav_group_system"): [
                 st.Page(render_feedback_page, title=t("nav_feedback"), icon="🚩", url_path="feedback"),
