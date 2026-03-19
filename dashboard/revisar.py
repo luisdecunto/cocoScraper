@@ -198,26 +198,63 @@ def main():
         return
 
     try:
-        # Sidebar filters
-        st.sidebar.markdown("### Filtros")
+        # Fetch all pending products for stats
+        df_all = fetch_pending_products(
+            conn,
+            supplier=None,
+            confidence=None,
+            limit=500,
+        )
+
+        if df_all.empty:
+            st.info("No hay productos pendientes de aprobación. ✓")
+            return
+
+        # Header stats (showing all pending, not filtered)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total pendiente", len(df_all))
+        with col2:
+            high_conf = len(df_all[df_all['classification_confidence'] == 'high'])
+            st.metric("Confianza alta", high_conf)
+        with col3:
+            low_conf = len(df_all[df_all['classification_confidence'] == 'low'])
+            st.metric("Confianza baja", low_conf)
+
+        st.divider()
+
+        # Placeholder bulk action (will be shown after filters are set)
+        # Note: Bulk action will be shown after filtering below
+
+        st.divider()
+
+        # Interactive table
+        st.markdown("### Revisión manual")
+        st.caption("💡 **Cómo usar**: 1) Usa filtros abajo para acotar productos. 2) Haz click en celdas para editar inline (Marca, Tipo, Variante, Tamaño). 3) Checkea filas que quieres aprobar. 4) Haz click en 'Aprobar seleccionadas'.")
+
+        # Filters section (moved from sidebar)
+        st.markdown("#### 🔍 Filtros")
+        filter_col1, filter_col2, filter_col3 = st.columns(3)
 
         suppliers = ["Todos"]
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute("SELECT DISTINCT supplier FROM products ORDER BY supplier")
             suppliers.extend([row['supplier'] for row in cur.fetchall()])
 
-        selected_supplier = st.sidebar.selectbox("Proveedor", suppliers)
-        supplier_filter = None if selected_supplier == "Todos" else selected_supplier
+        with filter_col1:
+            selected_supplier = st.selectbox("Proveedor", suppliers, key="revisar_supplier")
+            supplier_filter = None if selected_supplier == "Todos" else selected_supplier
 
-        confidence_options = ["Todos", "high", "low"]
-        selected_confidence = st.sidebar.selectbox(
-            "Confianza",
-            confidence_options,
-            format_func=lambda x: "Todos" if x == "Todos" else ("Alta" if x == "high" else "Baja"),
-        )
-        confidence_filter = None if selected_confidence == "Todos" else selected_confidence
+        with filter_col2:
+            confidence_options = ["Todos", "Alta", "Baja"]
+            selected_confidence = st.selectbox("Confianza", confidence_options, key="revisar_confidence")
+            confidence_map = {"Todos": None, "Alta": "high", "Baja": "low"}
+            confidence_filter = confidence_map[selected_confidence]
 
-        # Fetch pending products
+        with filter_col3:
+            search_text = st.text_input("Buscar por nombre (raw)", key="revisar_search")
+
+        # Re-fetch with new filters
         df = fetch_pending_products(
             conn,
             supplier=supplier_filter,
@@ -225,37 +262,13 @@ def main():
             limit=500,
         )
 
+        # Apply text search filter
+        if search_text.strip():
+            df = df[df['name'].str.contains(search_text, case=False, na=False)]
+
         if df.empty:
-            st.info("No hay productos pendientes de aprobación. ✓")
+            st.info("No hay productos que coincidan con los filtros. ✓")
             return
-
-        # Header stats
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Total pendiente", len(df))
-        with col2:
-            high_conf = len(df[df['classification_confidence'] == 'high'])
-            st.metric("Confianza alta", high_conf)
-        with col3:
-            low_conf = len(df[df['classification_confidence'] == 'low'])
-            st.metric("Confianza baja", low_conf)
-
-        st.divider()
-
-        # Bulk actions
-        if len(df) > 0:
-            col1, col2 = st.columns([1, 3])
-            with col1:
-                if st.button("✓ Aprobar todos (confianza alta)", use_container_width=True):
-                    count = approve_bulk_high_confidence(conn, supplier=supplier_filter)
-                    st.success(f"✓ {count} producto(s) aprobado(s)")
-                    st.rerun()
-
-        st.divider()
-
-        # Interactive table
-        st.markdown("### Revisión manual")
-        st.caption("💡 **Cómo usar**: 1) Usa filtros arriba para acotar productos. 2) Haz click en celdas para editar inline (Marca, Tipo, Variante, Tamaño). 3) Checkea filas que quieres aprobar. 4) Haz click en 'Aprobar seleccionadas'.")
 
         # Build editable table
         edit_data = []
