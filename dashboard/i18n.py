@@ -15,6 +15,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "nav_comparison": "Comparison",
         "nav_history": "History",
         "nav_logs": "Logs",
+        "nav_group_analysis": "Analysis",
+        "nav_group_system": "System",
         # sidebar
         "brand_subtitle": "Supplier pricing workspace",
         "meta_products": "Products",
@@ -159,6 +161,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "nav_comparison": "Comparación",
         "nav_history": "Historial",
         "nav_logs": "Registros",
+        "nav_group_analysis": "Análisis",
+        "nav_group_system": "Sistema",
         "brand_subtitle": "Precios de proveedores",
         "meta_products": "Productos",
         "meta_suppliers": "Proveedores",
@@ -296,6 +300,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "nav_comparison": "El Careo",
         "nav_history": "Cómo venía la mano",
         "nav_logs": "El Reporte",
+        "nav_group_analysis": "El Análisis",
+        "nav_group_system": "El Sistema",
         # sidebar
         "brand_subtitle": "Los precios del barrio, wacho",
         "meta_products": "Los materiales",

@@ -159,6 +159,77 @@ def _inject_mobile_swipe() -> None:
     )
 
 
+def render_sidebar_extras(
+    workspace_snapshot: dict[str, str] | None = None,
+    snapshot_error: str | None = None,
+) -> None:
+    """Render only the non-nav sidebar content (metadata, refresh, language).
+
+    Call this alongside st.navigation() — Streamlit renders the page links
+    natively; this function fills in everything else.
+    """
+    _sync_lang_from_url()
+    with st.sidebar:
+        st.markdown(
+            f"""
+            <section class="sidebar-brand">
+                <p class="sidebar-brand-title">cocoScraper</p>
+                <p class="sidebar-brand-subtitle">{escape(t("brand_subtitle"))}</p>
+            </section>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+
+        if workspace_snapshot:
+            st.markdown(
+                f"""
+                <section class="sidebar-meta">
+                    <div class="sidebar-meta-row">
+                        <strong>{escape(t("meta_products"))}</strong>
+                        <span>{escape(workspace_snapshot.get("products", "0"))}</span>
+                    </div>
+                    <div class="sidebar-meta-row">
+                        <strong>{escape(t("meta_suppliers"))}</strong>
+                        <span>{escape(workspace_snapshot.get("suppliers", "0"))}</span>
+                    </div>
+                    <div class="sidebar-meta-row">
+                        <strong>{escape(t("meta_updated"))}</strong>
+                        <span>{escape(workspace_snapshot.get("updated", t("not_available")))}</span>
+                    </div>
+                </section>
+                """,
+                unsafe_allow_html=True,
+            )
+        elif snapshot_error:
+            st.caption(snapshot_error)
+
+        if st.button(t("btn_refresh"), use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
+
+        st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+        lang_options = list(LANG_DISPLAY.keys())
+        lang_labels = list(LANG_DISPLAY.values())
+        current_lang = get_lang()
+        current_index = lang_options.index(current_lang) if current_lang in lang_options else 0
+        selected_label = st.selectbox(
+            t("lang_label"),
+            lang_labels,
+            index=current_index,
+            key="lang_selectbox",
+            label_visibility="collapsed",
+        )
+        selected_lang = lang_options[lang_labels.index(selected_label)]
+        if selected_lang != current_lang:
+            st.session_state.lang = selected_lang
+            st.query_params["lang"] = selected_lang
+            st.rerun()
+
+    _inject_mobile_swipe()
+
+
 def render_sidebar(
     page_meta: dict[str, dict[str, str]],
     workspace_snapshot: dict[str, str] | None = None,

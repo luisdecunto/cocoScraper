@@ -18,7 +18,7 @@ try:
         test_database_connection,
     )
     from .filters import AdvancedFilterPanel, NO_STOCK_VALUES, normalize_text
-    from .sidebar import render_sidebar
+    from .sidebar import render_sidebar, render_sidebar_extras
     from .ui import (
         CHART_COLORS,
         apply_global_styles,
@@ -40,7 +40,7 @@ except ImportError:
         test_database_connection,
     )
     from filters import AdvancedFilterPanel, NO_STOCK_VALUES, normalize_text
-    from sidebar import render_sidebar
+    from sidebar import render_sidebar, render_sidebar_extras
     from ui import (
         CHART_COLORS,
         apply_global_styles,
@@ -1061,7 +1061,8 @@ def render_feedback_page() -> None:
 
 def main() -> None:
     if not has_database_config():
-        render_sidebar(get_page_meta(), None, t("db_not_configured_sidebar"))
+        with st.sidebar:
+            st.error(t("db_not_configured_sidebar"))
         render_empty_state(t("db_not_configured"))
         st.caption(t("db_not_configured_caption"))
         return
@@ -1075,13 +1076,14 @@ def main() -> None:
         try:
             connected_at = test_database_connection()
         except Exception as connection_exc:
-            render_sidebar(get_page_meta(), None, t("db_connection_unavailable_sidebar"))
+            with st.sidebar:
+                st.error(t("db_connection_unavailable_sidebar"))
             render_empty_state(f"Database connection failed: {connection_exc}")
             st.caption("Check the DATABASE_URL secret or environment variable and try again.")
             return
 
-        render_sidebar(get_page_meta(), None, snapshot_error)
         error_text = str(exc).lower()
+        render_sidebar_extras(None, snapshot_error)
         if "does not exist" in error_text or "undefinedtable" in error_text or "relation " in error_text:
             render_empty_state(t("db_tables_not_ready"))
             st.code(t("db_schema_hint"))
@@ -1090,21 +1092,27 @@ def main() -> None:
         st.caption(t("db_connection_ok", ts=format_timestamp(connected_at) if connected_at else "connected"))
         return
 
-    page = render_sidebar(get_page_meta(), snapshot, snapshot_error)
+    # Native Streamlit multi-page navigation — each page gets its own URL.
+    pg = st.navigation(
+        {
+            "": [
+                st.Page(render_browse_page, title=t("nav_dashboard"), icon="⌂", url_path="dashboard"),
+            ],
+            t("nav_group_analysis"): [
+                st.Page(render_comparison_page, title=t("nav_comparison"), icon="≅", url_path="comparison"),
+                st.Page(render_history_page, title=t("nav_history"), icon="◷", url_path="history"),
+            ],
+            t("nav_group_system"): [
+                st.Page(render_feedback_page, title=t("nav_feedback"), icon="⚑", url_path="feedback"),
+                st.Page(render_logs_page, title=t("nav_logs"), icon="⚙", url_path="logs"),
+            ],
+        },
+        position="sidebar",
+    )
+    render_sidebar_extras(snapshot, snapshot_error)
 
     try:
-        if page == "Dashboard":
-            render_browse_page()
-        elif page == "Comparison":
-            render_comparison_page()
-        elif page == "History":
-            render_history_page()
-        elif page == "Logs":
-            render_logs_page()
-        elif page == "Feedback":
-            render_feedback_page()
-        else:
-            st.error(f"Unknown page: {page}")
+        pg.run()
     except Exception as exc:
         st.error(f"Could not load data: {exc}")
 
