@@ -187,7 +187,7 @@ def main():
         st.error("Database not configured. Check env vars or config file.")
         return
 
-    render_page_header("Revisar", "Aprobar clasificaciones de productos")
+    render_page_header("Sistema", "Revisar", "Aprobar clasificaciones de productos")
 
     # Get connection
     try:
