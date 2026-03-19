@@ -223,17 +223,11 @@ def main():
 
         st.divider()
 
-        # Placeholder bulk action (will be shown after filters are set)
-        # Note: Bulk action will be shown after filtering below
-
-        st.divider()
-
         # Interactive table
         st.markdown("### Revisión manual")
-        st.caption("💡 **Cómo usar**: 1) Usa filtros abajo para acotar productos. 2) Haz click en celdas para editar inline (Marca, Tipo, Variante, Tamaño). 3) Checkea filas que quieres aprobar. 4) Haz click en 'Aprobar seleccionadas'.")
+        st.caption("💡 **Cómo usar**: 1) Filtra productos abajo. 2) Haz click en celdas para editar inline (Marca, Tipo, Variante, Tamaño). 3) Usa 'Aprobar todos los visibles' para aprobar de golpe, o checkea filas y usa 'Aprobar seleccionadas'.")
 
-        # Filters section (moved from sidebar)
-        st.markdown("#### 🔍 Filtros")
+        # Filters
         filter_col1, filter_col2, filter_col3 = st.columns(3)
 
         suppliers = ["Todos"]
@@ -254,7 +248,7 @@ def main():
         with filter_col3:
             search_text = st.text_input("Buscar por nombre (raw)", key="revisar_search")
 
-        # Re-fetch with new filters
+        # Fetch with filters
         df = fetch_pending_products(
             conn,
             supplier=supplier_filter,
@@ -262,13 +256,26 @@ def main():
             limit=500,
         )
 
-        # Apply text search filter
         if search_text.strip():
             df = df[df['name'].str.contains(search_text, case=False, na=False)]
 
         if df.empty:
             st.info("No hay productos que coincidan con los filtros. ✓")
             return
+
+        st.caption(f"Mostrando **{len(df)}** productos")
+
+        # Bulk actions (applied to current filtered view)
+        bulk_col1, bulk_col2 = st.columns([1, 3])
+        with bulk_col1:
+            if st.button("✓ Aprobar todos los visibles (alta confianza)", use_container_width=True):
+                visible_high = df[df['classification_confidence'] == 'high']
+                count = 0
+                for _, row in visible_high.iterrows():
+                    if approve_product(conn, row['sku'], row['supplier']):
+                        count += 1
+                st.success(f"✓ {count} producto(s) aprobado(s)")
+                st.rerun()
 
         # Build editable table
         edit_data = []
@@ -312,14 +319,7 @@ def main():
 
         st.divider()
 
-        # Row-by-row actions
-        st.markdown("### Acciones por fila")
-
-        # Select All helper (note: checkboxes must be clicked manually in AgGrid, but we can provide info)
-        col_select, col_info = st.columns([1, 3])
-        with col_select:
-            st.caption("📋 **Tip**: Haz scroll y checkea manualmente las filas que quieres. Los cambios inline se guardan automáticamente.")
-
+        # Row-level actions for checked rows
         col1, col2, col3, col4 = st.columns(4)
 
         selected_rows = grid_response["selected_rows"]
