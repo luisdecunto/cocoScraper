@@ -848,6 +848,7 @@ def render_history_page() -> None:
             h.first_seen,
             h.last_seen,
             h.price_unit,
+            h.stock_flags,
             p.product_id,
             p.canonical_name,
             p.supplier,
@@ -897,6 +898,26 @@ def render_history_page() -> None:
     history_plot["date"] = pd.to_datetime(history_plot["date"])
     history_plot["price_unit"] = pd.to_numeric(history_plot["price_unit"], errors="coerce")
 
+    # Build per-calendar-day marker data from stock_flags.
+    # stock_flags[i] corresponds to first_seen + i days: '1'=stock (circle), '0'=no stock (cross).
+    stock_marker_rows = []
+    no_stock_marker_rows = []
+    for _, row in history.iterrows():
+        flags = row.get("stock_flags") or ""
+        if not flags:
+            continue
+        first = pd.Timestamp(row["first_seen"])
+        price = pd.to_numeric(row["price_unit"], errors="coerce")
+        label = row["label"]
+        for i, f in enumerate(flags):
+            entry = {"date": first + pd.Timedelta(days=i), "price_unit": price, "label": label}
+            if f == "0":
+                no_stock_marker_rows.append(entry)
+            else:
+                stock_marker_rows.append(entry)
+    stock_markers_df    = pd.DataFrame(stock_marker_rows)    if stock_marker_rows    else pd.DataFrame(columns=["date", "price_unit", "label"])
+    no_stock_markers_df = pd.DataFrame(no_stock_marker_rows) if no_stock_marker_rows else pd.DataFrame(columns=["date", "price_unit", "label"])
+
     plottable = history_plot.dropna(subset=["price_unit"])
     if plottable.empty:
         st.info("Los productos seleccionados no tienen precios registrados en el historial.")
@@ -906,16 +927,36 @@ def render_history_page() -> None:
         for i, label in enumerate(labels_ordered):
             subset = plottable[plottable["label"] == label].sort_values("date")
             color = CHART_COLORS[i % len(CHART_COLORS)]
-            # Use lines+markers when there are multiple dates, markers-only for a single date
-            multi_date = subset["date"].nunique() > 1
+            # Line (no built-in markers — explicit per-scrape markers added below)
             figure.add_trace(go.Scatter(
                 x=subset["date"],
                 y=subset["price_unit"],
-                mode="lines+markers" if multi_date else "markers",
+                mode="lines",
                 name=label,
                 line=dict(shape="hv", width=2.4, color=color),
-                marker=dict(size=8, color=color, line=dict(width=1, color="#ffffff")),
             ))
+            # Circle markers: scrape days where stock was available
+            sm = stock_markers_df[stock_markers_df["label"] == label] if not stock_markers_df.empty else pd.DataFrame()
+            if not sm.empty:
+                figure.add_trace(go.Scatter(
+                    x=sm["date"],
+                    y=sm["price_unit"],
+                    mode="markers",
+                    name=label,
+                    showlegend=False,
+                    marker=dict(symbol="circle", size=8, color=color, line=dict(width=1, color="#ffffff")),
+                ))
+            # Cross markers: scrape days where stock was unavailable
+            nm = no_stock_markers_df[no_stock_markers_df["label"] == label] if not no_stock_markers_df.empty else pd.DataFrame()
+            if not nm.empty:
+                figure.add_trace(go.Scatter(
+                    x=nm["date"],
+                    y=nm["price_unit"],
+                    mode="markers",
+                    name=label,
+                    showlegend=False,
+                    marker=dict(symbol="x", size=10, color=color, line=dict(width=2.5, color=color)),
+                ))
         figure.update_layout(
             height=420,
             xaxis_title=t("history_chart_date"),

@@ -11,6 +11,7 @@ import httpx
 from scraper.config import SUPPLIERS, get_supplier_config, get_short_code, load_supplier_class
 from scraper.db import (
     finish_run,
+    reconcile_missing_as_no_stock,
     start_run,
     update_run_categories_total,
     upsert_product,
@@ -30,6 +31,7 @@ async def run_supplier(supplier_id: str, pool, max_products: int | None = None) 
     products_scraped = 0
     snapshots_written = 0
     categories_done = 0
+    scraped_skus: set[str] = set()
 
     try:
         async with httpx.AsyncClient(
@@ -59,6 +61,7 @@ async def run_supplier(supplier_id: str, pool, max_products: int | None = None) 
                             pool, p["sku"], supplier_id,
                             p["price_unit"], p["price_bulk"], p["stock"],
                         )
+                        scraped_skus.add(p["sku"])
                         products_scraped += 1
                         if wrote:
                             snapshots_written += 1
@@ -91,6 +94,17 @@ async def run_supplier(supplier_id: str, pool, max_products: int | None = None) 
     else:
         logger.info(f"{supplier_id}: done — {products_scraped} products, "
                     f"{snapshots_written} snapshots written")
+
+    # Post-scrape reconciliation: mark products not seen in this run as no-stock.
+    # Only enabled for suppliers that silently remove out-of-stock products (e.g. Nini).
+    # Skipped entirely if the scrape returned nothing (safety: avoid false positives on failure).
+    if config.get("reconcile_missing_stock") and scraped_skus:
+        try:
+            missing = await reconcile_missing_as_no_stock(pool, supplier_id, scraped_skus)
+            if missing:
+                logger.info(f"{supplier_id}: reconcile — {missing} products not seen → marked no-stock")
+        except Exception as e:
+            logger.warning(f"{supplier_id}: reconcile failed — {e}")
 
     # Run post-scrape feature extraction pipeline
     try:

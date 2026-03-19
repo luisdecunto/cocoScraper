@@ -96,6 +96,10 @@ SUPPLIERS: list[dict] = [
         "selectors": {},        # Not used — JSON API
         "category_urls": [],    # Discovered dynamically from department/sector API
         "concurrency": 6,
+        # Nini removes out-of-stock products from their API entirely — no explicit "sin stock"
+        # signal. After each run we compare scraped SKUs against known SKUs and mark the
+        # difference as no-stock in price_history.
+        "reconcile_missing_stock": True,
     },
 ]
 

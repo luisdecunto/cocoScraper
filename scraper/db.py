@@ -4,6 +4,7 @@ PostgreSQL connection pool, schema init, upsert logic, and run log helpers.
 """
 
 import asyncpg
+import datetime
 import os
 import logging
 
@@ -97,16 +98,23 @@ async def init_schema(pool: asyncpg.Pool) -> None:
                 FOREIGN KEY (sku, supplier) REFERENCES products(sku, supplier)
             );
 
-            -- Price history: one row per stable price period per product
+            -- Price history: one row per stable price period per product.
+            -- stock_flags is a per-calendar-day string from first_seen to last_seen:
+            --   position i  →  first_seen + i days
+            --   '1' = in stock that day, '0' = no stock
+            -- Unscraped days inherit the last known status (gaps filled on next scrape).
             CREATE TABLE IF NOT EXISTS price_history (
-                id          BIGSERIAL   PRIMARY KEY,
-                sku         TEXT        NOT NULL,
-                supplier    TEXT        NOT NULL,
-                price_unit  NUMERIC(12,2),
-                first_seen  DATE        NOT NULL DEFAULT CURRENT_DATE,
-                last_seen   DATE        NOT NULL DEFAULT CURRENT_DATE,
+                id              BIGSERIAL   PRIMARY KEY,
+                sku             TEXT        NOT NULL,
+                supplier        TEXT        NOT NULL,
+                price_unit      NUMERIC(12,2),
+                first_seen      DATE        NOT NULL DEFAULT CURRENT_DATE,
+                last_seen       DATE        NOT NULL DEFAULT CURRENT_DATE,
+                stock_flags     TEXT        NOT NULL DEFAULT '',
                 FOREIGN KEY (sku, supplier) REFERENCES products(sku, supplier)
             );
+
+            ALTER TABLE price_history ADD COLUMN IF NOT EXISTS stock_flags TEXT NOT NULL DEFAULT '';
 
             CREATE TABLE IF NOT EXISTS run_log (
                 id                BIGSERIAL    PRIMARY KEY,
@@ -177,6 +185,34 @@ async def init_schema(pool: asyncpg.Pool) -> None:
                 """)
                 logger.info("Migration: back-filled price_unit/price_bulk/stock on products table")
 
+    # ── One-time migration: auto-approve pre-existing valid classifications ──
+    # Products classified before classification_status column existed have
+    # valid brand/product_type/features_version but NULL or 'pending' status.
+    # Auto-approve them so they don't appear in the manual review queue.
+    async with pool.acquire() as conn:
+        r1 = await conn.execute("""
+            UPDATE products
+            SET classification_status = 'approved'
+            WHERE classification_status IS NULL
+              AND brand IS NOT NULL
+              AND product_type IS NOT NULL
+              AND features_version > 0
+        """)
+        r2 = await conn.execute("""
+            UPDATE products
+            SET classification_status = 'approved'
+            WHERE classification_status = 'pending'
+              AND classification_confidence = 'high'
+              AND brand IS NOT NULL
+              AND product_type IS NOT NULL
+              AND features_version > 0
+        """)
+        n1 = int(r1.split()[-1]) if r1 else 0
+        n2 = int(r2.split()[-1]) if r2 else 0
+        if n1 + n2 > 0:
+            logger.info(f"Migration: auto-approved {n1 + n2} pre-existing classified products "
+                        f"({n1} from NULL, {n2} from pending/high)")
+
     logger.info("Schema initialized.")
 
 
@@ -209,6 +245,12 @@ async def upsert_product(pool: asyncpg.Pool, supplier: str, product_dict: dict) 
         )
 
 
+def _build_gap_fill(last_seen: datetime.date, target_date: datetime.date, last_flag: str) -> str:
+    """Return a string of last_flag repeated for each day from last_seen+1 to target_date-1."""
+    gap = (target_date - last_seen).days - 1
+    return last_flag * max(0, gap)
+
+
 async def upsert_price_history(
     pool: asyncpg.Pool,
     sku: str,
@@ -219,10 +261,21 @@ async def upsert_price_history(
 ) -> bool:
     """
     Update current price/stock on products, then manage price_history periods.
-    - If price_unit unchanged from the last period: extend last_seen to today.
-    - If price_unit changed (or no history yet): open a new period row.
+
+    stock_flags is a per-calendar-day string: position i = first_seen + i days.
+    '1' = in stock, '0' = no stock. Unscraped days are filled with the last known
+    status so gaps propagate correctly (e.g. no-stock persists until confirmed again).
+
+    - Same price: fill gap days with last flag, then append today's actual flag.
+    - Price changed: fill previous period's gap up to yesterday, close it,
+      then open a new period starting today.
+
     Returns True if a new price period was opened (price changed), False otherwise.
     """
+    no_stock = (stock == "sin stock")
+    flag = "0" if no_stock else "1"
+    today = datetime.date.today()
+
     async with pool.acquire() as conn:
         # Always update current price/stock on the products row
         await conn.execute(
@@ -235,26 +288,102 @@ async def upsert_price_history(
         if price_unit is None:
             return False
 
-        # Check whether the most recent period has the same price_unit
+        # Fetch most recent period: same price? last_seen? last stock flag?
         last = await conn.fetchrow(
-            "SELECT id, (price_unit IS NOT DISTINCT FROM $3::NUMERIC) AS same_price "
+            "SELECT id, last_seen, "
+            "       COALESCE(NULLIF(RIGHT(stock_flags, 1), ''), '1') AS last_flag, "
+            "       (price_unit IS NOT DISTINCT FROM $3::NUMERIC) AS same_price "
             "FROM price_history WHERE sku=$1 AND supplier=$2 "
             "ORDER BY first_seen DESC LIMIT 1",
             sku, supplier, price_unit,
         )
+
         if last and last["same_price"]:
+            # Fill unscraped days since last_seen with the previous flag, then append today's
+            gap = _build_gap_fill(last["last_seen"], today, last["last_flag"])
             await conn.execute(
-                "UPDATE price_history SET last_seen=CURRENT_DATE WHERE id=$1",
-                last["id"],
+                "UPDATE price_history "
+                "SET last_seen   = CURRENT_DATE, "
+                "    stock_flags = stock_flags || $2 "
+                "WHERE id = $1",
+                last["id"], gap + flag,
             )
             return False
         else:
+            if last:
+                # Close previous period: fill gap up to yesterday, set last_seen = yesterday
+                gap = _build_gap_fill(last["last_seen"], today, last["last_flag"])
+                await conn.execute(
+                    "UPDATE price_history "
+                    "SET last_seen   = CURRENT_DATE - 1, "
+                    "    stock_flags = stock_flags || $2 "
+                    "WHERE id = $1",
+                    last["id"], gap,
+                )
+            # Open new period starting today
             await conn.execute(
-                "INSERT INTO price_history (sku, supplier, price_unit, first_seen, last_seen) "
-                "VALUES ($1, $2, $3, CURRENT_DATE, CURRENT_DATE)",
-                sku, supplier, price_unit,
+                "INSERT INTO price_history "
+                "    (sku, supplier, price_unit, first_seen, last_seen, stock_flags) "
+                "VALUES ($1, $2, $3, CURRENT_DATE, CURRENT_DATE, $4)",
+                sku, supplier, price_unit, flag,
             )
             return True
+
+
+async def reconcile_missing_as_no_stock(
+    pool: asyncpg.Pool,
+    supplier: str,
+    scraped_skus: set[str],
+) -> int:
+    """Mark products not seen in this scrape as no-stock for today.
+
+    For suppliers that silently remove out-of-stock products (e.g. Nini), absence
+    from the scrape result is the only signal that a product is unavailable.
+
+    Fills the gap from last_seen+1 to today with the last known flag, then appends '0'
+    for today — consistent with the per-calendar-day stock_flags convention.
+
+    Only touches the most-recent price_history period per missing SKU, and only if
+    last_seen < CURRENT_DATE to prevent double-marking on the same day.
+
+    Returns the number of products marked no-stock.
+    """
+    if not scraped_skus:
+        return 0
+
+    skus_list = list(scraped_skus)
+
+    async with pool.acquire() as conn:
+        result = await conn.execute(
+            """
+            UPDATE price_history ph
+            SET last_seen   = CURRENT_DATE,
+                stock_flags = stock_flags
+                              || repeat(
+                                  COALESCE(NULLIF(RIGHT(stock_flags, 1), ''), '1'),
+                                  GREATEST(0, CURRENT_DATE - ph.last_seen - 1)
+                              )
+                              || '0'
+            WHERE ph.supplier = $1
+              AND NOT (ph.sku = ANY($2::TEXT[]))
+              AND ph.last_seen < CURRENT_DATE
+              AND ph.id = (
+                  SELECT id FROM price_history
+                  WHERE sku = ph.sku AND supplier = ph.supplier
+                  ORDER BY first_seen DESC
+                  LIMIT 1
+              )
+            """,
+            supplier, skus_list,
+        )
+        # Flip products.stock so the dashboard reflects current status
+        await conn.execute(
+            "UPDATE products SET stock = 'sin stock' "
+            "WHERE supplier = $1 AND NOT (sku = ANY($2::TEXT[]))",
+            supplier, skus_list,
+        )
+
+    return int(result.split()[-1]) if result else 0
 
 
 async def start_run(pool: asyncpg.Pool, supplier: str) -> int:
