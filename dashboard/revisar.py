@@ -255,6 +255,7 @@ def main():
 
         # Interactive table
         st.markdown("### Revisión manual")
+        st.caption("💡 **Cómo usar**: 1) Usa filtros arriba para acotar productos. 2) Haz click en celdas para editar inline (Marca, Tipo, Variante, Tamaño). 3) Checkea filas que quieres aprobar. 4) Haz click en 'Aprobar seleccionadas'.")
 
         # Build editable table
         edit_data = []
@@ -300,6 +301,11 @@ def main():
 
         # Row-by-row actions
         st.markdown("### Acciones por fila")
+
+        # Select All helper (note: checkboxes must be clicked manually in AgGrid, but we can provide info)
+        col_select, col_info = st.columns([1, 3])
+        with col_select:
+            st.caption("📋 **Tip**: Haz scroll y checkea manualmente las filas que quieres. Los cambios inline se guardan automáticamente.")
 
         col1, col2, col3, col4 = st.columns(4)
 
