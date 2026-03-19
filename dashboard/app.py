@@ -1116,7 +1116,7 @@ def main() -> None:
             t("nav_group_analysis"): [
                 st.Page(render_comparison_page, title=t("nav_comparison"), icon="🔍", url_path="comparison"),
                 st.Page(render_history_page, title=t("nav_history"), icon="📈", url_path="history"),
-                st.Page(render_revisar_page, title=t("nav_revisar"), icon="✓", url_path="revisar"),
+                st.Page(render_revisar_page, title=t("nav_revisar"), icon="✅", url_path="revisar"),
             ],
             t("nav_group_system"): [
                 st.Page(render_feedback_page, title=t("nav_feedback"), icon="🚩", url_path="feedback"),
