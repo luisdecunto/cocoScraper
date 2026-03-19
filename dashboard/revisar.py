@@ -284,7 +284,7 @@ def main():
         gb.configure_column("Tamaño", editable=True, width=100)
         gb.configure_column("Confianza", width=80, pinned=False)
         gb.configure_column("Acción", width=120, editable=False)
-        gb.configure_selection("multiple")
+        gb.configure_selection("multiple", use_checkbox=True)
 
         grid_options = gb.build()
         grid_response = AgGrid(
