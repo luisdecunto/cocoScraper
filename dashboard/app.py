@@ -374,6 +374,191 @@ def render_browse_page() -> None:
     display_table(filtered[visible_columns], height=980)
 
 
+@st.fragment
+def _render_comp_grid_and_detail() -> None:
+    """AG Grid + detail panel + flagging.
+
+    Decorated with @st.fragment so row clicks only rerun this function,
+    not the full comparison page (which would redo pivot/groupby/etc).
+    Filter changes in the outer page store fresh data in session_state and
+    then call this fragment, which re-renders with the new data.
+    """
+    display_frame: pd.DataFrame | None = st.session_state.get("_cmp_display_frame")
+    if display_frame is None:
+        return
+
+    pivot_cks: list = st.session_state.get("_cmp_pivot_ck", [])
+    pivot_cns: list = st.session_state.get("_cmp_pivot_cn", [])
+    cheapest: list = st.session_state.get("_cmp_cheapest", [])
+    supplier_columns: list = st.session_state.get("_cmp_supplier_columns", [])
+    priced_supplier_cols: set = set(st.session_state.get("_cmp_priced_supplier_cols", []))
+    detail_lookup: dict = st.session_state.get("_cmp_detail_lookup", {})
+    ck_to_cn: dict = dict(zip(pivot_cks, pivot_cns))
+
+    if "comp_flagged_cks" not in st.session_state:
+        st.session_state["comp_flagged_cks"] = set()
+
+    ag_frame = display_frame.copy()
+    ag_frame["_ck"] = pivot_cks
+    ag_frame["_cheapest"] = cheapest
+    ag_frame["_clicked_col"] = ""
+    ag_frame["🚩"] = ag_frame["_ck"].isin(st.session_state["comp_flagged_cks"])
+
+    min_cell_style = JsCode("""function(params) {
+        if (params.data._cheapest && params.colDef.field === params.data._cheapest
+                && params.value && params.value.startsWith('$')) {
+            return {'background': '#e6f0ed', 'color': '#1d5b50', 'fontWeight': '600'};
+        }
+        return {};
+    }""")
+
+    gb = GridOptionsBuilder.from_dataframe(
+        ag_frame[[c for c in ag_frame.columns if not c.startswith("_")]]
+    )
+    gb.configure_default_column(resizable=True, sortable=True, filter=False, min_width=60,
+                                cellStyle={"fontSize": "12px"})
+    gb.configure_column(
+        "🚩",
+        editable=True,
+        cellRenderer="agCheckboxCellRenderer",
+        cellEditor="agCheckboxCellEditor",
+        width=40, minWidth=40, maxWidth=40,
+        pinned="left", headerName="", sortable=False, suppressSizeToFit=True,
+    )
+    for sup in supplier_columns:
+        gb.configure_column(sup, cellStyle=min_cell_style, hide=(sup not in priced_supplier_cols))
+    gb.configure_selection(selection_mode="single", use_checkbox=False)
+    grid_options = gb.build()
+    grid_options["columnDefs"] += [
+        {"field": "_ck", "hide": True},
+        {"field": "_cheapest", "hide": True},
+        {"field": "_clicked_col", "hide": True},
+    ]
+    grid_options["onCellClicked"] = JsCode("""function(e) {
+        var field = e.colDef.field || '';
+        e.node.data['_clicked_col'] = field;
+        if (field !== '\uD83D\uDEA9') {
+            e.node.setSelected(true, true);
+        }
+    }""")
+    saved_col_state = st.session_state.get("comp_col_state", [])
+    if saved_col_state:
+        grid_options["onGridReady"] = JsCode(
+            "function(p){var s=%s;"
+            "var a=p.columnApi||p.api;"
+            "if(a&&a.applyColumnState)a.applyColumnState({state:s,applyOrder:false});}"
+            % json.dumps(saved_col_state)
+        )
+
+    col_table, col_detail = st.columns([4, 1])
+
+    with col_table:
+        grid_response = AgGrid(
+            ag_frame,
+            gridOptions=grid_options,
+            update_mode=GridUpdateMode.VALUE_CHANGED | GridUpdateMode.SELECTION_CHANGED,
+            height=600,
+            fit_columns_on_grid_load=False,
+            allow_unsafe_jscode=True,
+            use_container_width=True,
+            custom_css={
+                ".ag-header-cell-label": {"font-size": "12px !important"},
+                ".ag-cell": {"font-size": "12px !important", "padding-left": "2px !important", "padding-right": "2px !important"},
+                ".ag-header-cell": {"padding-left": "2px !important", "padding-right": "2px !important"},
+                ".ag-row": {"line-height": "24px !important"},
+                ".ag-header-row": {"height": "32px !important"},
+            },
+        )
+        col_state = grid_response.get("column_state")
+        if col_state is not None and len(col_state) > 0:
+            st.session_state["comp_col_state"] = (
+                col_state.to_dict("records") if hasattr(col_state, "to_dict") else list(col_state)
+            )
+        resp_data = grid_response.get("data")
+        if resp_data is not None and "🚩" in resp_data.columns and "_ck" in resp_data.columns:
+            st.session_state["comp_flagged_cks"] = set(
+                resp_data.loc[resp_data["🚩"] == True, "_ck"].tolist()
+            )
+
+    with col_detail:
+        selected = grid_response.get("selected_rows")
+        if selected is not None and len(selected) > 0:
+            row = selected[0] if isinstance(selected, list) else selected.iloc[0]
+            ck = row.get("_ck", "")
+            st.markdown(f"**{row.get('canonical_name', ck)}**")
+            details = detail_lookup.get(ck, {})
+            clicked_col = row.get("_clicked_col", "")
+            if clicked_col in supplier_columns:
+                active_suppliers = [clicked_col]
+            else:
+                active_suppliers = [
+                    sup for sup in supplier_columns
+                    if str(row.get(sup, "")) not in ("", "N/A", "nan", "None")
+                ]
+            for sup in active_suppliers:
+                products = details.get(sup)
+                if not products:
+                    continue
+                st.divider()
+                st.markdown(f"**{sup}**")
+                for p in products:
+                    def _val(key, _p=p):
+                        v = _p.get(key)
+                        return v if (v is not None and pd.notna(v)) else None
+                    if _val("name"):
+                        st.caption(str(_val("name")))
+                    fields = [
+                        ("SKU", _val("sku")),
+                        ("ID producto", _val("product_id")),
+                        ("Marca", _val("brand")),
+                        ("Tipo", _val("product_type")),
+                        ("Tamaño", _val("size")),
+                        ("Precio unit.", f"${float(_val('price_unit')):,.2f}" if _val("price_unit") else None),
+                        ("Precio bulto", f"${float(_val('price_bulk')):,.2f}" if _val("price_bulk") else None),
+                        ("Uds. x bulto", _val("units_per_package")),
+                        ("Stock", _val("stock")),
+                    ]
+                    for label, value in fields:
+                        if value:
+                            st.markdown(f"<small>**{label}:** {value}</small>", unsafe_allow_html=True)
+                    if _val("url"):
+                        st.markdown(f"[Ver producto →]({_val('url')})")
+        else:
+            st.caption("← Clic en una fila")
+
+    # Flagging panel
+    st.divider()
+    flagged_cks = st.session_state.get("comp_flagged_cks", set())
+    flagged_names = [ck_to_cn[ck] for ck in flagged_cks if ck in ck_to_cn]
+    if flagged_names:
+        preview = ", ".join(flagged_names[:4]) + ("…" if len(flagged_names) > 4 else "")
+        st.markdown(f"**🚩 {len(flagged_names)} producto(s) marcado(s):** {preview}")
+        with st.form("comp_flag_form"):
+            comment = st.text_area(
+                "Comentario",
+                placeholder="Ej: estos productos no son equivalentes, el tamaño es diferente",
+            )
+            col_send, col_clear, _ = st.columns([1, 1, 6])
+            with col_send:
+                submitted = st.form_submit_button("Enviar")
+            with col_clear:
+                cleared = st.form_submit_button("Limpiar")
+        if submitted:
+            if not comment.strip():
+                st.warning("Escribí un comentario antes de enviar.")
+            else:
+                _insert_feedback(flagged_names, comment.strip())
+                st.session_state["comp_flagged_cks"] = set()
+                st.cache_data.clear()
+                st.toast("Reporte guardado. ¡Gracias!", icon="✅")
+                st.rerun()
+        if cleared:
+            st.session_state["comp_flagged_cks"] = set()
+            st.rerun()
+    else:
+        st.caption("☐ Marcá filas con 🚩 para reportar un problema")
+
+
 def render_comparison_page() -> None:
     df = _load_comparison_data()
 
@@ -527,200 +712,25 @@ def render_comparison_page() -> None:
     )
 
     # Build detail lookup: canonical_key -> {supplier -> [row_dict, ...]}
+    # groupby is ~20x faster than iterrows for this pattern
     detail_cols = ["canonical_key", "supplier", "name", "url", "brand", "product_type",
                    "size", "price_unit", "price_bulk", "stock", "units_per_package",
                    "sku", "product_id"]
+    detail_subset = filtered[[c for c in detail_cols if c in filtered.columns]]
     detail_lookup: dict[str, dict[str, list]] = {}
-    for _, r in filtered[[c for c in detail_cols if c in filtered.columns]].iterrows():
-        ck = r["canonical_key"]
-        sup = r["supplier"]
-        detail_lookup.setdefault(ck, {}).setdefault(sup, []).append(r.to_dict())
+    for (ck, sup), grp in detail_subset.groupby(["canonical_key", "supplier"], sort=False):
+        detail_lookup.setdefault(ck, {})[sup] = grp.to_dict("records")
 
-    # Flagged rows survive filter reruns via session state
-    if "comp_flagged_cks" not in st.session_state:
-        st.session_state["comp_flagged_cks"] = set()
+    # Store data the fragment needs; rebuilt on every filter change, reused on row clicks
+    st.session_state["_cmp_display_frame"] = display_frame
+    st.session_state["_cmp_pivot_ck"] = pivot["canonical_key"].tolist()
+    st.session_state["_cmp_pivot_cn"] = pivot["canonical_name"].tolist()
+    st.session_state["_cmp_cheapest"] = pivot["cheapest"].tolist()
+    st.session_state["_cmp_supplier_columns"] = supplier_columns
+    st.session_state["_cmp_priced_supplier_cols"] = list(priced_supplier_cols)
+    st.session_state["_cmp_detail_lookup"] = detail_lookup
 
-    # AgGrid setup
-    ag_frame = display_frame.copy()
-    ag_frame["_ck"] = pivot["canonical_key"].values
-    ag_frame["_cheapest"] = pivot["cheapest"].values
-    ag_frame["_clicked_col"] = ""  # populated by onCellClicked JS handler
-    ag_frame["🚩"] = ag_frame["_ck"].isin(st.session_state["comp_flagged_cks"])
-
-    min_cell_style = JsCode("""function(params) {
-        if (params.data._cheapest && params.colDef.field === params.data._cheapest
-                && params.value && params.value.startsWith('$')) {
-            return {'background': '#e6f0ed', 'color': '#1d5b50', 'fontWeight': '600'};
-        }
-        return {};
-    }""")
-
-    gb = GridOptionsBuilder.from_dataframe(
-        ag_frame[[c for c in ag_frame.columns if not c.startswith("_")]]
-    )
-    gb.configure_default_column(resizable=True, sortable=True, filter=False, min_width=60,
-                                cellStyle={"fontSize": "12px"})
-    gb.configure_column(
-        "🚩",
-        editable=True,
-        cellRenderer="agCheckboxCellRenderer",
-        cellEditor="agCheckboxCellEditor",
-        width=40,
-        minWidth=40,
-        maxWidth=40,
-        pinned="left",
-        headerName="",
-        sortable=False,
-        suppressSizeToFit=True,
-    )
-    for sup in supplier_columns:
-        gb.configure_column(sup, cellStyle=min_cell_style, hide=(sup not in priced_supplier_cols))
-    gb.configure_selection(selection_mode="single", use_checkbox=False)
-    grid_options = gb.build()
-    # Pass hidden columns so they're available in cellStyle and detail panel
-    grid_options["columnDefs"] += [
-        {"field": "_ck", "hide": True},
-        {"field": "_cheapest", "hide": True},
-        {"field": "_clicked_col", "hide": True},
-    ]
-    # Stamp clicked column into row data before selection fires.
-    # Skip setSelected for the flag column so checkbox toggling isn't disrupted.
-    grid_options["onCellClicked"] = JsCode("""function(e) {
-        var field = e.colDef.field || '';
-        e.node.data['_clicked_col'] = field;
-        if (field !== '\uD83D\uDEA9') {
-            e.node.setSelected(true, true);
-        }
-    }""")
-
-    # Restore user-resized column widths from the previous render
-    saved_col_state = st.session_state.get("comp_col_state", [])
-    if saved_col_state:
-        grid_options["onGridReady"] = JsCode(
-            "function(p){var s=%s;"
-            "var a=p.columnApi||p.api;"
-            "if(a&&a.applyColumnState)a.applyColumnState({state:s,applyOrder:false});}"
-            % json.dumps(saved_col_state)
-        )
-
-    col_table, col_detail = st.columns([4, 1])
-
-    with col_table:
-        grid_response = AgGrid(
-            ag_frame,
-            gridOptions=grid_options,
-            update_mode=GridUpdateMode.VALUE_CHANGED | GridUpdateMode.SELECTION_CHANGED,
-            height=600,
-            fit_columns_on_grid_load=False,
-            allow_unsafe_jscode=True,
-            use_container_width=True,
-            custom_css={
-                ".ag-header-cell-label": {"font-size": "12px !important"},
-                ".ag-cell": {"font-size": "12px !important", "padding-left": "2px !important", "padding-right": "2px !important"},
-                ".ag-header-cell": {"padding-left": "2px !important", "padding-right": "2px !important"},
-                ".ag-row": {"line-height": "24px !important"},
-                ".ag-header-row": {"height": "32px !important"},
-            },
-        )
-        # Persist column state so widths survive filter reruns
-        col_state = grid_response.get("column_state")
-        if col_state is not None and len(col_state) > 0:
-            st.session_state["comp_col_state"] = (
-                col_state.to_dict("records")
-                if hasattr(col_state, "to_dict")
-                else list(col_state)
-            )
-        # Read checkbox flag state back from the grid and persist it
-        resp_data = grid_response.get("data")
-        if resp_data is not None and "🚩" in resp_data.columns and "_ck" in resp_data.columns:
-            st.session_state["comp_flagged_cks"] = set(
-                resp_data.loc[resp_data["🚩"] == True, "_ck"].tolist()
-            )
-
-    with col_detail:
-        selected = grid_response.get("selected_rows")
-        if selected is not None and len(selected) > 0:
-            row = selected[0] if isinstance(selected, list) else selected.iloc[0]
-            ck = row.get("_ck", "")
-            canonical = row.get("canonical_name", ck)
-            st.markdown(f"**{canonical}**")
-            details = detail_lookup.get(ck, {})
-            clicked_col = row.get("_clicked_col", "")
-            if clicked_col in supplier_columns:
-                # User clicked a specific supplier cell — show only that supplier
-                active_suppliers = [clicked_col]
-            else:
-                # User clicked canonical_name or diff_pct — show all priced suppliers
-                active_suppliers = [
-                    sup for sup in supplier_columns
-                    if str(row.get(sup, "")) not in ("", "N/A", "nan", "None")
-                ]
-            for sup in active_suppliers:
-                products = details.get(sup)
-                if not products:
-                    continue
-                st.divider()
-                st.markdown(f"**{sup}**")
-                for p in products:
-                    def _val(key):
-                        v = p.get(key)
-                        return v if (v is not None and pd.notna(v)) else None
-                    if _val("name"):
-                        st.caption(str(_val("name")))
-                    fields = [
-                        ("SKU", _val("sku")),
-                        ("ID producto", _val("product_id")),
-                        ("Marca", _val("brand")),
-                        ("Tipo", _val("product_type")),
-                        ("Tamaño", _val("size")),
-                        ("Precio unit.", f"${float(_val('price_unit')):,.2f}" if _val("price_unit") else None),
-                        ("Precio bulto", f"${float(_val('price_bulk')):,.2f}" if _val("price_bulk") else None),
-                        ("Uds. x bulto", _val("units_per_package")),
-                        ("Stock", _val("stock")),
-                    ]
-                    for label, value in fields:
-                        if value:
-                            st.markdown(f"<small>**{label}:** {value}</small>", unsafe_allow_html=True)
-                    url_str = _val("url")
-                    if url_str:
-                        st.markdown(f"[Ver producto →]({url_str})")
-        else:
-            st.caption("← Clic en una fila")
-
-    # Flagging panel — shows only when rows are checked
-    st.divider()
-    flagged_cks = st.session_state.get("comp_flagged_cks", set())
-    flagged_names = (
-        pivot[pivot["canonical_key"].isin(flagged_cks)]["canonical_name"]
-        .dropna().unique().tolist()
-    )
-    if flagged_names:
-        preview = ", ".join(flagged_names[:4]) + ("…" if len(flagged_names) > 4 else "")
-        st.markdown(f"**🚩 {len(flagged_names)} producto(s) marcado(s):** {preview}")
-        with st.form("comp_flag_form"):
-            comment = st.text_area(
-                "Comentario",
-                placeholder="Ej: estos productos no son equivalentes, el tamaño es diferente",
-            )
-            col_send, col_clear, _ = st.columns([1, 1, 6])
-            with col_send:
-                submitted = st.form_submit_button("Enviar")
-            with col_clear:
-                cleared = st.form_submit_button("Limpiar")
-        if submitted:
-            if not comment.strip():
-                st.warning("Escribí un comentario antes de enviar.")
-            else:
-                _insert_feedback(flagged_names, comment.strip())
-                st.session_state["comp_flagged_cks"] = set()
-                st.cache_data.clear()
-                st.toast("Reporte guardado. ¡Gracias!", icon="✅")
-                st.rerun()
-        if cleared:
-            st.session_state["comp_flagged_cks"] = set()
-            st.rerun()
-    else:
-        st.caption("☐ Marcá filas con 🚩 para reportar un problema")
+    _render_comp_grid_and_detail()
 
 
 def render_history_page() -> None:
