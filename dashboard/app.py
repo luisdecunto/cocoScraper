@@ -1096,15 +1096,15 @@ def main() -> None:
     pg = st.navigation(
         {
             "": [
-                st.Page(render_browse_page, title=t("nav_dashboard"), icon="⌂", url_path="dashboard"),
+                st.Page(render_browse_page, title=t("nav_dashboard"), icon="🏠", url_path="dashboard"),
             ],
             t("nav_group_analysis"): [
-                st.Page(render_comparison_page, title=t("nav_comparison"), icon="≅", url_path="comparison"),
-                st.Page(render_history_page, title=t("nav_history"), icon="◷", url_path="history"),
+                st.Page(render_comparison_page, title=t("nav_comparison"), icon="🔍", url_path="comparison"),
+                st.Page(render_history_page, title=t("nav_history"), icon="📈", url_path="history"),
             ],
             t("nav_group_system"): [
-                st.Page(render_feedback_page, title=t("nav_feedback"), icon="⚑", url_path="feedback"),
-                st.Page(render_logs_page, title=t("nav_logs"), icon="⚙", url_path="logs"),
+                st.Page(render_feedback_page, title=t("nav_feedback"), icon="🚩", url_path="feedback"),
+                st.Page(render_logs_page, title=t("nav_logs"), icon="📋", url_path="logs"),
             ],
         },
         position="sidebar",
