@@ -304,7 +304,7 @@ def main():
         col1, col2, col3, col4 = st.columns(4)
 
         selected_rows = grid_response["selected_rows"]
-        if selected_rows:
+        if isinstance(selected_rows, list) and len(selected_rows) > 0:
             with col1:
                 if st.button(f"✓ Aprobar seleccionadas ({len(selected_rows)})", use_container_width=True):
                     for row in selected_rows:
